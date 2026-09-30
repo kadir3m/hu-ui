@@ -18,13 +18,13 @@
     "table",
     "turkish"
   ],
-  "homepage": "https://github.com/OWNER/hu-ui#readme",
+  "homepage": "https://github.com/kadir3m/hu-ui#readme",
   "bugs": {
-    "url": "https://github.com/OWNER/hu-ui/issues"
+    "url": "https://github.com/kadir3m/hu-ui/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/hu-ui.git",
+    "url": "git+https://github.com/kadir3m/hu-ui.git",
     "directory": "projects/hu-ui"
   },
   "publishConfig": {
