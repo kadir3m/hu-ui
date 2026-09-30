@@ -1,0 +1,128 @@
+.topbar-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 16rem;
+  margin-right: var(--hu-space-2);
+
+  hu-icon {
+    position: absolute;
+    left: 0.625rem;
+    color: var(--hu-text-subtle);
+    pointer-events: none;
+  }
+
+  input {
+    padding-left: 2rem;
+    padding-right: 3.5rem;
+    background: var(--hu-surface-2);
+    box-shadow: none;
+  }
+
+  kbd {
+    position: absolute;
+    right: 0.5rem;
+    padding: 1px 6px;
+    font-family: var(--hu-font-sans);
+    font-size: 0.6875rem;
+    color: var(--hu-text-subtle);
+    background: var(--hu-surface);
+    border: 1px solid var(--hu-border);
+    border-radius: var(--hu-radius-sm);
+    pointer-events: none;
+  }
+
+  @media (max-width: 1199.98px) {
+    display: none;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .topbar-breadcrumb {
+    display: none;
+  }
+}
+
+.notif-trigger {
+  position: relative;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  background: var(--hu-primary);
+  border: 2px solid var(--hu-surface);
+  border-radius: 50%;
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hu-space-3);
+  min-width: 20rem;
+  padding: var(--hu-space-2) var(--hu-space-3);
+}
+
+.notif-item {
+  align-items: flex-start;
+
+  hu-icon {
+    margin-top: 2px;
+  }
+}
+
+.notif-text {
+  display: block;
+  white-space: normal;
+}
+
+.notif-time {
+  display: block;
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  height: 2.5rem;
+  margin-left: var(--hu-space-1);
+  padding: 0 var(--hu-space-2) 0 var(--hu-space-1);
+  font: inherit;
+  color: var(--hu-text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--hu-surface-3);
+  }
+}
+
+.user-trigger__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.user-trigger__name {
+  font-weight: 600;
+  color: var(--hu-text);
+}
+
+.user-trigger__role {
+  font-size: var(--hu-text-xs);
+}
+
+@media (max-width: 767.98px) {
+  .user-trigger__text {
+    display: none;
+  }
+}

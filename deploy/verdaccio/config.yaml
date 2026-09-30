@@ -1,0 +1,38 @@
+# Verdaccio yapılandırması — https://verdaccio.org/docs/configuration
+storage: /verdaccio/storage
+
+auth:
+  htpasswd:
+    file: /verdaccio/conf/htpasswd
+    # Yeni hesaplar yalnızca yönetici tarafından açılır (htpasswd dosyasına eklenerek).
+    max_users: -1
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+    cache: true
+
+packages:
+  # Kurum paketleri: ASLA npmjs'ten proxy'lenmez (dependency confusion koruması).
+  '@hu/*':
+    access: $authenticated
+    publish: hu-publisher
+    unpublish: hu-publisher
+
+  # Diğer tüm paketler npmjs'ten çekilir ve önbelleklenir.
+  '**':
+    access: $all
+    publish: hu-publisher
+    proxy: npmjs
+
+server:
+  keepAliveTimeout: 60
+
+web:
+  title: Kurum npm
+  login: true
+
+log:
+  type: stdout
+  format: pretty
+  level: http

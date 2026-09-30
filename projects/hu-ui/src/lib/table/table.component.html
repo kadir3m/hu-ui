@@ -1,0 +1,58 @@
+<div class="hu-table__scroll" [attr.aria-busy]="loading() || null">
+  <table class="hu-table__table">
+    <thead>
+      <tr>
+        @for (col of columns(); track col.key) {
+          <th
+            scope="col"
+            [style.width]="col.width"
+            [attr.data-align]="col.align"
+            [attr.aria-sort]="ariaSort(col)"
+            [class.hu-table__cell--hide-mobile]="col.hideOnMobile"
+          >
+            @if (col.sortable) {
+              <button type="button" class="hu-table__sort" [class.hu-table__sort--active]="sort().key === col.key && sort().direction" (click)="toggleSort(col)">
+                {{ col.header }}
+                <hu-icon [name]="sortIcon(col)" [size]="14" />
+              </button>
+            } @else {
+              {{ col.header }}
+            }
+          </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @if (loading() && !rows().length) {
+        <tr>
+          <td class="hu-table__state" [attr.colspan]="columns().length">
+            <hu-spinner />
+          </td>
+        </tr>
+      } @else {
+        @for (row of rows(); track trackBy()(row); let i = $index) {
+          <tr [class.hu-table__row--clickable]="clickableRows()" (click)="onRowClick(row)">
+            @for (col of columns(); track col.key) {
+              <td [attr.data-align]="col.align" [class.hu-table__cell--hide-mobile]="col.hideOnMobile">
+                @if (templates().get(col.key); as tpl) {
+                  <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, index: i }" />
+                } @else {
+                  {{ cellValue(row, col) }}
+                }
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td class="hu-table__state" [attr.colspan]="columns().length">
+              <ng-content select="[huTableEmpty]">{{ emptyText() }}</ng-content>
+            </td>
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+  @if (loading() && rows().length) {
+    <div class="hu-table__overlay"><hu-spinner size="lg" /></div>
+  }
+</div>

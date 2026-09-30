@@ -1,0 +1,72 @@
+.hu-checkbox {
+  display: inline-flex;
+  // Flex/grid kapsayıcıda satır boyunca uzamasın: tıklanabilir alan içerik kadar olsun
+  width: fit-content;
+  max-width: 100%;
+}
+
+.hu-check {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--hu-space-2);
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  cursor: pointer;
+  user-select: none;
+
+  &--disabled {
+    color: var(--hu-text-subtle);
+    cursor: not-allowed;
+  }
+}
+
+.hu-check__input {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  margin: 0.125rem 0 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.hu-check__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  color: transparent;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-sm);
+  transition:
+    background-color var(--hu-transition),
+    border-color var(--hu-transition),
+    box-shadow var(--hu-transition);
+}
+
+.hu-check:hover .hu-check__input:not(:disabled) + .hu-check__box {
+  border-color: var(--hu-primary);
+}
+
+.hu-check__input:focus-visible + .hu-check__box {
+  box-shadow: var(--hu-ring);
+}
+
+.hu-check__input:checked + .hu-check__box,
+.hu-check__input:indeterminate + .hu-check__box {
+  color: var(--hu-primary-fg);
+  background: var(--hu-primary);
+  border-color: var(--hu-primary);
+}
+
+.hu-check__input:disabled + .hu-check__box {
+  opacity: 0.5;
+}
+
+.hu-check__label:empty {
+  display: none;
+}

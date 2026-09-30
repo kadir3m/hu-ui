@@ -1,0 +1,146 @@
+// =============================================================================
+// HU UI — Directive tabanlı kontrollerin stilleri
+// Directive'lerin kendi stil dosyası olamadığından huInput ve huMenuItem
+// stilleri burada tanımlanır.
+// =============================================================================
+
+// --- huInput (input / textarea / select) -------------------------------------
+.hu-input {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: var(--hu-control-md);
+  padding: 0 var(--hu-space-3);
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  background-color: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--hu-shadow-sm);
+  transition:
+    border-color var(--hu-transition),
+    box-shadow var(--hu-transition);
+
+  &::placeholder {
+    color: var(--hu-text-subtle);
+  }
+
+  &:hover:not(:disabled, :focus) {
+    border-color: var(--hu-gray-400);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--hu-primary);
+    box-shadow: var(--hu-ring);
+  }
+
+  &:disabled {
+    color: var(--hu-text-subtle);
+    background-color: var(--hu-surface-3);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  &[readonly] {
+    background-color: var(--hu-surface-2);
+  }
+
+  &--invalid,
+  &--invalid:hover:not(:disabled, :focus) {
+    border-color: var(--hu-danger);
+  }
+
+  &--invalid:focus {
+    border-color: var(--hu-danger);
+    box-shadow: var(--hu-ring-danger);
+  }
+
+  &[data-size='sm'] {
+    height: var(--hu-control-sm);
+    padding: 0 var(--hu-space-2);
+    font-size: 0.8125rem;
+  }
+
+  &[data-size='lg'] {
+    height: var(--hu-control-lg);
+    padding: 0 var(--hu-space-4);
+    font-size: var(--hu-text-md);
+  }
+}
+
+textarea.hu-input {
+  height: auto;
+  min-height: 5.5rem;
+  padding: var(--hu-space-2) var(--hu-space-3);
+  line-height: 1.5;
+  resize: vertical;
+}
+
+select.hu-input {
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+  background-size: 1rem;
+  cursor: pointer;
+
+  &[data-size='sm'] {
+    padding-right: 1.75rem;
+    background-position: right 0.375rem center;
+  }
+}
+
+// --- huMenuItem --------------------------------------------------------------
+.hu-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  width: 100%;
+  padding: var(--hu-space-2) var(--hu-space-3);
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  .hu-icon {
+    color: var(--hu-text-subtle);
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: var(--hu-surface-3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--danger,
+  &--danger .hu-icon {
+    color: var(--hu-danger);
+  }
+}
+
+.hu-menu-divider {
+  height: 1px;
+  margin: var(--hu-space-1) calc(var(--hu-space-1) * -1);
+  background: var(--hu-border);
+  border: 0;
+}
+
+.hu-menu-label {
+  padding: var(--hu-space-2) var(--hu-space-3) var(--hu-space-1);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-subtle);
+}

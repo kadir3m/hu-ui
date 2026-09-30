@@ -1,0 +1,72 @@
+.hu-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+.hu-field__label {
+  font-size: var(--hu-text-sm);
+  font-weight: 500;
+  color: var(--hu-text);
+}
+
+.hu-field__required {
+  margin-left: 2px;
+  color: var(--hu-danger);
+}
+
+.hu-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+// Öznitelik seçicisi kullanılır: HuPrefix/HuSuffix direktifi import edilmemiş olsa da
+// yerleşim bozulmaz. .hu-field__control ile nitelendirme, hu-button'ın
+// position: relative kuralını ezmek içindir.
+.hu-field__control > [huPrefix],
+.hu-field__control > [huSuffix] {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  color: var(--hu-text-subtle);
+  transform: translateY(-50%);
+  pointer-events: none;
+
+  // İçinde buton varsa tıklanabilir olmalı
+  &:is(button),
+  button {
+    pointer-events: auto;
+  }
+}
+
+.hu-field__control > [huPrefix] {
+  left: var(--hu-space-3);
+}
+
+.hu-field__control > [huSuffix] {
+  right: var(--hu-space-1);
+}
+
+.hu-field__control:has(> [huPrefix]) > .hu-input {
+  padding-left: 2.25rem;
+}
+
+.hu-field__control:has(> [huSuffix]) > .hu-input {
+  padding-right: 2.5rem;
+}
+
+.hu-field__message {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-1);
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-muted);
+
+  &--error {
+    color: var(--hu-danger);
+  }
+}

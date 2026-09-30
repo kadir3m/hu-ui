@@ -1,0 +1,75 @@
+<a class="hu-shell__skip" href="#hu-main">İçeriğe geç</a>
+
+<aside
+  class="hu-shell__sidebar"
+  [class.hu-shell__sidebar--dark]="sidebarTheme() === 'dark'"
+  [attr.aria-hidden]="isMobile() && !mobileOpen() ? 'true' : null"
+  [attr.inert]="isMobile() && !mobileOpen() ? '' : null"
+>
+  <a class="hu-shell__brand" [routerLink]="brandLink()">
+    <ng-content select="[huShellLogo]">
+      <span class="hu-shell__logo hu-shell__logo--default">
+        <hu-icon name="graduation-cap" [size]="20" />
+      </span>
+    </ng-content>
+    <span class="hu-shell__brand-text">
+      <span class="hu-shell__brand-name">{{ brand() }}</span>
+      @if (brandSubtitle()) {
+        <span class="hu-shell__brand-subtitle">{{ brandSubtitle() }}</span>
+      }
+    </span>
+  </a>
+
+  <nav class="hu-shell__nav" aria-label="Ana menü">
+    <hu-sidebar-nav
+      [groups]="nav()"
+      [collapsed]="isCollapsed()"
+      (navigate)="mobileOpen.set(false)"
+      (expandRequest)="collapsed.set(false)"
+    />
+  </nav>
+
+  <ng-content select="[huSidebarFooter]" />
+
+  @if (!isMobile()) {
+    <button
+      type="button"
+      class="hu-shell__collapse"
+      [attr.aria-label]="isCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'"
+      [attr.title]="isCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt'"
+      (click)="toggleSidebar()"
+    >
+      <hu-icon [name]="isCollapsed() ? 'chevrons-right' : 'chevrons-left'" [size]="16" />
+      <span class="hu-nav__label">Daralt</span>
+    </button>
+  }
+</aside>
+
+@if (isMobile() && mobileOpen()) {
+  <div class="hu-shell__backdrop" aria-hidden="true" (click)="mobileOpen.set(false)"></div>
+}
+
+<div class="hu-shell__main">
+  <header class="hu-shell__topbar">
+    @if (isMobile()) {
+      <button
+        hu-button
+        variant="ghost"
+        iconOnly
+        class="hu-shell__menu-toggle"
+        aria-label="Menüyü aç"
+        [attr.aria-expanded]="mobileOpen()"
+        (click)="toggleSidebar()"
+      >
+        <hu-icon name="menu" [size]="20" />
+      </button>
+    }
+    <ng-content select="[huTopbarStart]" />
+    <span class="hu-shell__spacer"></span>
+    <ng-content select="[huTopbarEnd]" />
+  </header>
+
+  <main class="hu-shell__content" id="hu-main" tabindex="-1">
+    <ng-content />
+  </main>
+</div>

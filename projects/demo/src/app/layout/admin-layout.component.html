@@ -1,0 +1,53 @@
+<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="HU UI Demo">
+  <hu-breadcrumb huTopbarStart class="topbar-breadcrumb" [items]="breadcrumb()" />
+
+  <div huTopbarEnd>
+    <div class="topbar-search">
+      <hu-icon name="search" [size]="16" />
+      <input huInput size="sm" type="search" placeholder="Ara…" aria-label="Uygulamada ara" />
+      <kbd>Ctrl K</kbd>
+    </div>
+
+    <hu-theme-toggle />
+
+    <hu-menu align="end">
+      <button huMenuTrigger hu-button variant="ghost" iconOnly aria-label="Bildirimler" class="notif-trigger">
+        <hu-icon name="bell" [size]="18" />
+        <span class="notif-dot" aria-hidden="true"></span>
+      </button>
+      <div class="notif-header">
+        <strong>Bildirimler</strong>
+        <hu-badge variant="primary">{{ notifications.length }} yeni</hu-badge>
+      </div>
+      @for (n of notifications; track n.text) {
+        <button huMenuItem class="notif-item">
+          <hu-icon [name]="n.icon" [size]="16" />
+          <span>
+            <span class="notif-text">{{ n.text }}</span>
+            <span class="notif-time">{{ n.time }}</span>
+          </span>
+        </button>
+      }
+    </hu-menu>
+
+    <hu-menu align="end">
+      <button huMenuTrigger type="button" class="user-trigger" aria-label="Kullanıcı menüsü">
+        <hu-avatar [name]="user.name" size="sm" />
+        <span class="user-trigger__text">
+          <span class="user-trigger__name">{{ user.name }}</span>
+          <span class="user-trigger__role">{{ user.role }}</span>
+        </span>
+        <hu-icon name="chevron-down" [size]="16" />
+      </button>
+      <div class="hu-menu-label">{{ user.email }}</div>
+      <a huMenuItem routerLink="/ayarlar"><hu-icon name="user" [size]="16" /> Profilim</a>
+      <a huMenuItem routerLink="/ayarlar"><hu-icon name="settings" [size]="16" /> Ayarlar</a>
+      <hr class="hu-menu-divider" />
+      <button huMenuItem class="hu-menu-item--danger" (click)="logout()">
+        <hu-icon name="log-out" [size]="16" /> Çıkış yap
+      </button>
+    </hu-menu>
+  </div>
+
+  <router-outlet />
+</hu-shell>

@@ -1,0 +1,203 @@
+// =============================================================================
+// HU UI — Tasarım token'ları
+// Tüm componentler yalnızca bu CSS değişkenlerini kullanır. Tema değiştirmek,
+// marka rengini güncellemek veya yoğunluğu ayarlamak için burayı override edin.
+// =============================================================================
+
+:root {
+  color-scheme: light;
+
+  // --- Marka paleti (kırmızı) ------------------------------------------------
+  --hu-red-50: #fdf2f3;
+  --hu-red-100: #fbe3e6;
+  --hu-red-200: #f6c4cb;
+  --hu-red-300: #ee96a2;
+  --hu-red-400: #e25e71;
+  --hu-red-500: #d3334b;
+  --hu-red-600: #c8102e;
+  --hu-red-700: #a70d27;
+  --hu-red-800: #8b0f24;
+  --hu-red-900: #741223;
+  --hu-red-950: #410510;
+
+  // --- Nötr palet ------------------------------------------------------------
+  --hu-gray-0: #ffffff;
+  --hu-gray-50: #fafafa;
+  --hu-gray-100: #f4f4f5;
+  --hu-gray-200: #e4e4e7;
+  --hu-gray-300: #d4d4d8;
+  --hu-gray-400: #a1a1aa;
+  --hu-gray-500: #71717a;
+  --hu-gray-600: #52525b;
+  --hu-gray-700: #3f3f46;
+  --hu-gray-800: #27272a;
+  --hu-gray-850: #1f1f23;
+  --hu-gray-900: #18181b;
+  --hu-gray-950: #0f0f11;
+
+  // --- Yüzeyler & metin ------------------------------------------------------
+  --hu-bg: #f5f5f6;
+  --hu-surface: var(--hu-gray-0);
+  --hu-surface-2: var(--hu-gray-50);
+  --hu-surface-3: var(--hu-gray-100);
+  --hu-border: var(--hu-gray-200);
+  --hu-border-strong: var(--hu-gray-300);
+  --hu-text: var(--hu-gray-900);
+  --hu-text-muted: #5b5b64;
+  --hu-text-subtle: #8a8a93;
+
+  // --- Birincil (marka) ------------------------------------------------------
+  --hu-primary: var(--hu-red-600);
+  --hu-primary-hover: var(--hu-red-700);
+  --hu-primary-active: var(--hu-red-800);
+  --hu-primary-fg: #ffffff;
+  --hu-primary-soft: var(--hu-red-50);
+  --hu-primary-soft-hover: var(--hu-red-100);
+  --hu-primary-soft-fg: var(--hu-red-700);
+
+  // --- Durum renkleri --------------------------------------------------------
+  // Not: Marka rengi kırmızı olduğu için "danger" farklı bir kırmızı tonudur ve
+  // componentlerde her zaman ikon/etiketle birlikte kullanılır.
+  // *-hover: dolgulu buton hover · *-contrast: dolgulu zemin üstündeki yazı
+  --hu-success: #15803d;
+  --hu-success-hover: #166534;
+  --hu-success-contrast: #ffffff;
+  --hu-success-soft: #ecfdf3;
+  --hu-success-fg: #166534;
+  --hu-warning: #b45309;
+  --hu-warning-hover: #92400e;
+  --hu-warning-contrast: #ffffff;
+  --hu-warning-soft: #fffbeb;
+  --hu-warning-fg: #92400e;
+  --hu-danger: #dc2626;
+  --hu-danger-hover: #b91c1c;
+  --hu-danger-contrast: #ffffff;
+  --hu-danger-soft: #fef2f2;
+  --hu-danger-fg: #991b1b;
+  --hu-info: #2563eb;
+  --hu-info-hover: #1d4ed8;
+  --hu-info-contrast: #ffffff;
+  --hu-info-soft: #eff6ff;
+  --hu-info-fg: #1e40af;
+
+  // Nötr dolgulu (koyu) buton
+  --hu-neutral: var(--hu-gray-900);
+  --hu-neutral-hover: var(--hu-gray-700);
+  --hu-neutral-contrast: #ffffff;
+
+  // --- Odak halkası ----------------------------------------------------------
+  --hu-focus: var(--hu-primary);
+  --hu-ring: 0 0 0 3px color-mix(in srgb, var(--hu-primary) 28%, transparent);
+  --hu-ring-danger: 0 0 0 3px color-mix(in srgb, var(--hu-danger) 28%, transparent);
+
+  // --- Tipografi -------------------------------------------------------------
+  --hu-font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --hu-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace;
+  --hu-text-xs: 0.75rem;
+  --hu-text-sm: 0.875rem;
+  --hu-text-md: 1rem;
+  --hu-text-lg: 1.125rem;
+  --hu-text-xl: 1.25rem;
+  --hu-text-2xl: 1.5rem;
+  --hu-text-3xl: 1.875rem;
+
+  // --- Boşluk ----------------------------------------------------------------
+  --hu-space-1: 0.25rem;
+  --hu-space-2: 0.5rem;
+  --hu-space-3: 0.75rem;
+  --hu-space-4: 1rem;
+  --hu-space-5: 1.25rem;
+  --hu-space-6: 1.5rem;
+  --hu-space-8: 2rem;
+  --hu-space-10: 2.5rem;
+
+  // --- Köşe & gölge ----------------------------------------------------------
+  --hu-radius-sm: 4px;
+  --hu-radius-md: 6px;
+  --hu-radius-lg: 10px;
+  --hu-radius-xl: 14px;
+  --hu-radius-full: 9999px;
+  --hu-shadow-sm: 0 1px 2px rgb(16 16 20 / 0.06);
+  --hu-shadow-md: 0 4px 12px -2px rgb(16 16 20 / 0.1), 0 2px 4px -2px rgb(16 16 20 / 0.06);
+  --hu-shadow-lg: 0 16px 40px -8px rgb(16 16 20 / 0.2), 0 4px 12px -4px rgb(16 16 20 / 0.1);
+
+  // --- Kontrol ölçüleri ------------------------------------------------------
+  --hu-control-xs: 1.625rem;
+  --hu-control-sm: 2rem;
+  --hu-control-md: 2.375rem;
+  --hu-control-lg: 2.75rem;
+  --hu-control-xl: 3.25rem;
+
+  // --- Layout ----------------------------------------------------------------
+  --hu-sidebar-width: 264px;
+  --hu-sidebar-collapsed-width: 72px;
+  --hu-topbar-height: 60px;
+  --hu-content-max-width: 1440px;
+
+  --hu-sidebar-bg: var(--hu-surface);
+  --hu-sidebar-fg: var(--hu-gray-700);
+  --hu-sidebar-muted: var(--hu-text-subtle);
+  --hu-sidebar-hover: var(--hu-gray-100);
+  --hu-sidebar-active-bg: var(--hu-primary-soft);
+  --hu-sidebar-active-fg: var(--hu-primary-soft-fg);
+  --hu-sidebar-border: var(--hu-border);
+
+  --hu-transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// --- Koyu tema ---------------------------------------------------------------
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --hu-bg: var(--hu-gray-950);
+  --hu-surface: var(--hu-gray-900);
+  --hu-surface-2: var(--hu-gray-850);
+  --hu-surface-3: var(--hu-gray-800);
+  --hu-border: var(--hu-gray-800);
+  --hu-border-strong: var(--hu-gray-700);
+  --hu-text: #f4f4f5;
+  --hu-text-muted: #b4b4bc;
+  --hu-text-subtle: #85858f;
+
+  --hu-primary: #e0364e;
+  --hu-primary-hover: #e9546a;
+  --hu-primary-active: #f07184;
+  --hu-primary-fg: #ffffff;
+  --hu-primary-soft: color-mix(in srgb, var(--hu-red-500) 16%, transparent);
+  --hu-primary-soft-hover: color-mix(in srgb, var(--hu-red-500) 24%, transparent);
+  --hu-primary-soft-fg: #f8a5b1;
+
+  --hu-success: #22c55e;
+  --hu-success-hover: #4ade80;
+  --hu-success-contrast: #052e16;
+  --hu-success-soft: color-mix(in srgb, #22c55e 14%, transparent);
+  --hu-success-fg: #86efac;
+  --hu-warning: #f59e0b;
+  --hu-warning-hover: #fbbf24;
+  --hu-warning-contrast: #451a03;
+  --hu-warning-soft: color-mix(in srgb, #f59e0b 14%, transparent);
+  --hu-warning-fg: #fcd34d;
+  --hu-danger: #ef4444;
+  --hu-danger-hover: #f87171;
+  --hu-danger-contrast: #ffffff;
+  --hu-danger-soft: color-mix(in srgb, #ef4444 14%, transparent);
+  --hu-danger-fg: #fca5a5;
+  --hu-info: #3b82f6;
+  --hu-info-hover: #60a5fa;
+  --hu-info-contrast: #ffffff;
+  --hu-info-soft: color-mix(in srgb, #3b82f6 14%, transparent);
+  --hu-info-fg: #93c5fd;
+
+  --hu-neutral: var(--hu-gray-100);
+  --hu-neutral-hover: var(--hu-gray-300);
+  --hu-neutral-contrast: var(--hu-gray-900);
+
+  --hu-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --hu-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.5);
+  --hu-shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6);
+
+  --hu-sidebar-bg: var(--hu-gray-900);
+  --hu-sidebar-fg: var(--hu-gray-300);
+  --hu-sidebar-hover: var(--hu-gray-800);
+  --hu-sidebar-border: var(--hu-gray-800);
+}

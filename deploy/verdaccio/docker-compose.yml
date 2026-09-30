@@ -1,0 +1,19 @@
+# Kurum içi npm registry (Verdaccio)
+# Sunucuda:  docker compose up -d
+# Önüne HTTPS terminasyonu yapan bir reverse proxy koyun (bkz. nginx.conf.example).
+services:
+  verdaccio:
+    image: verdaccio/verdaccio:6
+    container_name: verdaccio
+    restart: always
+    ports:
+      - "127.0.0.1:4873:4873" # yalnızca reverse proxy erişsin
+    environment:
+      VERDACCIO_PUBLIC_URL: https://npm.example.com
+    volumes:
+      - ./config.yaml:/verdaccio/conf/config.yaml:ro
+      - ./htpasswd:/verdaccio/conf/htpasswd
+      - verdaccio-storage:/verdaccio/storage
+
+volumes:
+  verdaccio-storage:

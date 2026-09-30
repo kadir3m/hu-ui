@@ -1,0 +1,57 @@
+<div class="login">
+  <div class="login__theme"><hu-theme-toggle /></div>
+
+  <section class="login__panel">
+    <div class="login__brand">
+      <span class="login__logo"><hu-icon name="graduation-cap" [size]="24" /></span>
+      <div>
+        <p class="login__brand-name">Yönetim Paneli</p>
+        <p class="login__brand-sub">HU UI Demo</p>
+      </div>
+    </div>
+
+    <h1 class="login__title">Hesabınıza giriş yapın</h1>
+    <p class="login__subtitle">Kurumsal kullanıcı adınız ve şifrenizle devam edin.</p>
+
+    @if (failed()) {
+      <hu-alert variant="danger" class="login__alert">Kullanıcı adı veya şifre hatalı.</hu-alert>
+    }
+
+    <form class="stack" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <hu-form-field label="Kullanıcı adı">
+        <hu-icon huPrefix name="user" [size]="16" />
+        <input huInput formControlName="username" autocomplete="username" placeholder="ad.soyad" />
+      </hu-form-field>
+      <hu-form-field label="Şifre">
+        <hu-icon huPrefix name="lock" [size]="16" />
+        <input huInput [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" />
+        <button
+          huSuffix
+          hu-button
+          variant="ghost"
+          size="sm"
+          iconOnly
+          type="button"
+          [attr.aria-label]="showPassword() ? 'Şifreyi gizle' : 'Şifreyi göster'"
+          (click)="showPassword.set(!showPassword())"
+        >
+          <hu-icon name="eye" [size]="16" />
+        </button>
+      </hu-form-field>
+      <div class="login__row">
+        <hu-checkbox formControlName="remember">Beni hatırla</hu-checkbox>
+        <a href="#" class="login__link">Şifremi unuttum</a>
+      </div>
+      <button hu-button type="submit" size="lg" block [loading]="loading()">Giriş yap</button>
+    </form>
+
+    <p class="login__hint">Demo: herhangi bir kullanıcı adı ve en az 6 karakterli şifre. Hata durumunu görmek için şifre olarak <code>hatali</code> yazın.</p>
+  </section>
+
+  <aside class="login__visual" aria-hidden="true">
+    <div class="login__visual-inner">
+      <p class="login__quote">"Bilgiyi üreten, paylaşan ve topluma yön veren bir üniversite."</p>
+      <p class="login__quote-sub">Öğrenci, akademik ve idari süreçler tek panelde.</p>
+    </div>
+  </aside>
+</div>

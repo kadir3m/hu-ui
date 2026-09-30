@@ -1,0 +1,82 @@
+.button-matrix {
+  display: grid;
+  gap: var(--hu-space-2);
+  overflow-x: auto;
+  padding-bottom: var(--hu-space-1);
+}
+
+.button-matrix__row {
+  display: grid;
+  grid-template-columns: 5.5rem repeat(5, minmax(7rem, 1fr));
+  align-items: center;
+  gap: var(--hu-space-2);
+
+  code {
+    font-family: var(--hu-font-mono);
+    font-size: var(--hu-text-xs);
+    color: var(--hu-text-muted);
+  }
+}
+
+.button-matrix__head {
+  padding-bottom: var(--hu-space-1);
+  border-bottom: 1px solid var(--hu-border);
+}
+
+.permission-group {
+  padding: var(--hu-space-3);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-md);
+}
+
+.permission-group__children {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-2);
+  margin: var(--hu-space-2) 0 0 0.375rem;
+  padding-left: var(--hu-space-4);
+  border-left: 1px solid var(--hu-border);
+}
+
+.row-divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--hu-border);
+}
+
+.calendar-demo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--hu-space-8);
+  align-items: start;
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.demo-label {
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-muted);
+}
+
+.date-fields {
+  max-width: 22rem;
+}
+
+.form-value {
+  margin: 0;
+  padding: var(--hu-space-3);
+  font-family: var(--hu-font-mono);
+  font-size: var(--hu-text-xs);
+  white-space: pre-wrap;
+  background: var(--hu-surface-2);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-md);
+}
+
+.w-auto {
+  width: auto;
+  flex: 1 1 8rem;
+}

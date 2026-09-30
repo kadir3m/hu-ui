@@ -1,0 +1,74 @@
+<header class="page-header">
+  <div>
+    <h1>Genel Bakış</h1>
+    <p>2026–2027 Güz dönemi özet bilgileri</p>
+  </div>
+  <div class="page-actions">
+    <button hu-button variant="outline"><hu-icon name="download" [size]="16" /> Rapor indir</button>
+    <a hu-button routerLink="/kullanicilar"><hu-icon name="plus" [size]="16" /> Yeni kullanıcı</a>
+  </div>
+</header>
+
+<div class="stack">
+  <hu-alert variant="info" title="Ders kayıt dönemi" dismissible>
+    Güz dönemi ders kayıtları 6 Ekim 2026 Pazartesi günü başlayacaktır.
+  </hu-alert>
+
+  <div class="grid grid--4">
+    @for (stat of stats; track stat.label) {
+      <hu-card>
+        <div class="stat">
+          <div>
+            <p class="stat__label">{{ stat.label }}</p>
+            <p class="stat__value">{{ stat.value }}</p>
+            <p class="stat__change" [class.stat__change--down]="stat.trend === 'down'">
+              <hu-icon [name]="stat.trend === 'up' ? 'trending-up' : 'trending-down'" [size]="14" />
+              {{ stat.change }}
+              <span>geçen döneme göre</span>
+            </p>
+          </div>
+          <span class="stat__icon"><hu-icon [name]="stat.icon" [size]="20" /></span>
+        </div>
+      </hu-card>
+    }
+  </div>
+
+  <div class="dashboard-grid">
+    <hu-card title="Son kayıt olan kullanıcılar" subtitle="Son 7 gün" padding="none">
+      <a huCardActions hu-button variant="ghost" size="sm" routerLink="/kullanicilar">
+        Tümü <hu-icon name="chevron-right" [size]="14" />
+      </a>
+      <hu-table [data]="recentUsers" [columns]="columns" dense>
+        <ng-template huCell="name" [huCellOf]="recentUsers" let-user>
+          <div class="user-cell">
+            <hu-avatar [name]="user.name" size="sm" />
+            <div>
+              <div class="user-cell__name">{{ user.name }}</div>
+              <div class="user-cell__email">{{ user.email }}</div>
+            </div>
+          </div>
+        </ng-template>
+        <ng-template huCell="status" [huCellOf]="recentUsers" let-user>
+          <hu-badge [variant]="statusVariants[user.status]" dot>{{ statusLabels[user.status] }}</hu-badge>
+        </ng-template>
+        <ng-template huCell="createdAt" [huCellOf]="recentUsers" let-user>
+          {{ user.createdAt | date: 'd MMM' }}
+        </ng-template>
+      </hu-table>
+    </hu-card>
+
+    <hu-card title="Son etkinlikler">
+      <ul class="activity">
+        @for (a of activities; track a.text) {
+          <li class="activity__item">
+            <span class="activity__icon"><hu-icon [name]="a.icon" [size]="14" /></span>
+            <div>
+              <p>{{ a.text }}</p>
+              <p class="activity__time">{{ a.time }}</p>
+            </div>
+          </li>
+        }
+      </ul>
+    </hu-card>
+  </div>
+</div>

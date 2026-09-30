@@ -1,0 +1,62 @@
+// HU UI temel stilleri (token'lar, reset, kontrol stilleri).
+// Paket olarak kullanırken: @use '@hu/ui/styles';
+@use '../../hu-ui/styles/hu-ui';
+
+// --- Demo uygulamasına özel yardımcı sınıflar --------------------------------
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--hu-space-4);
+  margin-bottom: var(--hu-space-6);
+
+  h1 {
+    font-size: var(--hu-text-2xl);
+  }
+
+  p {
+    margin-top: var(--hu-space-1);
+    color: var(--hu-text-muted);
+  }
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hu-space-2);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hu-space-3);
+}
+
+.grid {
+  display: grid;
+  gap: var(--hu-space-4);
+
+  &--2 {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  }
+  &--3 {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+  &--4 {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: var(--hu-space-4);
+}

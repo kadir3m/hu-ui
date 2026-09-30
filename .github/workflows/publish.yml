@@ -1,0 +1,49 @@
+# v* etiketi push'landığında @hu/ui'yi npm'e yayınlar.
+#   cd projects/hu-ui && npm version minor && cd ../..
+#   git commit -am "@hu/ui 0.2.0" && git tag v0.2.0 && git push --follow-tags
+#
+# Gerekli secret: NPM_TOKEN (npmjs.com → Access Tokens → Granular, yalnızca @hu kapsamında "Read and write")
+name: Publish
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance için
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - name: Etiket ve paket sürümü eşleşmeli
+        run: |
+          PKG_VERSION=$(node -p "require('./projects/hu-ui/package.json').version")
+          if [ "v$PKG_VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Etiket $GITHUB_REF_NAME, fakat package.json sürümü $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: repository.url bu repoyu göstermeli (provenance şartı)
+        run: |
+          REPO_URL=$(node -p "require('./projects/hu-ui/package.json').repository.url")
+          if [[ "$REPO_URL" != *"github.com/$GITHUB_REPOSITORY"* ]]; then
+            echo "::error::package.json repository.url ($REPO_URL) github.com/$GITHUB_REPOSITORY ile eşleşmiyor"
+            exit 1
+          fi
+
+      - run: npx ng build hu-ui
+
+      - name: npm'e yayınla
+        run: npm publish ./dist/hu-ui --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

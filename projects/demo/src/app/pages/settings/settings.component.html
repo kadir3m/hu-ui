@@ -1,0 +1,126 @@
+<header class="page-header">
+  <div>
+    <h1>Ayarlar</h1>
+    <p>Hesap, bildirim ve görünüm tercihlerinizi yönetin.</p>
+  </div>
+</header>
+
+<hu-tabs [(selectedIndex)]="tab">
+  <hu-tab label="Profil" icon="user">
+    <hu-card title="Profil bilgileri" subtitle="Bu bilgiler kurum içi rehberde görünür.">
+      <form class="stack" [formGroup]="profile" (ngSubmit)="saveProfile()">
+        <div class="row">
+          <hu-avatar name="Kadir Üçme" size="lg" />
+          <button hu-button variant="outline" size="sm" type="button">Fotoğraf yükle</button>
+          <button hu-button variant="ghost" size="sm" type="button">Kaldır</button>
+        </div>
+        <div class="form-grid">
+          <hu-form-field label="Ad Soyad" required>
+            <input huInput formControlName="name" />
+          </hu-form-field>
+          <hu-form-field label="Unvan">
+            <input huInput formControlName="title" />
+          </hu-form-field>
+          <hu-form-field label="E-posta" hint="Kurumsal e-posta değiştirilemez.">
+            <hu-icon huPrefix name="mail" [size]="16" />
+            <input huInput formControlName="email" />
+          </hu-form-field>
+          <hu-form-field label="Telefon">
+            <input huInput type="tel" formControlName="phone" />
+          </hu-form-field>
+        </div>
+        <hu-form-field label="Hakkımda" hint="En fazla 200 karakter.">
+          <textarea huInput formControlName="bio" rows="3"></textarea>
+        </hu-form-field>
+        <div class="row">
+          <button hu-button type="submit" [disabled]="profile.pristine">Kaydet</button>
+          <button hu-button variant="ghost" type="button" (click)="profile.reset()">Sıfırla</button>
+        </div>
+      </form>
+    </hu-card>
+  </hu-tab>
+
+  <hu-tab label="Bildirimler" icon="bell">
+    <hu-card title="Bildirim tercihleri" [formGroup]="notifications">
+      <ul class="settings-list">
+        <li>
+          <div>
+            <p class="settings-list__title">E-posta bildirimleri</p>
+            <p class="settings-list__desc">Onay bekleyen işlemler için e-posta alın.</p>
+          </div>
+          <hu-switch formControlName="email" aria-label="E-posta bildirimleri" />
+        </li>
+        <li>
+          <div>
+            <p class="settings-list__title">SMS bildirimleri</p>
+            <p class="settings-list__desc">Acil durumlarda kısa mesaj gönderilir.</p>
+          </div>
+          <hu-switch formControlName="sms" aria-label="SMS bildirimleri" />
+        </li>
+        <li>
+          <div>
+            <p class="settings-list__title">Haftalık özet raporu</p>
+            <p class="settings-list__desc">Her pazartesi sabahı sistem özetini alın.</p>
+          </div>
+          <hu-switch formControlName="weeklyReport" aria-label="Haftalık özet raporu" />
+        </li>
+        <li>
+          <div>
+            <p class="settings-list__title">Güvenlik uyarıları</p>
+            <p class="settings-list__desc">Yönetici hesapları için kapatılamaz.</p>
+          </div>
+          <hu-switch formControlName="securityAlerts" aria-label="Güvenlik uyarıları" />
+        </li>
+      </ul>
+      <div huCardFooter>
+        <button hu-button (click)="saveNotifications()">Tercihleri kaydet</button>
+      </div>
+    </hu-card>
+  </hu-tab>
+
+  <hu-tab label="Görünüm" icon="sun">
+    <hu-card title="Tema" subtitle="Tercihiniz bu tarayıcıda saklanır.">
+      <div class="theme-options" role="radiogroup" aria-label="Tema">
+        @for (opt of themeOptions; track opt.mode) {
+          <button
+            type="button"
+            role="radio"
+            class="theme-option"
+            [attr.aria-checked]="theme.mode() === opt.mode"
+            (click)="theme.setMode(opt.mode)"
+          >
+            <span class="theme-option__preview" [attr.data-mode]="opt.mode">
+              <span></span><span></span>
+            </span>
+            <span class="theme-option__label"><hu-icon [name]="opt.icon" [size]="16" /> {{ opt.label }}</span>
+          </button>
+        }
+      </div>
+    </hu-card>
+  </hu-tab>
+
+  <hu-tab label="Güvenlik" icon="lock">
+    <div class="stack">
+      <hu-alert variant="warning" title="Şifrenizin süresi dolmak üzere">
+        Kurum politikası gereği şifreniz 12 gün içinde yenilenmelidir.
+      </hu-alert>
+      <hu-card title="Şifre değiştir">
+        <form class="stack security-form" [formGroup]="password" (ngSubmit)="changePassword()">
+          <hu-form-field label="Mevcut şifre" required>
+            <input huInput type="password" formControlName="current" autocomplete="current-password" />
+          </hu-form-field>
+          <hu-form-field label="Yeni şifre" hint="En az 8 karakter." required>
+            <input huInput type="password" formControlName="next" autocomplete="new-password" />
+          </hu-form-field>
+          <div>
+            <button hu-button type="submit">Şifreyi güncelle</button>
+          </div>
+        </form>
+      </hu-card>
+    </div>
+  </hu-tab>
+
+  <hu-tab label="Entegrasyonlar" icon="grid" disabled>
+    <p>Yakında</p>
+  </hu-tab>
+</hu-tabs>

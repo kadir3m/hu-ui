@@ -1,0 +1,101 @@
+<header class="page-header">
+  <div>
+    <h1>Akademik Takvim</h1>
+    <p>2026–2027 eğitim-öğretim yılı önemli tarihleri</p>
+  </div>
+  <div class="page-actions">
+    <button hu-button (click)="openCreate()"><hu-icon name="plus" [size]="16" /> Yeni etkinlik</button>
+  </div>
+</header>
+
+<div class="calendar-layout">
+  <div class="stack">
+    <hu-card>
+      <hu-calendar
+        class="calendar"
+        [(value)]="selectedDate"
+        [markers]="markers()"
+        (monthChange)="onMonthChange($event)"
+      />
+      <div class="legend" role="group" aria-label="Kategoriler">
+        @for (key of categoryKeys; track key) {
+          <button
+            type="button"
+            class="legend__item"
+            [attr.aria-pressed]="activeCategories().has(key)"
+            (click)="toggleCategory(key)"
+          >
+            <span class="legend__dot" [attr.data-variant]="categories[key].variant"></span>
+            {{ categories[key].label }}
+          </button>
+        }
+      </div>
+    </hu-card>
+
+    <hu-card title="Yaklaşan">
+      <ul class="upcoming">
+        @for (e of upcoming(); track e.id) {
+          <li>
+            <span class="upcoming__date">
+              <span class="upcoming__day">{{ e.start | date: 'd' }}</span>
+              <span class="upcoming__month">{{ e.start | date: 'MMM' }}</span>
+            </span>
+            <span class="upcoming__title">{{ e.title }}</span>
+          </li>
+        } @empty {
+          <li class="hu-text-muted">Yaklaşan etkinlik yok.</li>
+        }
+      </ul>
+    </hu-card>
+  </div>
+
+  <hu-card [title]="listTitle()" [subtitle]="selectedDate() ? 'Seçili gündeki etkinlikler' : 'Bu aydaki etkinlikler'" padding="none">
+    @if (selectedDate()) {
+      <button huCardActions hu-button variant="ghost" size="sm" (click)="selectedDate.set(null)">
+        <hu-icon name="x" [size]="14" /> Seçimi kaldır
+      </button>
+    }
+    <ul class="events">
+      @for (e of listedEvents(); track e.id) {
+        <li class="event" [attr.data-variant]="categories[e.category].variant">
+          <div class="event__when">
+            @if (isSingleDay(e)) {
+              {{ e.start | date: 'd MMMM, EEEE' }}
+            } @else {
+              {{ e.start | date: 'd MMMM' }} – {{ e.end | date: 'd MMMM y' }}
+            }
+          </div>
+          <div class="event__title">{{ e.title }}</div>
+          <hu-badge [variant]="categories[e.category].variant">{{ categories[e.category].label }}</hu-badge>
+        </li>
+      } @empty {
+        <li class="events__empty">
+          <hu-icon name="calendar" [size]="24" />
+          <p>Bu dönemde etkinlik yok.</p>
+        </li>
+      }
+    </ul>
+  </hu-card>
+</div>
+
+<hu-dialog [(open)]="formOpen" title="Yeni etkinlik" description="Etkinlik akademik takvimde tüm kullanıcılara görünür.">
+  <form id="event-form" class="stack" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <hu-form-field label="Başlık" required>
+      <input huInput formControlName="title" placeholder="Örn. Mezuniyet töreni" />
+    </hu-form-field>
+    <hu-form-field label="Kategori">
+      <select huInput formControlName="category">
+        @for (key of categoryKeys; track key) {
+          <option [value]="key">{{ categories[key].label }}</option>
+        }
+      </select>
+    </hu-form-field>
+    <hu-form-field label="Tarih aralığı" hint="Tek günlük etkinlik için aynı günü iki kez seçin." required>
+      <hu-date-picker mode="range" formControlName="period" [markers]="markers()" />
+    </hu-form-field>
+  </form>
+  <div huDialogFooter>
+    <button hu-button variant="outline" type="button" (click)="formOpen.set(false)">Vazgeç</button>
+    <button hu-button type="submit" form="event-form">Ekle</button>
+  </div>
+</hu-dialog>

@@ -1,0 +1,56 @@
+{
+  "name": "@hu/ui",
+  "version": "0.1.0",
+  "description": "Angular 19 UI component kütüphanesi ve admin layout — signals, standalone, bağımlılıksız SCSS token'ları, açık/koyu tema.",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "angular19",
+    "ui",
+    "components",
+    "admin",
+    "dashboard",
+    "layout",
+    "design-system",
+    "signals",
+    "datepicker",
+    "calendar",
+    "table",
+    "turkish"
+  ],
+  "homepage": "https://github.com/OWNER/hu-ui#readme",
+  "bugs": {
+    "url": "https://github.com/OWNER/hu-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/hu-ui.git",
+    "directory": "projects/hu-ui"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    "./styles": {
+      "sass": "./styles/hu-ui.scss"
+    },
+    "./styles/tokens": {
+      "sass": "./styles/_tokens.scss"
+    }
+  },
+  "peerDependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/forms": "^19.2.0",
+    "@angular/router": "^19.2.0",
+    "rxjs": "^7.8.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ]
+}

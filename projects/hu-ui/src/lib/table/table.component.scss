@@ -1,0 +1,138 @@
+.hu-table {
+  display: block;
+  min-width: 0;
+}
+
+.hu-table__scroll {
+  position: relative;
+  overflow-x: auto;
+}
+
+.hu-table--sticky .hu-table__scroll {
+  max-height: var(--hu-table-max-height, 32rem);
+  overflow-y: auto;
+}
+
+.hu-table__table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--hu-text-sm);
+
+  th,
+  td {
+    padding: var(--hu-space-3) var(--hu-space-4);
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--hu-border);
+
+    &[data-align='center'] {
+      text-align: center;
+    }
+    &[data-align='end'] {
+      text-align: right;
+    }
+  }
+
+  th {
+    height: 2.5rem;
+    padding-top: var(--hu-space-2);
+    padding-bottom: var(--hu-space-2);
+    font-size: var(--hu-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--hu-text-muted);
+    white-space: nowrap;
+    background: var(--hu-surface-2);
+  }
+
+  tbody tr {
+    transition: background-color var(--hu-transition);
+
+    &:hover {
+      background: var(--hu-surface-2);
+    }
+
+    &:last-child td {
+      border-bottom: 0;
+    }
+  }
+}
+
+.hu-table--sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.hu-table--striped tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--hu-surface-3) 45%, transparent);
+}
+
+.hu-table--dense .hu-table__table {
+  td {
+    padding-top: var(--hu-space-2);
+    padding-bottom: var(--hu-space-2);
+  }
+}
+
+.hu-table__row--clickable {
+  cursor: pointer;
+}
+
+.hu-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hu-space-1);
+  margin: 0 calc(var(--hu-space-1) * -1);
+  padding: 2px var(--hu-space-1);
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  .hu-icon {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    color: var(--hu-text);
+  }
+
+  &--active {
+    color: var(--hu-text);
+
+    .hu-icon {
+      color: var(--hu-primary);
+      opacity: 1;
+    }
+  }
+}
+
+.hu-table__state {
+  height: 8rem;
+  color: var(--hu-text-muted);
+  text-align: center !important;
+
+  .hu-spinner {
+    margin: 0 auto;
+  }
+}
+
+.hu-table__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--hu-surface) 60%, transparent);
+}
+
+@media (max-width: 767.98px) {
+  .hu-table__cell--hide-mobile {
+    display: none;
+  }
+}

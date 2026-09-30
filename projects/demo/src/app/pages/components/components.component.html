@@ -1,0 +1,321 @@
+<header class="page-header">
+  <div>
+    <h1>Component Kataloğu</h1>
+    <p>HU UI kütüphanesindeki tüm componentler ve varyantları.</p>
+  </div>
+</header>
+
+<div class="stack">
+  <!-- Butonlar -->
+  <hu-card title="Button" subtitle="variant (görünüm) × color (renk) — button[hu-button], a[hu-button]">
+    <div class="stack">
+      <!-- Renk × görünüm matrisi -->
+      <div class="button-matrix" role="table" aria-label="Buton renk ve görünüm kombinasyonları">
+        <div role="row" class="button-matrix__row button-matrix__head">
+          <span role="columnheader"></span>
+          @for (v of buttonVariants; track v) {
+            <span role="columnheader"><code>{{ v }}</code></span>
+          }
+        </div>
+        @for (c of buttonColors; track c.value) {
+          <div role="row" class="button-matrix__row">
+            <span role="rowheader" class="button-matrix__label"><code>{{ c.value }}</code></span>
+            @for (v of buttonVariants; track v) {
+              <span role="cell"><button hu-button [variant]="v" [color]="c.value">{{ c.label }}</button></span>
+            }
+          </div>
+        }
+      </div>
+
+      <p class="demo-label">Boyutlar</p>
+      <div class="row">
+        @for (s of buttonSizes; track s) {
+          <button hu-button [size]="s"><hu-icon name="plus" [size]="s === 'xs' ? 12 : s === 'xl' ? 20 : 16" /> {{ s }}</button>
+        }
+      </div>
+
+      <p class="demo-label">İkon, pill, durumlar</p>
+      <div class="row">
+        <button hu-button iconOnly aria-label="Ekle"><hu-icon name="plus" [size]="16" /></button>
+        <button hu-button variant="soft" color="success" iconOnly aria-label="Onayla"><hu-icon name="check" [size]="16" /></button>
+        <button hu-button variant="outline" iconOnly aria-label="Düzenle"><hu-icon name="edit" [size]="16" /></button>
+        <button hu-button variant="ghost" color="danger" iconOnly aria-label="Sil"><hu-icon name="trash" [size]="16" /></button>
+        <button hu-button pill iconOnly color="neutral" aria-label="Bildirimler"><hu-icon name="bell" [size]="16" /></button>
+        <span class="row-divider"></span>
+        <button hu-button pill>Pill buton</button>
+        <button hu-button pill variant="soft" color="info"><hu-icon name="download" [size]="16" /> İndir</button>
+        <button hu-button color="neutral"><hu-icon name="file-text" [size]="16" /> Rapor</button>
+        <span class="row-divider"></span>
+        <button hu-button [loading]="loading()" (click)="simulateLoading()">
+          {{ loading() ? 'Kaydediliyor…' : 'Yükleniyor durumu' }}
+        </button>
+        <button hu-button disabled>Devre dışı</button>
+        <button hu-button variant="outline" disabled>Devre dışı</button>
+        <a hu-button variant="link" routerLink="/kullanicilar">Link buton <hu-icon name="chevron-right" [size]="14" /></a>
+      </div>
+
+      <p class="demo-label">Buton grupları</p>
+      <div class="row">
+        <hu-button-group aria-label="Görünüm">
+          @for (opt of viewOptions; track opt.value) {
+            <button
+              hu-button
+              variant="outline"
+              [attr.aria-pressed]="viewMode() === opt.value"
+              (click)="viewMode.set(opt.value)"
+            >
+              <hu-icon [name]="opt.icon" [size]="16" /> {{ opt.label }}
+            </button>
+          }
+        </hu-button-group>
+
+        <hu-button-group aria-label="Metin biçimi">
+          @for (f of formatOptions; track f.value) {
+            <button
+              hu-button
+              variant="outline"
+              iconOnly
+              [attr.aria-label]="f.label"
+              [attr.aria-pressed]="formats().has(f.value)"
+              (click)="toggleFormat(f.value)"
+            >
+              <strong [style.font-style]="f.value === 'italic' ? 'italic' : null" [style.text-decoration]="f.value === 'underline' ? 'underline' : null">{{ f.short }}</strong>
+            </button>
+          }
+        </hu-button-group>
+
+        <hu-button-group>
+          <button hu-button><hu-icon name="check" [size]="16" /> Kaydet</button>
+          <hu-menu align="end">
+            <button huMenuTrigger hu-button iconOnly aria-label="Diğer kaydetme seçenekleri"><hu-icon name="chevron-down" [size]="16" /></button>
+            <button huMenuItem>Kaydet ve yeni ekle</button>
+            <button huMenuItem>Taslak olarak kaydet</button>
+          </hu-menu>
+        </hu-button-group>
+
+        <hu-button-group pill>
+          <button hu-button variant="soft" color="neutral" iconOnly aria-label="Önceki"><hu-icon name="chevron-left" [size]="16" /></button>
+          <button hu-button variant="soft" color="neutral">Bugün</button>
+          <button hu-button variant="soft" color="neutral" iconOnly aria-label="Sonraki"><hu-icon name="chevron-right" [size]="16" /></button>
+        </hu-button-group>
+      </div>
+
+      <p class="demo-label">Görünüm seçimi: {{ viewMode() }} · Biçim: {{ formatList() }}</p>
+    </div>
+  </hu-card>
+
+  <div class="grid grid--2">
+    <!-- Form alanları -->
+    <hu-card title="Form Field & Input" subtitle="hu-form-field + huInput">
+      <div class="stack">
+        <hu-form-field label="Ad Soyad" hint="Nüfus cüzdanındaki gibi yazın." required>
+          <input huInput placeholder="Örn. Ayşe Yılmaz" />
+        </hu-form-field>
+        <hu-form-field label="Arama">
+          <hu-icon huPrefix name="search" [size]="16" />
+          <input huInput type="search" placeholder="Ders ara…" />
+        </hu-form-field>
+        <hu-form-field label="Şifre">
+          <input huInput [type]="showPassword() ? 'text' : 'password'" value="gizli-sifre" />
+          <button
+            huSuffix
+            hu-button
+            variant="ghost"
+            size="sm"
+            iconOnly
+            type="button"
+            [attr.aria-label]="showPassword() ? 'Şifreyi gizle' : 'Şifreyi göster'"
+            (click)="showPassword.set(!showPassword())"
+          >
+            <hu-icon [name]="showPassword() ? 'lock' : 'eye'" [size]="16" />
+          </button>
+        </hu-form-field>
+        <hu-form-field label="Öğrenci numarası" error="Öğrenci numarası 9 haneli olmalıdır.">
+          <input huInput value="21827" />
+        </hu-form-field>
+        <hu-form-field label="Fakülte">
+          <select huInput>
+            <option>Mühendislik Fakültesi</option>
+            <option>Tıp Fakültesi</option>
+            <option>Hukuk Fakültesi</option>
+          </select>
+        </hu-form-field>
+        <hu-form-field label="Açıklama">
+          <textarea huInput placeholder="Kısa bir açıklama…"></textarea>
+        </hu-form-field>
+        <div class="row">
+          <input huInput size="sm" placeholder="Küçük" class="w-auto" />
+          <input huInput placeholder="Orta" class="w-auto" />
+          <input huInput size="lg" placeholder="Büyük" class="w-auto" />
+        </div>
+        <hu-form-field label="Devre dışı">
+          <input huInput disabled value="Düzenlenemez" />
+        </hu-form-field>
+      </div>
+    </hu-card>
+
+    <div class="stack">
+      <!-- Checkbox & Switch -->
+      <hu-card title="Checkbox & Switch">
+        <div class="stack">
+          <hu-checkbox [(checked)]="accepted">KVKK aydınlatma metnini okudum</hu-checkbox>
+          <hu-checkbox disabled>Devre dışı</hu-checkbox>
+
+          <div class="permission-group">
+            <hu-checkbox
+              [checked]="allPermissions()"
+              [indeterminate]="somePermissions()"
+              (checkedChange)="setAllPermissions($event)"
+            >
+              <strong>Tüm yetkiler</strong>
+              <span class="hu-text-muted"> ({{ selectedPermissions().size }}/{{ permissions.length }})</span>
+            </hu-checkbox>
+            <div class="permission-group__children">
+              @for (p of permissions; track p.key) {
+                <hu-checkbox [checked]="selectedPermissions().has(p.key)" (checkedChange)="togglePermission(p.key, $event)">
+                  {{ p.label }}
+                </hu-checkbox>
+              }
+            </div>
+          </div>
+
+          <hu-switch [(checked)]="notify">E-posta bildirimleri {{ notify() ? 'açık' : 'kapalı' }}</hu-switch>
+          <hu-switch disabled>Devre dışı anahtar</hu-switch>
+        </div>
+      </hu-card>
+
+      <!-- Badge, Avatar, Spinner -->
+      <hu-card title="Badge, Avatar & Spinner">
+        <div class="stack">
+          <div class="row">
+            <hu-badge>Nötr</hu-badge>
+            <hu-badge variant="primary">Birincil</hu-badge>
+            <hu-badge variant="info">Bilgi</hu-badge>
+            <hu-badge variant="success" dot>Aktif</hu-badge>
+            <hu-badge variant="warning" dot>Beklemede</hu-badge>
+            <hu-badge variant="danger" dot>Reddedildi</hu-badge>
+          </div>
+          <div class="row">
+            <hu-avatar name="Ayşe Yılmaz" size="sm" />
+            <hu-avatar name="Mehmet Öztürk" />
+            <hu-avatar name="İrem Şahin" size="lg" />
+            <hu-avatar name="Kırık Görsel" src="/olmayan-gorsel.png" />
+          </div>
+          <div class="row">
+            <hu-spinner size="sm" />
+            <hu-spinner />
+            <hu-spinner size="lg" />
+          </div>
+        </div>
+      </hu-card>
+
+      <!-- Menü & Breadcrumb -->
+      <hu-card title="Menu & Breadcrumb">
+        <div class="stack">
+          <hu-breadcrumb
+            [items]="[
+              { label: 'Ana Sayfa', link: '/', icon: 'home' },
+              { label: 'Akademik', link: '/akademik/bolumler' },
+              { label: 'Bilgisayar Mühendisliği' }
+            ]"
+          />
+          <div class="row">
+            <hu-menu>
+              <button huMenuTrigger hu-button variant="outline">
+                İşlemler <hu-icon name="chevron-down" [size]="16" />
+              </button>
+              <div class="hu-menu-label">Kayıt</div>
+              <button huMenuItem><hu-icon name="edit" [size]="16" /> Düzenle</button>
+              <button huMenuItem><hu-icon name="download" [size]="16" /> İndir</button>
+              <button huMenuItem disabled><hu-icon name="folder" [size]="16" /> Arşivle</button>
+              <hr class="hu-menu-divider" />
+              <button huMenuItem class="hu-menu-item--danger"><hu-icon name="trash" [size]="16" /> Sil</button>
+            </hu-menu>
+          </div>
+        </div>
+      </hu-card>
+    </div>
+  </div>
+
+  <!-- Alert & Toast -->
+  <hu-card title="Alert & Toast">
+    <div class="stack">
+      <hu-alert variant="info" title="Bilgi">Yeni dönem ders programı yayınlandı.</hu-alert>
+      <hu-alert variant="success">Başvurunuz başarıyla alındı.</hu-alert>
+      <hu-alert variant="warning" title="Dikkat" dismissible>Oturumunuz 5 dakika içinde sona erecek.</hu-alert>
+      <hu-alert variant="danger" title="Hata">Sunucuya ulaşılamadı. Lütfen daha sonra tekrar deneyin.</hu-alert>
+      <div class="row">
+        <button hu-button variant="outline" (click)="toast.success('Değişiklikler kaydedildi.', 'Başarılı')">Başarılı toast</button>
+        <button hu-button variant="outline" (click)="toast.info('Yeni bir mesajınız var.')">Bilgi toast</button>
+        <button hu-button variant="outline" (click)="toast.warning('Disk alanı azalıyor.', 'Uyarı')">Uyarı toast</button>
+        <button hu-button variant="outline" (click)="toast.error('İşlem tamamlanamadı.', 'Hata')">Hata toast</button>
+      </div>
+    </div>
+  </hu-card>
+
+  <!-- Tabs -->
+  <hu-card title="Tabs" subtitle="line ve pills varyantları">
+    <div class="stack">
+      <hu-tabs>
+        <hu-tab label="Genel" icon="info">Genel bilgiler sekmesi içeriği.</hu-tab>
+        <hu-tab label="Dersler" icon="book-open">Ders listesi sekmesi içeriği.</hu-tab>
+        <hu-tab label="Takvim" icon="calendar">Takvim sekmesi içeriği.</hu-tab>
+        <hu-tab label="Arşiv" disabled>Arşiv</hu-tab>
+      </hu-tabs>
+      <hu-tabs variant="pills">
+        <hu-tab label="Günlük">Günlük görünüm</hu-tab>
+        <hu-tab label="Haftalık">Haftalık görünüm</hu-tab>
+        <hu-tab label="Aylık">Aylık görünüm</hu-tab>
+      </hu-tabs>
+    </div>
+  </hu-card>
+
+  <!-- Table & Paginator -->
+  <hu-card title="Table & Paginator" subtitle="İstemci tarafı sıralama — başlıklara tıklayın" padding="none">
+    <button huCardActions hu-button variant="outline" size="sm" (click)="reloadTable()">
+      <hu-icon name="chevrons-up-down" [size]="14" /> Yükleniyor durumu
+    </button>
+    <hu-table [data]="courses" [columns]="courseColumns" [loading]="tableLoading()" striped />
+    <hu-paginator [length]="248" [(pageIndex)]="page" [pageSizeOptions]="[10]" />
+  </hu-card>
+
+  <!-- Calendar & Date picker -->
+  <hu-card title="Calendar & Date Picker" subtitle="hu-calendar, hu-date-picker">
+    <div class="calendar-demo">
+      <div class="stack">
+        <p class="demo-label">Hafta sonları kapalı, bugünden önce seçilemez</p>
+        <hu-calendar [(value)]="calendarDate" [min]="today" [dateFilter]="weekdaysOnly" [markers]="demoMarkers" />
+        <p class="hu-text-muted">Seçili: {{ calendarDate() ? (calendarDate() | date: 'fullDate') : '—' }}</p>
+      </div>
+      <form class="stack date-fields" [formGroup]="dateForm">
+        <hu-form-field label="Başvuru tarihi" hint="Elle gg.aa.yyyy yazabilir ya da takvimden seçebilirsiniz." required>
+          <hu-date-picker formControlName="applyDate" [min]="today" [max]="maxDate" />
+        </hu-form-field>
+        <hu-form-field label="İzin aralığı">
+          <hu-date-picker mode="range" formControlName="leave" [dateFilter]="weekdaysOnly" />
+        </hu-form-field>
+        <hu-form-field label="Devre dışı">
+          <hu-date-picker formControlName="locked" />
+        </hu-form-field>
+        <div class="row">
+          <button hu-button type="button" (click)="dateForm.markAllAsTouched()">Doğrula</button>
+          <button hu-button variant="ghost" type="button" (click)="dateForm.reset()">Sıfırla</button>
+        </div>
+        <pre class="form-value">{{ dateFormValue() }}</pre>
+      </form>
+    </div>
+  </hu-card>
+
+  <!-- Dialog -->
+  <hu-card title="Dialog">
+    <button hu-button (click)="dialogOpen.set(true)">Dialog aç</button>
+  </hu-card>
+</div>
+
+<hu-dialog [(open)]="dialogOpen" title="Ders kaydını onayla" description="BBM 203 — Veri Yapıları">
+  <p>Bu derse kaydolmak istediğinize emin misiniz? Kayıt sonrası danışman onayı gerekecektir.</p>
+  <div huDialogFooter>
+    <button hu-button variant="outline" (click)="dialogOpen.set(false)">Vazgeç</button>
+    <button hu-button (click)="dialogOpen.set(false); toast.success('Ders kaydı oluşturuldu.')">Onayla</button>
+  </div>
+</hu-dialog>

@@ -1,0 +1,149 @@
+<header class="page-header">
+  <div>
+    <h1>Kullanıcılar</h1>
+    <p>Sistemdeki öğrenci, personel ve akademisyen hesaplarını yönetin.</p>
+  </div>
+  <div class="page-actions">
+    <button hu-button variant="outline" (click)="exportCsv()"><hu-icon name="download" [size]="16" /> Dışa aktar</button>
+    <button hu-button (click)="openCreate()"><hu-icon name="plus" [size]="16" /> Yeni kullanıcı</button>
+  </div>
+</header>
+
+<hu-card padding="none">
+  <div class="toolbar">
+    <hu-form-field class="toolbar__search">
+      <hu-icon huPrefix name="search" [size]="16" />
+      <input huInput type="search" placeholder="Ad veya e-posta ile ara" aria-label="Kullanıcı ara" [value]="search()" (input)="setFilter('search', $event)" />
+    </hu-form-field>
+    <select huInput aria-label="Rol" class="toolbar__select" [value]="roleFilter()" (change)="setFilter('role', $event)">
+      <option value="">Tüm roller</option>
+      @for (role of roles; track role) {
+        <option [value]="role">{{ role }}</option>
+      }
+    </select>
+    <select huInput aria-label="Durum" class="toolbar__select" [value]="statusFilter()" (change)="setFilter('status', $event)">
+      <option value="">Tüm durumlar</option>
+      <option value="aktif">Aktif</option>
+      <option value="pasif">Pasif</option>
+      <option value="beklemede">Beklemede</option>
+    </select>
+    <hu-date-picker
+      class="toolbar__date"
+      mode="range"
+      placeholder="Kayıt tarihi aralığı"
+      aria-label="Kayıt tarihi aralığı"
+      [value]="createdRange()"
+      (valueChange)="setCreatedRange($event)"
+    />
+    @if (hasFilters()) {
+      <button hu-button variant="ghost" (click)="clearFilters()"><hu-icon name="x" [size]="16" /> Temizle</button>
+    }
+  </div>
+
+  <hu-table [data]="page()" [columns]="columns" sortMode="server" [(sort)]="sort" [trackBy]="trackById">
+    <ng-template huCell="name" [huCellOf]="page()" let-user>
+      <div class="user-cell">
+        <hu-avatar [name]="user.name" />
+        <div class="user-cell__text">
+          <div class="user-cell__name">{{ user.name }}</div>
+          <div class="user-cell__email">{{ user.email }}</div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template huCell="status" [huCellOf]="page()" let-user>
+      <hu-badge [variant]="statusVariants[user.status]" dot>{{ statusLabels[user.status] }}</hu-badge>
+    </ng-template>
+
+    <ng-template huCell="createdAt" [huCellOf]="page()" let-user>
+      <span class="hu-text-muted">{{ user.createdAt | date: 'd MMMM y' }}</span>
+    </ng-template>
+
+    <ng-template huCell="actions" [huCellOf]="page()" let-user>
+      <hu-menu align="end">
+        <button huMenuTrigger hu-button variant="ghost" size="sm" iconOnly [attr.aria-label]="user.name + ' için işlemler'">
+          <hu-icon name="more-vertical" [size]="16" />
+        </button>
+        <button huMenuItem (click)="openEdit(user)"><hu-icon name="edit" [size]="16" /> Düzenle</button>
+        <button huMenuItem (click)="toggleStatus(user)">
+          <hu-icon [name]="user.status === 'aktif' ? 'lock' : 'check'" [size]="16" />
+          {{ user.status === 'aktif' ? 'Pasifleştir' : 'Aktifleştir' }}
+        </button>
+        <hr class="hu-menu-divider" />
+        <button huMenuItem class="hu-menu-item--danger" (click)="deleting.set(user)"><hu-icon name="trash" [size]="16" /> Sil</button>
+      </hu-menu>
+    </ng-template>
+
+    <div huTableEmpty class="empty">
+      <hu-icon name="search" [size]="24" />
+      <p><strong>Sonuç bulunamadı</strong></p>
+      <p>Arama veya filtre kriterlerini değiştirmeyi deneyin.</p>
+    </div>
+  </hu-table>
+
+  <hu-paginator class="paginator" [length]="filtered().length" [(pageIndex)]="pageIndex" [(pageSize)]="pageSize" />
+</hu-card>
+
+<!-- Ekle / düzenle -->
+<hu-dialog
+  [open]="formOpen()"
+  (openChange)="formOpen.set($event)"
+  [title]="editing() ? 'Kullanıcıyı düzenle' : 'Yeni kullanıcı'"
+  [description]="editing() ? editing()!.email : 'Kullanıcı bilgilerini girin. Davet e-postası otomatik gönderilir.'"
+  size="lg"
+>
+  <form id="user-form" class="form-grid" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <hu-form-field label="Ad Soyad" required>
+      <input huInput formControlName="name" autocomplete="name" />
+    </hu-form-field>
+    <hu-form-field label="E-posta" hint="@example.com uzantılı olmalıdır" required>
+      <hu-icon huPrefix name="mail" [size]="16" />
+      <input huInput type="email" formControlName="email" autocomplete="email" />
+    </hu-form-field>
+    <hu-form-field label="Rol" required>
+      <select huInput formControlName="role">
+        <option value="" disabled>Seçiniz</option>
+        @for (role of roles; track role) {
+          <option [value]="role">{{ role }}</option>
+        }
+      </select>
+    </hu-form-field>
+    <hu-form-field label="Birim" required>
+      <select huInput formControlName="department">
+        <option value="" disabled>Seçiniz</option>
+        @for (d of departments; track d) {
+          <option [value]="d">{{ d }}</option>
+        }
+      </select>
+    </hu-form-field>
+    <hu-form-field label="Durum">
+      <select huInput formControlName="status">
+        <option value="aktif">Aktif</option>
+        <option value="pasif">Pasif</option>
+        <option value="beklemede">Beklemede</option>
+      </select>
+    </hu-form-field>
+  </form>
+  <div huDialogFooter>
+    <button hu-button variant="outline" type="button" (click)="formOpen.set(false)">Vazgeç</button>
+    <button hu-button type="submit" form="user-form" [loading]="saving()">
+      {{ editing() ? 'Değişiklikleri kaydet' : 'Kullanıcı oluştur' }}
+    </button>
+  </div>
+</hu-dialog>
+
+<!-- Silme onayı -->
+<hu-dialog
+  [open]="deleteOpen()"
+  (openChange)="!$event && deleting.set(null)"
+  title="Kullanıcı silinsin mi?"
+  size="sm"
+>
+  <p class="hu-text-muted">
+    <strong>{{ deleting()?.name }}</strong> kalıcı olarak silinecek. Bu işlem geri alınamaz.
+  </p>
+  <div huDialogFooter>
+    <button hu-button variant="outline" (click)="deleting.set(null)">Vazgeç</button>
+    <button hu-button color="danger" (click)="confirmDelete()"><hu-icon name="trash" [size]="16" /> Sil</button>
+  </div>
+</hu-dialog>

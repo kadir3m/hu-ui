@@ -1,0 +1,105 @@
+<div class="hu-calendar__header">
+  <button type="button" class="hu-calendar__nav" aria-label="Önceki" [disabled]="prevDisabled()" (click)="previous()">
+    <hu-icon name="chevron-left" [size]="16" />
+  </button>
+  <button
+    type="button"
+    class="hu-calendar__title"
+    [attr.aria-label]="view() === 'days' ? headerLabel() + ', ay ve yıl seç' : view() === 'months' ? headerLabel() + ', yıl seç' : 'Gün görünümüne dön'"
+    aria-live="polite"
+    (click)="toggleView()"
+  >
+    {{ headerLabel() }}
+    <hu-icon name="chevron-down" [size]="14" [class.hu-calendar__title-icon--open]="view() !== 'days'" />
+  </button>
+  <button type="button" class="hu-calendar__nav" aria-label="Sonraki" [disabled]="nextDisabled()" (click)="next()">
+    <hu-icon name="chevron-right" [size]="16" />
+  </button>
+</div>
+
+@switch (view()) {
+  @case ('days') {
+    <table class="hu-calendar__grid" role="grid" [attr.aria-label]="headerLabel()" (keydown)="onGridKeydown($event)">
+      <thead>
+        <tr>
+          @for (wd of weekdays(); track $index) {
+            <th scope="col" [attr.abbr]="wd.long">{{ wd.short }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody (mouseleave)="hoverDate.set(null)">
+        @for (week of weeks(); track $index) {
+          <tr>
+            @for (cell of week; track cell.key) {
+              <td
+                role="gridcell"
+                [attr.aria-selected]="cell.selected"
+                [class.hu-calendar__day--in-range]="cell.inRange"
+                [class.hu-calendar__day--range-start]="cell.rangeStart"
+                [class.hu-calendar__day--range-end]="cell.rangeEnd"
+              >
+                <button
+                  type="button"
+                  class="hu-calendar__cell"
+                  [class.hu-calendar__cell--outside]="!cell.inMonth"
+                  [class.hu-calendar__cell--today]="cell.today"
+                  [class.hu-calendar__cell--selected]="cell.selected"
+                  [attr.tabindex]="cell.key === activeKey() ? 0 : -1"
+                  [attr.aria-label]="cell.label"
+                  [attr.aria-current]="cell.today ? 'date' : null"
+                  [attr.title]="cell.markers.length ? cell.label : null"
+                  [disabled]="cell.disabled"
+                  (click)="select(cell.date)"
+                  (mouseenter)="hoverDate.set(cell.date)"
+                >
+                  {{ cell.day }}
+                  @if (cell.markers.length) {
+                    <span class="hu-calendar__markers" aria-hidden="true">
+                      @for (m of cell.markers.slice(0, 3); track $index) {
+                        <span class="hu-calendar__marker" [attr.data-variant]="m.variant ?? 'primary'"></span>
+                      }
+                    </span>
+                  }
+                </button>
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+  @case ('months') {
+    <div class="hu-calendar__picker" role="listbox" aria-label="Ay seç">
+      @for (m of months(); track m.value) {
+        <button
+          type="button"
+          role="option"
+          class="hu-calendar__pick"
+          [class.hu-calendar__pick--current]="m.current"
+          [attr.aria-selected]="m.selected"
+          [disabled]="m.disabled"
+          (click)="pickMonth(m.value)"
+        >
+          {{ m.label }}
+        </button>
+      }
+    </div>
+  }
+  @case ('years') {
+    <div class="hu-calendar__picker" role="listbox" aria-label="Yıl seç">
+      @for (y of years(); track y.value) {
+        <button
+          type="button"
+          role="option"
+          class="hu-calendar__pick"
+          [class.hu-calendar__pick--current]="y.current"
+          [attr.aria-selected]="y.selected"
+          [disabled]="y.disabled"
+          (click)="pickYear(y.value)"
+        >
+          {{ y.label }}
+        </button>
+      }
+    </div>
+  }
+}

@@ -1,0 +1,69 @@
+@for (group of groups(); track $index) {
+  <div class="hu-nav__group">
+    @if (group.title) {
+      <div class="hu-nav__title">{{ group.title }}</div>
+    }
+    <ul class="hu-nav__list">
+      @for (item of group.items; track item.label) {
+        <li>
+          @if (item.children?.length) {
+            @let open = openItems().has(item) && !collapsed();
+            <button
+              type="button"
+              class="hu-nav__link"
+              [class.hu-nav__link--parent-active]="isParentActive(item)"
+              [attr.aria-expanded]="open"
+              [attr.title]="collapsed() ? item.label : null"
+              (click)="toggle(item)"
+            >
+              @if (item.icon) {
+                <hu-icon class="hu-nav__icon" [name]="item.icon" [size]="18" />
+              }
+              <span class="hu-nav__label">{{ item.label }}</span>
+              <hu-icon class="hu-nav__chevron" name="chevron-down" [size]="16" />
+            </button>
+            @if (open) {
+              <ul class="hu-nav__sublist">
+                @for (child of item.children; track child.label) {
+                  <li>
+                    <a
+                      class="hu-nav__link hu-nav__link--sub"
+                      [routerLink]="child.link"
+                      routerLinkActive="hu-nav__link--active"
+                      [routerLinkActiveOptions]="{ exact: child.exact ?? false }"
+                      ariaCurrentWhenActive="page"
+                      (click)="navigate.emit()"
+                    >
+                      <span class="hu-nav__label">{{ child.label }}</span>
+                      @if (child.badge != null) {
+                        <span class="hu-nav__badge">{{ child.badge }}</span>
+                      }
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <a
+              class="hu-nav__link"
+              [routerLink]="item.link"
+              routerLinkActive="hu-nav__link--active"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+              ariaCurrentWhenActive="page"
+              [attr.title]="collapsed() ? item.label : null"
+              (click)="navigate.emit()"
+            >
+              @if (item.icon) {
+                <hu-icon class="hu-nav__icon" [name]="item.icon" [size]="18" />
+              }
+              <span class="hu-nav__label">{{ item.label }}</span>
+              @if (item.badge != null) {
+                <span class="hu-nav__badge">{{ item.badge }}</span>
+              }
+            </a>
+          }
+        </li>
+      }
+    </ul>
+  </div>
+}

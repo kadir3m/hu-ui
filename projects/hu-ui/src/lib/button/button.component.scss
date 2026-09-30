@@ -1,0 +1,216 @@
+// =============================================================================
+// hu-button
+// İki eksen: data-color bir renk paleti (--_solid, --_soft, --_text ...) tanımlar,
+// data-variant bu paleti nasıl kullanacağını seçer.
+// =============================================================================
+
+.hu-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hu-space-2);
+  height: var(--hu-control-md);
+  padding: 0 var(--hu-space-4);
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--_fg);
+  background: var(--_bg);
+  border: 1px solid var(--_border, transparent);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--_shadow, none);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--hu-transition),
+    border-color var(--hu-transition),
+    color var(--hu-transition),
+    box-shadow var(--hu-transition);
+
+  &:not(:disabled, [aria-disabled='true']):hover {
+    color: var(--_fg-hover, var(--_fg));
+    background: var(--_bg-hover);
+    border-color: var(--_border-hover, var(--_border, transparent));
+  }
+
+  &:not(:disabled, [aria-disabled='true']):active {
+    background: var(--_bg-active, var(--_bg-hover));
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--_solid) 30%, transparent);
+  }
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.hu-button--loading {
+    cursor: progress;
+  }
+
+  .hu-button__spinner {
+    color: currentColor;
+  }
+}
+
+// --- Renk paletleri --------------------------------------------------------------
+.hu-button[data-color='primary'] {
+  --_solid: var(--hu-primary);
+  --_solid-hover: var(--hu-primary-hover);
+  --_solid-active: var(--hu-primary-active);
+  --_on-solid: var(--hu-primary-fg);
+  --_soft: var(--hu-primary-soft);
+  --_soft-hover: var(--hu-primary-soft-hover);
+  --_soft-fg: var(--hu-primary-soft-fg);
+  --_text: var(--hu-primary);
+}
+
+.hu-button[data-color='neutral'] {
+  --_solid: var(--hu-neutral);
+  --_solid-hover: var(--hu-neutral-hover);
+  --_solid-active: var(--hu-neutral-hover);
+  --_on-solid: var(--hu-neutral-contrast);
+  --_soft: var(--hu-surface-3);
+  --_soft-hover: var(--hu-border);
+  --_soft-fg: var(--hu-text);
+  --_text: var(--hu-text);
+}
+
+@each $name in success, warning, danger, info {
+  .hu-button[data-color='#{$name}'] {
+    --_solid: var(--hu-#{$name});
+    --_solid-hover: var(--hu-#{$name}-hover);
+    --_solid-active: var(--hu-#{$name}-hover);
+    --_on-solid: var(--hu-#{$name}-contrast);
+    --_soft: var(--hu-#{$name}-soft);
+    --_soft-hover: color-mix(in srgb, var(--hu-#{$name}) 20%, transparent);
+    --_soft-fg: var(--hu-#{$name}-fg);
+    --_text: var(--hu-#{$name});
+  }
+}
+
+// --- Görünümler ------------------------------------------------------------------
+.hu-button[data-variant='solid'] {
+  --_bg: var(--_solid);
+  --_bg-hover: var(--_solid-hover);
+  --_bg-active: var(--_solid-active);
+  --_fg: var(--_on-solid);
+  --_shadow: var(--hu-shadow-sm);
+}
+
+.hu-button[data-variant='soft'] {
+  --_bg: var(--_soft);
+  --_bg-hover: var(--_soft-hover);
+  --_fg: var(--_soft-fg);
+}
+
+.hu-button[data-variant='outline'] {
+  --_bg: var(--hu-surface);
+  --_bg-hover: var(--_soft);
+  --_fg: var(--_text);
+  --_border: color-mix(in srgb, var(--_text) 40%, transparent);
+  --_border-hover: color-mix(in srgb, var(--_text) 65%, transparent);
+  --_shadow: var(--hu-shadow-sm);
+
+  &[data-color='neutral'] {
+    --_bg-hover: var(--hu-surface-2);
+    --_border: var(--hu-border-strong);
+    --_border-hover: var(--hu-gray-400);
+  }
+}
+
+.hu-button[data-variant='ghost'] {
+  --_bg: transparent;
+  --_bg-hover: var(--_soft);
+  --_fg: var(--_text);
+
+  &[data-color='neutral'] {
+    --_fg: var(--hu-text-muted);
+    --_fg-hover: var(--hu-text);
+  }
+}
+
+.hu-button[data-variant='link'] {
+  --_bg: transparent;
+  --_bg-hover: transparent;
+  --_fg: var(--_text);
+  height: auto;
+  padding: 0;
+  text-underline-offset: 3px;
+
+  &:not(:disabled, [aria-disabled='true']):hover {
+    text-decoration: underline;
+  }
+}
+
+// Aç/kapa butonları (aria-pressed): basılıyken yumuşak dolgu
+.hu-button[aria-pressed='true']:not([data-variant='solid']) {
+  --_bg: var(--_soft);
+  --_bg-hover: var(--_soft-hover);
+  --_fg: var(--_soft-fg);
+}
+
+// --- Boyutlar --------------------------------------------------------------------
+.hu-button {
+  &[data-size='xs'] {
+    gap: var(--hu-space-1);
+    height: var(--hu-control-xs);
+    padding: 0 var(--hu-space-2);
+    font-size: var(--hu-text-xs);
+    border-radius: var(--hu-radius-sm);
+  }
+
+  &[data-size='sm'] {
+    gap: var(--hu-space-1);
+    height: var(--hu-control-sm);
+    padding: 0 var(--hu-space-3);
+    font-size: 0.8125rem;
+  }
+
+  &[data-size='lg'] {
+    height: var(--hu-control-lg);
+    padding: 0 var(--hu-space-5);
+    font-size: 0.9375rem;
+  }
+
+  &[data-size='xl'] {
+    gap: var(--hu-space-3);
+    height: var(--hu-control-xl);
+    padding: 0 var(--hu-space-6);
+    font-size: var(--hu-text-md);
+    border-radius: var(--hu-radius-lg);
+  }
+
+  &[data-variant='link'] {
+    height: auto;
+    padding: 0;
+  }
+}
+
+.hu-button--icon {
+  padding: 0;
+
+  @each $size in xs, sm, md, lg, xl {
+    &[data-size='#{$size}'] {
+      width: var(--hu-control-#{$size});
+      padding: 0;
+    }
+  }
+}
+
+.hu-button--pill {
+  border-radius: var(--hu-radius-full) !important;
+}
+
+.hu-button--block {
+  display: flex;
+  width: 100%;
+}

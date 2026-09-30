@@ -1,0 +1,252 @@
+.hu-calendar {
+  --_cell: 2.375rem;
+  display: inline-block;
+  width: calc(var(--_cell) * 7);
+  box-sizing: content-box;
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  user-select: none;
+}
+
+// --- Başlık ----------------------------------------------------------------------
+.hu-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hu-space-1);
+  margin-bottom: var(--hu-space-2);
+}
+
+.hu-calendar__nav,
+.hu-calendar__title {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--hu-space-1);
+  height: 2rem;
+  font: inherit;
+  color: var(--hu-text);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}
+
+.hu-calendar__nav {
+  width: 2rem;
+  color: var(--hu-text-muted);
+}
+
+.hu-calendar__title {
+  padding: 0 var(--hu-space-2);
+  font-weight: 600;
+
+  .hu-icon {
+    color: var(--hu-text-subtle);
+    transition: transform var(--hu-transition);
+  }
+}
+
+.hu-calendar__title-icon--open {
+  transform: rotate(180deg);
+}
+
+// --- Gün ızgarası ----------------------------------------------------------------
+.hu-calendar__grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+
+  th {
+    height: 2rem;
+    padding: 0;
+    font-size: var(--hu-text-xs);
+    font-weight: 500;
+    color: var(--hu-text-subtle);
+    text-align: center;
+  }
+
+  td {
+    position: relative;
+    padding: 1px 0;
+    text-align: center;
+  }
+}
+
+// Aralık şeridi: hücrelerin arkasında kesintisiz bir bant
+.hu-calendar__day--in-range,
+.hu-calendar__day--range-start,
+.hu-calendar__day--range-end {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 1px 0;
+    background: var(--hu-primary-soft);
+  }
+}
+
+.hu-calendar__day--range-start::before {
+  left: 50%;
+}
+
+.hu-calendar__day--range-end::before {
+  right: 50%;
+}
+
+.hu-calendar__cell {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--_cell) - 2px);
+  height: calc(var(--_cell) - 2px);
+  padding: 0;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--hu-transition),
+    color var(--hu-transition);
+
+  &:hover:not(:disabled, .hu-calendar__cell--selected) {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+    z-index: 1;
+  }
+
+  &--outside {
+    color: var(--hu-text-subtle);
+  }
+
+  &--today {
+    font-weight: 700;
+    color: var(--hu-primary);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border: 1px solid color-mix(in srgb, var(--hu-primary) 45%, transparent);
+      border-radius: calc(var(--hu-radius-md) - 2px);
+      pointer-events: none;
+    }
+  }
+
+  &--selected,
+  &--selected:hover {
+    font-weight: 600;
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary);
+
+    &::after {
+      display: none;
+    }
+  }
+
+  &:disabled {
+    color: var(--hu-text-subtle);
+    text-decoration: line-through;
+    text-decoration-color: color-mix(in srgb, var(--hu-text-subtle) 60%, transparent);
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// --- Etkinlik işaretleri -----------------------------------------------------------
+.hu-calendar__markers {
+  position: absolute;
+  bottom: 4px;
+  display: flex;
+  gap: 2px;
+}
+
+.hu-calendar__marker {
+  width: 4px;
+  height: 4px;
+  background: var(--_marker, var(--hu-primary));
+  border-radius: 50%;
+
+  &[data-variant='info'] {
+    --_marker: var(--hu-info);
+  }
+  &[data-variant='success'] {
+    --_marker: var(--hu-success);
+  }
+  &[data-variant='warning'] {
+    --_marker: var(--hu-warning);
+  }
+  &[data-variant='danger'] {
+    --_marker: var(--hu-danger);
+  }
+
+  .hu-calendar__cell--selected & {
+    --_marker: currentColor;
+  }
+}
+
+// --- Ay / yıl seçimi -------------------------------------------------------------
+.hu-calendar__picker {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--hu-space-1);
+  min-height: calc(var(--_cell) * 6 + 2rem);
+  align-content: center;
+}
+
+.hu-calendar__pick {
+  height: 3rem;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+
+  &--current {
+    font-weight: 700;
+    color: var(--hu-primary);
+  }
+
+  &[aria-selected='true'] {
+    font-weight: 600;
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+}

@@ -1,0 +1,68 @@
+<div class="hu-date-picker__control">
+  <input
+    #input
+    type="text"
+    class="hu-input hu-date-picker__input"
+    inputmode="numeric"
+    autocomplete="off"
+    aria-haspopup="dialog"
+    [id]="id()"
+    [attr.data-size]="size()"
+    [class.hu-input--invalid]="isInvalid()"
+    [attr.aria-invalid]="isInvalid() || null"
+    [attr.aria-describedby]="field?.describedBy() ?? null"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="panelId"
+    [attr.placeholder]="placeholderText()"
+    [value]="text()"
+    [disabled]="isDisabled()"
+    (input)="onInput($event)"
+    (keydown)="onInputKeydown($event)"
+  />
+  <button
+    type="button"
+    class="hu-date-picker__toggle"
+    tabindex="-1"
+    [attr.aria-label]="open() ? 'Takvimi kapat' : 'Takvimi aç'"
+    [disabled]="isDisabled()"
+    (click)="toggle()"
+  >
+    <hu-icon name="calendar" [size]="16" />
+  </button>
+</div>
+
+<div
+  #panel
+  popover="manual"
+  class="hu-date-picker__panel"
+  role="dialog"
+  aria-label="Tarih seç"
+  [id]="panelId"
+  [class.hu-date-picker__panel--inline]="!supportsPopover"
+  [attr.hidden]="!supportsPopover && !open() ? '' : null"
+  (keydown)="onPanelKeydown($event)"
+>
+  @if (open()) {
+    <hu-calendar
+      [mode]="mode()"
+      [value]="singleValue()"
+      [range]="draftRange()"
+      [min]="min()"
+      [max]="max()"
+      [dateFilter]="dateFilter()"
+      [markers]="markers()"
+      (dateSelected)="onCalendarDate($event)"
+      (rangeChange)="onCalendarRange($event)"
+    />
+    <div class="hu-date-picker__footer">
+      @if (mode() === 'range') {
+        <span class="hu-date-picker__hint">
+          {{ draftRange()?.start && !draftRange()?.end ? 'Bitiş tarihini seçin' : 'Başlangıç tarihini seçin' }}
+        </span>
+      } @else {
+        <button hu-button variant="ghost" size="sm" type="button" (click)="selectToday()">Bugün</button>
+      }
+      <button hu-button variant="ghost" size="sm" type="button" (click)="clear()">Temizle</button>
+    </div>
+  }
+</div>
