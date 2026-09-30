@@ -1,5 +1,5 @@
 {
-  "name": "@hu/ui",
+  "name": "hu-ui",
   "version": "0.1.0",
   "description": "Angular 19 UI component kütüphanesi ve admin layout — signals, standalone, bağımlılıksız SCSS token'ları, açık/koyu tema.",
   "license": "MIT",

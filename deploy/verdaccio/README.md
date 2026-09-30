@@ -27,7 +27,7 @@ Yayın yetkisi `config.yaml` içindeki `hu-publisher` grubundadır. htpasswd'de 
 olmadığından en basit yöntem, `publish:` satırını doğrudan kullanıcı adlarıyla yazmaktır:
 
 ```yaml
-'@hu/*':
+'hu-ui':
   access: $authenticated
   publish: yayinci
 ```

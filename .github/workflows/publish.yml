@@ -1,8 +1,8 @@
-# v* etiketi push'landığında @hu/ui'yi npm'e yayınlar.
-#   cd projects/hu-ui && npm version minor && cd ../..
-#   git commit -am "@hu/ui 0.2.0" && git tag v0.2.0 && git push --follow-tags
+# v* etiketi push'landığında hu-ui'yi npm'e yayınlar.
+#   cd projects/hu-ui && npm version minor --no-git-tag-version && cd ../..
+#   git commit -am "hu-ui 0.2.0" && git tag v0.2.0 && git push --follow-tags
 #
-# Gerekli secret: NPM_TOKEN (npmjs.com → Access Tokens → Granular, yalnızca @hu kapsamında "Read and write")
+# Gerekli secret: NPM_TOKEN (npmjs.com → Access Tokens → Granular, yalnızca hu-ui paketi için "Read and write")
 name: Publish
 
 on:

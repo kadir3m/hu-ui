@@ -18,7 +18,7 @@ import {
   compareDays,
   isSameDay,
   startOfDay,
-} from '@hu/ui';
+} from 'hu-ui';
 import { ACADEMIC_EVENTS, AcademicEvent, CATEGORIES, EventCategory } from '../../data/academic-events';
 
 @Component({

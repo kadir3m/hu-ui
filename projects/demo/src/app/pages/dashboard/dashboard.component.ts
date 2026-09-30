@@ -13,7 +13,7 @@ import {
   HuColumn,
   HuIcon,
   HuTable,
-} from '@hu/ui';
+} from 'hu-ui';
 import { STATUS_LABELS, User, UserStatus, createUsers } from '../../data/users';
 
 interface Stat {

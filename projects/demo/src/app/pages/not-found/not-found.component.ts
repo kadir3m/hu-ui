@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HuButton, HuIcon } from '@hu/ui';
+import { HuButton, HuIcon } from 'hu-ui';
 
 @Component({
   selector: 'app-not-found',
