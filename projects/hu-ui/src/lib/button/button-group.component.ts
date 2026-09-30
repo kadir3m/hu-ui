@@ -22,10 +22,10 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation, booleanAttribute
 
     /*
      * Bitişik: kenarlar üst üste biner, yalnızca dış köşeler yuvarlak.
-     * Öğe doğrudan buton ya da tek butonlu bir sarmalayıcı (örn. hu-menu ile
+     * Öğe doğrudan buton ya da tek butonlu bir sarmalayıcı (örn. hu-dropdown ile
      * bölünmüş buton) olabilir; ilk/son kontrolü sarmalayıcı üzerinden yapılır.
      */
-    .hu-button-group > .hu-menu { display: inline-flex; }
+    .hu-button-group > .hu-dropdown { display: inline-flex; }
     .hu-button-group:not(.hu-button-group--vertical) > .hu-button:not(:first-child),
     .hu-button-group:not(.hu-button-group--vertical) > :not(.hu-button):not(:first-child) > .hu-button {
       margin-left: -1px;

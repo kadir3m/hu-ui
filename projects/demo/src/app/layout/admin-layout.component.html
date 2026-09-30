@@ -10,8 +10,8 @@
 
     <hu-theme-toggle />
 
-    <hu-menu align="end">
-      <button huMenuTrigger hu-button variant="ghost" iconOnly aria-label="Bildirimler" class="notif-trigger">
+    <hu-dropdown align="end">
+      <button huDropdownTrigger hu-button variant="ghost" iconOnly aria-label="Bildirimler" class="notif-trigger">
         <hu-icon name="bell" [size]="18" />
         <span class="notif-dot" aria-hidden="true"></span>
       </button>
@@ -20,7 +20,7 @@
         <hu-badge variant="primary">{{ notifications.length }} yeni</hu-badge>
       </div>
       @for (n of notifications; track n.text) {
-        <button huMenuItem class="notif-item">
+        <button huDropdownItem class="notif-item">
           <hu-icon [name]="n.icon" [size]="16" />
           <span>
             <span class="notif-text">{{ n.text }}</span>
@@ -28,10 +28,10 @@
           </span>
         </button>
       }
-    </hu-menu>
+    </hu-dropdown>
 
-    <hu-menu align="end">
-      <button huMenuTrigger type="button" class="user-trigger" aria-label="Kullanıcı menüsü">
+    <hu-dropdown align="end">
+      <button huDropdownTrigger type="button" class="user-trigger" aria-label="Kullanıcı menüsü">
         <hu-avatar [name]="user.name" size="sm" />
         <span class="user-trigger__text">
           <span class="user-trigger__name">{{ user.name }}</span>
@@ -39,14 +39,14 @@
         </span>
         <hu-icon name="chevron-down" [size]="16" />
       </button>
-      <div class="hu-menu-label">{{ user.email }}</div>
-      <a huMenuItem routerLink="/ayarlar"><hu-icon name="user" [size]="16" /> Profilim</a>
-      <a huMenuItem routerLink="/ayarlar"><hu-icon name="settings" [size]="16" /> Ayarlar</a>
-      <hr class="hu-menu-divider" />
-      <button huMenuItem class="hu-menu-item--danger" (click)="logout()">
+      <div class="hu-dropdown-label">{{ user.email }}</div>
+      <a huDropdownItem routerLink="/ayarlar"><hu-icon name="user" [size]="16" /> Profilim</a>
+      <a huDropdownItem routerLink="/ayarlar"><hu-icon name="settings" [size]="16" /> Ayarlar</a>
+      <hr class="hu-dropdown-divider" />
+      <button huDropdownItem class="hu-dropdown-item--danger" (click)="logout()">
         <hu-icon name="log-out" [size]="16" /> Çıkış yap
       </button>
-    </hu-menu>
+    </hu-dropdown>
   </div>
 
   <router-outlet />

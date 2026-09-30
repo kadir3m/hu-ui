@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Signal, inject, signal } from '@angular/core';
+import { DOCUMENT, DestroyRef, Signal, inject, signal } from '@angular/core';
 
 /**
  * Bir media query'yi signal olarak döndürür. Injection context içinde çağrılmalıdır.

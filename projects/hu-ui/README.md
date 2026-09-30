@@ -1,15 +1,15 @@
 # @ucme-ui/angular
 
-Admin panelleri için Angular 19 component kütüphanesi. Hazır bir admin layout, form, tablo,
+Admin panelleri için Angular 20–22 component kütüphanesi. Hazır bir admin layout, form, tablo,
 takvim ve geri bildirim componentleri içerir.
 
 - **Bağımlılıksız:** Angular dışında hiçbir paket gerektirmez; stiller düz SCSS ve CSS değişkenleri.
-- **Modern Angular:** standalone componentler, signals (`input()`, `model()`), `OnPush`.
+- **Modern Angular:** standalone componentler, signals (`input()`, `model()`), `OnPush`; zone.js'li ve zoneless uygulamalarda çalışır.
 - **Tema:** tüm renk ve ölçüler `--hu-*` token'larıdır. Açık/koyu tema hazır, marka rengi tek satırla değişir.
 - **Erişilebilir:** native `<button>`, `<input>`, `<dialog>` üzerine kurulu. Tam klavye desteği ve ARIA.
 - **Türkçe:** metinler, tarih biçimi (`gg.aa.yyyy`), sıralama ve baş harf kuralları `tr-TR`.
 
-> *English:* Angular 19 UI kit & admin layout. Standalone, signal-based, zero dependencies,
+> *English:* Angular 20–22 UI kit & admin layout. Standalone, signal-based, zero dependencies,
 > themeable via CSS custom properties. UI texts default to Turkish.
 
 ## Kurulum
@@ -18,7 +18,7 @@ takvim ve geri bildirim componentleri içerir.
 npm install @ucme-ui/angular
 ```
 
-Gereksinim: Angular `^19.2` (`@angular/common`, `core`, `forms`, `router`).
+Gereksinim: Angular **20, 21 veya 22** (`@angular/common`, `core`, `forms`, `router`).
 
 **1. Stiller** (`src/styles.scss`)
 
@@ -74,12 +74,12 @@ Toast'ların görünmesi için kök componente bir kez `<hu-toaster />` ekleyin.
 | **Layout** | `hu-shell` (daraltılabilir sidebar, mobil çekmece, topbar), `hu-sidebar-nav`, `hu-breadcrumb`, `hu-theme-toggle` |
 | **Form** | `hu-button`, `hu-button-group`, `huInput`, `hu-form-field`, `hu-checkbox`, `hu-switch`, `hu-date-picker` |
 | **Tarih** | `hu-calendar`: tek gün/aralık seçimi, min/max, `dateFilter`, etkinlik işaretleri |
-| **Veri** | `hu-table` (sıralama, özel hücreler), `hu-paginator`, `hu-tabs`, `hu-card`, `hu-menu` |
+| **Veri** | `hu-table` (sıralama, özel hücreler), `hu-paginator`, `hu-tabs`, `hu-card`, `hu-dropdown` |
 | **Geri bildirim** | `hu-alert`, `hu-dialog`, `HuToastService`, `hu-badge`, `hu-avatar`, `hu-spinner` |
 | **Çekirdek** | `hu-icon` (+`provideHuIcons`), `HuThemeService`, `provideHuErrorMessages`, tarih yardımcıları |
 
 Birlikte kullanılan parçalar için gruplu import'lar var: `HU_FORM_FIELD_IMPORTS`, `HU_TABLE_IMPORTS`,
-`HU_DIALOG_IMPORTS`, `HU_MENU_IMPORTS`, `HU_TABS_IMPORTS`, `HU_CARD_IMPORTS`, `HU_SHELL_IMPORTS`.
+`HU_DIALOG_IMPORTS`, `HU_DROPDOWN_IMPORTS`, `HU_TABS_IMPORTS`, `HU_CARD_IMPORTS`, `HU_SHELL_IMPORTS`.
 
 ### Butonlar
 

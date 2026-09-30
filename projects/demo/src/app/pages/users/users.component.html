@@ -60,18 +60,18 @@
     </ng-template>
 
     <ng-template huCell="actions" [huCellOf]="page()" let-user>
-      <hu-menu align="end">
-        <button huMenuTrigger hu-button variant="ghost" size="sm" iconOnly [attr.aria-label]="user.name + ' için işlemler'">
+      <hu-dropdown align="end">
+        <button huDropdownTrigger hu-button variant="ghost" size="sm" iconOnly [attr.aria-label]="user.name + ' için işlemler'">
           <hu-icon name="more-vertical" [size]="16" />
         </button>
-        <button huMenuItem (click)="openEdit(user)"><hu-icon name="edit" [size]="16" /> Düzenle</button>
-        <button huMenuItem (click)="toggleStatus(user)">
+        <button huDropdownItem (click)="openEdit(user)"><hu-icon name="edit" [size]="16" /> Düzenle</button>
+        <button huDropdownItem (click)="toggleStatus(user)">
           <hu-icon [name]="user.status === 'aktif' ? 'lock' : 'check'" [size]="16" />
           {{ user.status === 'aktif' ? 'Pasifleştir' : 'Aktifleştir' }}
         </button>
-        <hr class="hu-menu-divider" />
-        <button huMenuItem class="hu-menu-item--danger" (click)="deleting.set(user)"><hu-icon name="trash" [size]="16" /> Sil</button>
-      </hu-menu>
+        <hr class="hu-dropdown-divider" />
+        <button huDropdownItem class="hu-dropdown-item--danger" (click)="deleting.set(user)"><hu-icon name="trash" [size]="16" /> Sil</button>
+      </hu-dropdown>
     </ng-template>
 
     <div huTableEmpty class="empty">

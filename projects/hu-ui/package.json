@@ -1,11 +1,13 @@
 {
   "name": "@ucme-ui/angular",
-  "version": "0.1.0",
-  "description": "Angular 19 UI component kütüphanesi ve admin layout — signals, standalone, bağımlılıksız SCSS token'ları, açık/koyu tema.",
+  "version": "0.2.0",
+  "description": "Angular 20–22 UI component kütüphanesi ve admin layout — signals, standalone, bağımlılıksız SCSS token'ları, açık/koyu tema.",
   "license": "MIT",
   "keywords": [
     "angular",
-    "angular19",
+    "angular20",
+    "angular21",
+    "angular22",
     "ui",
     "components",
     "admin",
@@ -40,10 +42,10 @@
     }
   },
   "peerDependencies": {
-    "@angular/common": "^19.2.0",
-    "@angular/core": "^19.2.0",
-    "@angular/forms": "^19.2.0",
-    "@angular/router": "^19.2.0",
+    "@angular/common": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/core": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/forms": "^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/router": "^20.0.0 || ^21.0.0 || ^22.0.0",
     "rxjs": "^7.8.0"
   },
   "dependencies": {

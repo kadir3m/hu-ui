@@ -1,6 +1,6 @@
 // =============================================================================
 // HU UI — Directive tabanlı kontrollerin stilleri
-// Directive'lerin kendi stil dosyası olamadığından huInput ve huMenuItem
+// Directive'lerin kendi stil dosyası olamadığından huInput ve huDropdownItem
 // stilleri burada tanımlanır.
 // =============================================================================
 
@@ -93,8 +93,8 @@ select.hu-input {
   }
 }
 
-// --- huMenuItem --------------------------------------------------------------
-.hu-menu-item {
+// --- huDropdownItem --------------------------------------------------------------
+.hu-dropdown-item {
   display: flex;
   align-items: center;
   gap: var(--hu-space-2);
@@ -131,14 +131,14 @@ select.hu-input {
   }
 }
 
-.hu-menu-divider {
+.hu-dropdown-divider {
   height: 1px;
   margin: var(--hu-space-1) calc(var(--hu-space-1) * -1);
   background: var(--hu-border);
   border: 0;
 }
 
-.hu-menu-label {
+.hu-dropdown-label {
   padding: var(--hu-space-2) var(--hu-space-3) var(--hu-space-1);
   font-size: var(--hu-text-xs);
   font-weight: 600;

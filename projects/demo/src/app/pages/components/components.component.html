@@ -86,11 +86,11 @@
 
         <hu-button-group>
           <button hu-button><hu-icon name="check" [size]="16" /> Kaydet</button>
-          <hu-menu align="end">
-            <button huMenuTrigger hu-button iconOnly aria-label="Diğer kaydetme seçenekleri"><hu-icon name="chevron-down" [size]="16" /></button>
-            <button huMenuItem>Kaydet ve yeni ekle</button>
-            <button huMenuItem>Taslak olarak kaydet</button>
-          </hu-menu>
+          <hu-dropdown align="end">
+            <button huDropdownTrigger hu-button iconOnly aria-label="Diğer kaydetme seçenekleri"><hu-icon name="chevron-down" [size]="16" /></button>
+            <button huDropdownItem>Kaydet ve yeni ekle</button>
+            <button huDropdownItem>Taslak olarak kaydet</button>
+          </hu-dropdown>
         </hu-button-group>
 
         <hu-button-group pill>
@@ -220,17 +220,17 @@
             ]"
           />
           <div class="row">
-            <hu-menu>
-              <button huMenuTrigger hu-button variant="outline">
+            <hu-dropdown>
+              <button huDropdownTrigger hu-button variant="outline">
                 İşlemler <hu-icon name="chevron-down" [size]="16" />
               </button>
-              <div class="hu-menu-label">Kayıt</div>
-              <button huMenuItem><hu-icon name="edit" [size]="16" /> Düzenle</button>
-              <button huMenuItem><hu-icon name="download" [size]="16" /> İndir</button>
-              <button huMenuItem disabled><hu-icon name="folder" [size]="16" /> Arşivle</button>
-              <hr class="hu-menu-divider" />
-              <button huMenuItem class="hu-menu-item--danger"><hu-icon name="trash" [size]="16" /> Sil</button>
-            </hu-menu>
+              <div class="hu-dropdown-label">Kayıt</div>
+              <button huDropdownItem><hu-icon name="edit" [size]="16" /> Düzenle</button>
+              <button huDropdownItem><hu-icon name="download" [size]="16" /> İndir</button>
+              <button huDropdownItem disabled><hu-icon name="folder" [size]="16" /> Arşivle</button>
+              <hr class="hu-dropdown-divider" />
+              <button huDropdownItem class="hu-dropdown-item--danger"><hu-icon name="trash" [size]="16" /> Sil</button>
+            </hu-dropdown>
           </div>
         </div>
       </hu-card>
