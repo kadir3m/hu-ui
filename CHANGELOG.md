@@ -6,16 +6,39 @@
 
 - **Angular 20, 21 ve 22 desteklenir; Angular 19 desteği kaldırıldı.** Angular 19'un desteği sona erdi
   ve düzeltilmemiş güvenlik açıkları var. Angular 19 kullanan projeler `0.1.x` sürümünde kalmalıdır.
-- **`hu-menu` → `hu-dropdown`.** Açılır menü ve ilgili tüm adlar değişti:
+- **`hu-menu` → `hu-dropdown`, öğeler artık veriyle tanımlanıyor.** Öğeleri tek tek buton olarak
+  yazmak yerine `options` dizisi verilir; seçim `(selected)` ile döner. Tetikleyici butonu component
+  kendisi çizer (`label`, `icon`, `variant`, `color`, `size`).
+
+  ```html
+  <!-- 0.1.x -->
+  <hu-menu>
+    <button huMenuTrigger hu-button variant="outline">İşlemler</button>
+    <button huMenuItem (click)="edit()"><hu-icon name="edit" /> Düzenle</button>
+    <hr class="hu-menu-divider" />
+    <button huMenuItem class="hu-menu-item--danger" (click)="remove()"><hu-icon name="trash" /> Sil</button>
+  </hu-menu>
+
+  <!-- 0.2.0 -->
+  <hu-dropdown label="İşlemler" [options]="actions" (selected)="run($event.value)" />
+  ```
+  ```ts
+  actions: HuDropdownEntry[] = [
+    { label: 'Düzenle', value: 'edit', icon: 'edit' },
+    { divider: true },
+    { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+  ];
+  ```
 
   | 0.1.x | 0.2.0 |
   | --- | --- |
   | `<hu-menu>` | `<hu-dropdown>` |
-  | `huMenuTrigger` | `huDropdownTrigger` |
-  | `huMenuItem` | `huDropdownItem` |
-  | `HuMenu`, `HuMenuTrigger`, `HuMenuItem`, `HuMenuAlign` | `HuDropdown`, `HuDropdownTrigger`, `HuDropdownItem`, `HuDropdownAlign` |
+  | `huMenuTrigger` | `huDropdownTrigger` (yalnızca özel tetikleyici için; normalde `label`/`icon` yeterli) |
+  | `huMenuItem` | kaldırıldı → `options` |
+  | `<hr class="hu-menu-divider">`, `.hu-menu-label` | `{ divider: true }`, `{ header: '…' }` |
+  | `.hu-menu-item--danger` | `{ danger: true }` |
+  | `HuMenu`, `HuMenuTrigger`, `HuMenuAlign` | `HuDropdown`, `HuDropdownTrigger`, `HuDropdownAlign` |
   | `HU_MENU_IMPORTS` | `HU_DROPDOWN_IMPORTS` |
-  | `.hu-menu-item`, `.hu-menu-item--danger`, `.hu-menu-divider`, `.hu-menu-label` | `.hu-dropdown-item`, `.hu-dropdown-item--danger`, `.hu-dropdown-divider`, `.hu-dropdown-label` |
   | `--hu-menu-min-width` | `--hu-dropdown-min-width` |
 
 ### Diğer

@@ -3,113 +3,179 @@ import {
   Component,
   Directive,
   ElementRef,
+  Injector,
   ViewEncapsulation,
   afterNextRender,
+  booleanAttribute,
+  contentChild,
   inject,
   input,
-  signal,
-  Injector,
+  model,
+  output,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { HuButton, HuButtonColor, HuButtonSize, HuButtonVariant } from '../button/button.component';
+import { HuIcon } from '../icon/icon.component';
 import { huUniqueId } from '../core/unique-id';
+import { HuDropdownEntry, HuDropdownOption, isDropdownDivider, isDropdownHeader } from './dropdown.types';
 
 export type HuDropdownAlign = 'start' | 'end';
 
 /**
- * Açılır menü (dropdown). Tetikleyiciye `huDropdownTrigger`, öğelere `huDropdownItem` verin.
+ * Hazır tetikleyici yerine kendi elementinizi kullanmak için (avatar, ikon vb.).
+ * @example <button huDropdownTrigger class="avatar-btn"><hu-avatar name="…" /></button>
+ */
+@Directive({
+  selector: '[huDropdownTrigger]',
+  host: {
+    'aria-haspopup': 'menu',
+    '[attr.aria-expanded]': 'dropdown.open()',
+    '[attr.aria-controls]': 'dropdown.panelId',
+    '(click)': 'dropdown.toggle()',
+  },
+})
+export class HuDropdownTrigger {
+  protected readonly dropdown = inject(HuDropdown);
+  readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+}
+
+/** Panelin en üstüne serbest içerik (başlık, rozet vb.). */
+@Directive({ selector: '[huDropdownHeader]', host: { class: 'hu-dropdown__header' } })
+export class HuDropdownHeaderSlot {}
+
+/**
+ * Açılır menü. Öğeleri `options` ile verin; seçim `(selected)` ile döner.
  *
  * @example
- * <hu-dropdown align="end">
- *   <button huDropdownTrigger hu-button variant="ghost" iconOnly aria-label="İşlemler"><hu-icon name="more-vertical" /></button>
- *   <button huDropdownItem (click)="edit()"><hu-icon name="edit" /> Düzenle</button>
- *   <hr class="hu-dropdown-divider" />
- *   <button huDropdownItem class="hu-dropdown-item--danger" (click)="remove()"><hu-icon name="trash" /> Sil</button>
- * </hu-dropdown>
+ * <hu-dropdown label="İşlemler" [options]="actions" (selected)="run($event.value)" />
+ *
+ * actions: HuDropdownEntry[] = [
+ *   { label: 'Düzenle', value: 'edit', icon: 'edit' },
+ *   { divider: true },
+ *   { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+ * ];
+ *
+ * <!-- Yalnızca ikon -->
+ * <hu-dropdown icon="more-vertical" variant="ghost" ariaLabel="Satır işlemleri" [options]="actions" />
  */
 @Component({
   selector: 'hu-dropdown',
-  template: `
-    <ng-content select="[huDropdownTrigger]" />
-    <div
-      class="hu-dropdown__panel"
-      role="menu"
-      [id]="panelId"
-      [attr.data-align]="align()"
-      [hidden]="!isOpen()"
-      (keydown)="onPanelKeydown($event)"
-    >
-      <ng-content />
-    </div>
-  `,
-  styles: `
-    .hu-dropdown { position: relative; display: inline-flex; }
-    .hu-dropdown__panel {
-      position: absolute;
-      top: calc(100% + 6px);
-      z-index: 1000;
-      display: flex;
-      flex-direction: column;
-      min-width: var(--hu-dropdown-min-width, 12rem);
-      padding: var(--hu-space-1);
-      background: var(--hu-surface);
-      border: 1px solid var(--hu-border);
-      border-radius: var(--hu-radius-lg);
-      box-shadow: var(--hu-shadow-lg);
-      animation: hu-dropdown-in 120ms ease-out;
-    }
-    .hu-dropdown__panel[hidden] { display: none; }
-    .hu-dropdown__panel[data-align='start'] { left: 0; }
-    .hu-dropdown__panel[data-align='end'] { right: 0; }
-    @keyframes hu-dropdown-in { from { opacity: 0; transform: translateY(-4px); } }
-  `,
+  imports: [NgTemplateOutlet, RouterLink, HuButton, HuIcon],
+  templateUrl: './dropdown.component.html',
+  styleUrl: './dropdown.component.scss',
   host: {
     class: 'hu-dropdown',
+    '[class.hu-dropdown--open]': 'open()',
     '(document:click)': 'onDocumentClick($event)',
     '(document:keydown.escape)': 'close(true)',
   },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HuDropdown {
+export class HuDropdown<T = string> {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly injector = inject(Injector);
 
+  // --- İçerik -----------------------------------------------------------------------
+  readonly options = input<readonly HuDropdownEntry<T>[]>([]);
+
+  // --- Hazır tetikleyici ------------------------------------------------------------
+  /** Tetikleyici butonun metni. */
+  readonly label = input<string>();
+  /** Tetikleyici butonun ikonu. Yalnızca ikon verilirse kare buton olur. */
+  readonly icon = input<string>();
+  readonly variant = input<HuButtonVariant>('outline');
+  readonly color = input<HuButtonColor>();
+  readonly size = input<HuButtonSize>('md');
+  /** Etiketin yanında aşağı ok gösterilsin mi? */
+  readonly caret = input(true, { transform: booleanAttribute });
+  /** Yalnızca ikonlu tetikleyicide ekran okuyucu etiketi (zorunlu gibi düşünün). */
+  readonly ariaLabel = input<string>();
+  readonly disabled = input(false, { transform: booleanAttribute });
+
+  // --- Davranış ---------------------------------------------------------------------
   readonly align = input<HuDropdownAlign>('start');
-  readonly isOpen = signal(false);
+  /** Açık mı? `[(open)]` ile iki yönlü bağlanabilir. */
+  readonly open = model(false);
+
+  /** Bir öğe seçildiğinde. */
+  readonly selected = output<HuDropdownOption<T>>();
+
   readonly panelId = huUniqueId('hu-dropdown');
+  protected readonly customTrigger = contentChild(HuDropdownTrigger);
+  protected readonly isDivider = isDropdownDivider;
+  protected readonly isHeader = isDropdownHeader;
+
+  private typeahead = '';
+  private typeaheadTimer?: ReturnType<typeof setTimeout>;
 
   toggle(): void {
-    if (this.isOpen()) this.close();
-    else this.openMenu();
+    if (this.open()) this.close();
+    else this.show();
   }
 
-  openMenu(): void {
-    this.isOpen.set(true);
+  show(): void {
+    if (this.disabled()) return;
+    this.open.set(true);
     afterNextRender(() => this.items()[0]?.focus(), { injector: this.injector });
   }
 
   close(restoreFocus = false): void {
-    if (!this.isOpen()) return;
-    this.isOpen.set(false);
-    if (restoreFocus) this.host.nativeElement.querySelector<HTMLElement>('[huDropdownTrigger]')?.focus();
+    if (!this.open()) return;
+    this.open.set(false);
+    if (restoreFocus) this.triggerElement()?.focus();
+  }
+
+  protected choose(option: HuDropdownOption<T>): void {
+    if (option.disabled) return;
+    this.selected.emit({ ...option, value: (option.value ?? option.label) as T });
+    this.close(true);
   }
 
   protected onDocumentClick(event: MouseEvent): void {
     if (!this.host.nativeElement.contains(event.target as Node)) this.close();
   }
 
+  protected onTriggerKeydown(event: KeyboardEvent): void {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.show();
+    }
+  }
+
   protected onPanelKeydown(event: KeyboardEvent): void {
     const items = this.items();
+    if (!items.length) return;
     const current = items.indexOf(this.host.nativeElement.ownerDocument.activeElement as HTMLElement);
     let next = -1;
+
     if (event.key === 'ArrowDown') next = (current + 1) % items.length;
     else if (event.key === 'ArrowUp') next = (current - 1 + items.length) % items.length;
     else if (event.key === 'Home') next = 0;
     else if (event.key === 'End') next = items.length - 1;
     else if (event.key === 'Tab') this.close();
+    else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      next = this.findByTypeahead(items, event.key, current);
+    }
+
     if (next >= 0) {
       event.preventDefault();
       items[next]?.focus();
     }
+  }
+
+  /** Harfe basınca o harfle başlayan öğeye git (ör. "S" → "Sil"). */
+  private findByTypeahead(items: HTMLElement[], key: string, current: number): number {
+    clearTimeout(this.typeaheadTimer);
+    this.typeahead += key.toLocaleLowerCase('tr-TR');
+    this.typeaheadTimer = setTimeout(() => (this.typeahead = ''), 500);
+    for (let i = 1; i <= items.length; i++) {
+      const index = (current + i) % items.length;
+      const text = items[index].textContent?.trim().toLocaleLowerCase('tr-TR') ?? '';
+      if (text.startsWith(this.typeahead)) return index;
+    }
+    return -1;
   }
 
   private items(): HTMLElement[] {
@@ -117,30 +183,11 @@ export class HuDropdown {
       this.host.nativeElement.querySelectorAll<HTMLElement>('.hu-dropdown__panel .hu-dropdown-item:not(:disabled)'),
     );
   }
-}
 
-@Directive({
-  selector: '[huDropdownTrigger]',
-  host: {
-    'aria-haspopup': 'menu',
-    '[attr.aria-expanded]': 'menu.isOpen()',
-    '[attr.aria-controls]': 'menu.panelId',
-    '(click)': 'menu.toggle()',
-  },
-})
-export class HuDropdownTrigger {
-  protected readonly menu = inject(HuDropdown);
-}
-
-@Directive({
-  selector: '[huDropdownItem]',
-  host: {
-    class: 'hu-dropdown-item',
-    role: 'menuitem',
-    tabindex: '-1',
-    '(click)': 'menu.close()',
-  },
-})
-export class HuDropdownItem {
-  protected readonly menu = inject(HuDropdown);
+  private triggerElement(): HTMLElement | null {
+    return (
+      this.customTrigger()?.element.nativeElement ??
+      this.host.nativeElement.querySelector<HTMLElement>('.hu-dropdown__trigger')
+    );
+  }
 }

@@ -31,8 +31,8 @@ import {
   HuIcon,
   HuInput,
   HuDropdown,
-  HuDropdownItem,
-  HuDropdownTrigger,
+  HuDropdownEntry,
+  HuDropdownOption,
   HuPaginator,
   HuPrefix,
   HuSpinner,
@@ -75,8 +75,6 @@ interface Course {
     HuIcon,
     HuInput,
     HuDropdown,
-    HuDropdownItem,
-    HuDropdownTrigger,
     HuPaginator,
     HuPrefix,
     HuSpinner,
@@ -117,6 +115,31 @@ export class ComponentsComponent {
   ];
   protected readonly formats = signal<ReadonlySet<string>>(new Set(['bold']));
   protected readonly formatList = computed(() => [...this.formats()].join(', ') || '—');
+
+  // --- Dropdown ------------------------------------------------------------------------
+  protected readonly recordActions: HuDropdownEntry[] = [
+    { header: 'Kayıt' },
+    { label: 'Düzenle', value: 'edit', icon: 'edit' },
+    { label: 'Kopyala', value: 'copy', icon: 'layers' },
+    { label: 'Arşivle', value: 'archive', icon: 'folder', disabled: true },
+    { divider: true },
+    { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+  ];
+  protected readonly exportOptions: HuDropdownEntry[] = [
+    { label: 'Excel', value: 'xlsx', icon: 'file-text', description: 'Tüm sütunlar, .xlsx' },
+    { label: 'CSV', value: 'csv', icon: 'file-text', description: 'Virgülle ayrılmış' },
+    { label: 'PDF', value: 'pdf', icon: 'download', description: 'Yazdırmaya hazır' },
+  ];
+  protected readonly linkOptions: HuDropdownEntry[] = [
+    { label: 'Genel Bakış', icon: 'home', link: '/' },
+    { label: 'Kullanıcılar', icon: 'users', link: '/kullanicilar' },
+    { label: 'Akademik Takvim', icon: 'calendar', link: '/akademik/takvim' },
+  ];
+  protected readonly saveOptions: HuDropdownEntry[] = [
+    { label: 'Kaydet ve yeni ekle', value: 'save-new' },
+    { label: 'Taslak olarak kaydet', value: 'draft' },
+  ];
+  protected readonly lastAction = signal<HuDropdownOption | null>(null);
 
   // --- Kısmen seçili ("Tümünü seç") örneği -------------------------------------------
   protected readonly permissions = [

@@ -10,27 +10,20 @@
 
     <hu-theme-toggle />
 
-    <hu-dropdown align="end">
+    <!-- Özel tetikleyici (okunmamış noktası) + panel başlığı -->
+    <hu-dropdown class="notifications" align="end" ariaLabel="Bildirimler" [options]="notifications">
       <button huDropdownTrigger hu-button variant="ghost" iconOnly aria-label="Bildirimler" class="notif-trigger">
         <hu-icon name="bell" [size]="18" />
         <span class="notif-dot" aria-hidden="true"></span>
       </button>
-      <div class="notif-header">
+      <div huDropdownHeader>
         <strong>Bildirimler</strong>
         <hu-badge variant="primary">{{ notifications.length }} yeni</hu-badge>
       </div>
-      @for (n of notifications; track n.text) {
-        <button huDropdownItem class="notif-item">
-          <hu-icon [name]="n.icon" [size]="16" />
-          <span>
-            <span class="notif-text">{{ n.text }}</span>
-            <span class="notif-time">{{ n.time }}</span>
-          </span>
-        </button>
-      }
     </hu-dropdown>
 
-    <hu-dropdown align="end">
+    <!-- Özel tetikleyici (avatar) -->
+    <hu-dropdown align="end" ariaLabel="Kullanıcı menüsü" [options]="userMenu" (selected)="onUserMenu($event)">
       <button huDropdownTrigger type="button" class="user-trigger" aria-label="Kullanıcı menüsü">
         <hu-avatar [name]="user.name" size="sm" />
         <span class="user-trigger__text">
@@ -38,13 +31,6 @@
           <span class="user-trigger__role">{{ user.role }}</span>
         </span>
         <hu-icon name="chevron-down" [size]="16" />
-      </button>
-      <div class="hu-dropdown-label">{{ user.email }}</div>
-      <a huDropdownItem routerLink="/ayarlar"><hu-icon name="user" [size]="16" /> Profilim</a>
-      <a huDropdownItem routerLink="/ayarlar"><hu-icon name="settings" [size]="16" /> Ayarlar</a>
-      <hr class="hu-dropdown-divider" />
-      <button huDropdownItem class="hu-dropdown-item--danger" (click)="logout()">
-        <hu-icon name="log-out" [size]="16" /> Çıkış yap
       </button>
     </hu-dropdown>
   </div>

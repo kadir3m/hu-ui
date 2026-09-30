@@ -1,0 +1,84 @@
+@if (!customTrigger()) {
+  <button
+    hu-button
+    type="button"
+    class="hu-dropdown__trigger"
+    aria-haspopup="menu"
+    [variant]="variant()"
+    [color]="color()"
+    [size]="size()"
+    [iconOnly]="!!icon() && !label()"
+    [disabled]="disabled()"
+    [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="panelId"
+    (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    @if (icon()) {
+      <hu-icon [name]="icon()!" [size]="16" />
+    }
+    @if (label()) {
+      {{ label() }}
+      @if (caret()) {
+        <hu-icon class="hu-dropdown__caret" name="chevron-down" [size]="16" />
+      }
+    }
+  </button>
+}
+<ng-content select="[huDropdownTrigger]" />
+
+<div
+  class="hu-dropdown__panel"
+  role="menu"
+  [id]="panelId"
+  [attr.aria-label]="label() || ariaLabel() || null"
+  [attr.data-align]="align()"
+  [hidden]="!open()"
+  (keydown)="onPanelKeydown($event)"
+>
+  <ng-content select="[huDropdownHeader]" />
+
+  @for (entry of options(); track $index) {
+    @if (isDivider(entry)) {
+      <div class="hu-dropdown-divider" role="separator"></div>
+    } @else if (isHeader(entry)) {
+      <div class="hu-dropdown-label" role="presentation">{{ entry.header }}</div>
+    } @else if (entry.link && !entry.disabled) {
+      <a
+        class="hu-dropdown-item"
+        role="menuitem"
+        tabindex="-1"
+        [class.hu-dropdown-item--danger]="entry.danger"
+        [routerLink]="entry.link"
+        (click)="choose(entry)"
+      >
+        <ng-container *ngTemplateOutlet="itemContent; context: { $implicit: entry }" />
+      </a>
+    } @else {
+      <button
+        type="button"
+        class="hu-dropdown-item"
+        role="menuitem"
+        tabindex="-1"
+        [class.hu-dropdown-item--danger]="entry.danger"
+        [disabled]="entry.disabled"
+        (click)="choose(entry)"
+      >
+        <ng-container *ngTemplateOutlet="itemContent; context: { $implicit: entry }" />
+      </button>
+    }
+  }
+</div>
+
+<ng-template #itemContent let-entry>
+  @if (entry.icon) {
+    <hu-icon class="hu-dropdown-item__icon" [name]="entry.icon" [size]="16" />
+  }
+  <span class="hu-dropdown-item__text">
+    <span class="hu-dropdown-item__label">{{ entry.label }}</span>
+    @if (entry.description) {
+      <span class="hu-dropdown-item__description">{{ entry.description }}</span>
+    }
+  </span>
+</ng-template>

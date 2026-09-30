@@ -1,6 +1,6 @@
 {
   "name": "@ucme-ui/angular",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Angular 20–22 UI component kütüphanesi ve admin layout — signals, standalone, bağımlılıksız SCSS token'ları, açık/koyu tema.",
   "license": "MIT",
   "keywords": [

@@ -86,11 +86,14 @@
 
         <hu-button-group>
           <button hu-button><hu-icon name="check" [size]="16" /> Kaydet</button>
-          <hu-dropdown align="end">
-            <button huDropdownTrigger hu-button iconOnly aria-label="Diğer kaydetme seçenekleri"><hu-icon name="chevron-down" [size]="16" /></button>
-            <button huDropdownItem>Kaydet ve yeni ekle</button>
-            <button huDropdownItem>Taslak olarak kaydet</button>
-          </hu-dropdown>
+          <hu-dropdown
+            align="end"
+            icon="chevron-down"
+            variant="solid"
+            ariaLabel="Diğer kaydetme seçenekleri"
+            [options]="saveOptions"
+            (selected)="toast.success($event.label)"
+          />
         </hu-button-group>
 
         <hu-button-group pill>
@@ -220,18 +223,14 @@
             ]"
           />
           <div class="row">
-            <hu-dropdown>
-              <button huDropdownTrigger hu-button variant="outline">
-                İşlemler <hu-icon name="chevron-down" [size]="16" />
-              </button>
-              <div class="hu-dropdown-label">Kayıt</div>
-              <button huDropdownItem><hu-icon name="edit" [size]="16" /> Düzenle</button>
-              <button huDropdownItem><hu-icon name="download" [size]="16" /> İndir</button>
-              <button huDropdownItem disabled><hu-icon name="folder" [size]="16" /> Arşivle</button>
-              <hr class="hu-dropdown-divider" />
-              <button huDropdownItem class="hu-dropdown-item--danger"><hu-icon name="trash" [size]="16" /> Sil</button>
-            </hu-dropdown>
+            <hu-dropdown label="İşlemler" [options]="recordActions" (selected)="lastAction.set($event)" />
+            <hu-dropdown label="Dışa aktar" icon="download" variant="soft" [options]="exportOptions" (selected)="lastAction.set($event)" />
+            <hu-dropdown icon="more-vertical" variant="ghost" ariaLabel="Diğer" [options]="recordActions" (selected)="lastAction.set($event)" />
+            <hu-dropdown label="Sayfalar" variant="ghost" [options]="linkOptions" />
           </div>
+          <p class="demo-label">
+            Seçilen: {{ lastAction() ? lastAction()!.label + ' (value: ' + lastAction()!.value + ')' : '—' }}
+          </p>
         </div>
       </hu-card>
     </div>

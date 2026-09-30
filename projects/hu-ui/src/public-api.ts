@@ -37,6 +37,7 @@ export * from './lib/table/table.component';
 export * from './lib/paginator/paginator.component';
 export * from './lib/tabs/tabs.component';
 export * from './lib/breadcrumb/breadcrumb.component';
+export * from './lib/dropdown/dropdown.types';
 export * from './lib/dropdown/dropdown.component';
 
 // Layout

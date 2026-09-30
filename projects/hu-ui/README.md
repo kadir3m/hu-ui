@@ -95,6 +95,47 @@ Görünüm ve renk birbirinden bağımsızdır:
 `variant`: `solid` `soft` `outline` `ghost` `link`. `color`: `primary` `neutral` `success` `warning` `danger` `info`.
 `size`: `xs` … `xl`.
 
+### Dropdown
+
+Öğeleri bir dizi olarak verin; seçilen öğe `(selected)` ile döner:
+
+```html
+<hu-dropdown label="İşlemler" [options]="actions" (selected)="run($event.value)" />
+
+<!-- Yalnızca ikonlu tetikleyici -->
+<hu-dropdown icon="more-vertical" variant="ghost" ariaLabel="Satır işlemleri" [options]="actions" />
+```
+
+```ts
+actions: HuDropdownEntry[] = [
+  { header: 'Kayıt' },                                     // grup başlığı
+  { label: 'Düzenle', value: 'edit', icon: 'edit' },
+  { label: 'Dışa aktar', value: 'export', description: 'Excel dosyası' },
+  { label: 'Ayarlar', icon: 'settings', link: '/ayarlar' }, // router linki
+  { label: 'Arşivle', value: 'archive', disabled: true },
+  { divider: true },                                       // ayraç
+  { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+];
+```
+
+| Input | Açıklama |
+| --- | --- |
+| `options` | Öğeler: seçenek, `{ divider: true }` veya `{ header: '…' }` |
+| `label`, `icon`, `variant`, `color`, `size` | Hazır tetikleyici buton (`variant` varsayılanı `outline`) |
+| `ariaLabel` | Yalnızca ikonlu tetikleyicide ekran okuyucu etiketi |
+| `align` | Panelin hizası: `start` veya `end` |
+| `caret`, `disabled` | Aşağı ok gösterimi; tetikleyiciyi devre dışı bırakma |
+| `[(open)]` | Açık/kapalı durumu (iki yönlü) |
+
+| Output | Açıklama |
+| --- | --- |
+| `(selected)` | Seçilen `HuDropdownOption`; `value` verilmemişse `label` döner |
+| `(openChange)` | Panel açıldığında veya kapandığında |
+
+Kendi tetikleyicinizi kullanmak için (avatar vb.) içine `huDropdownTrigger` özniteliği olan bir element koyun.
+Panelin üstüne serbest içerik eklemek için `huDropdownHeader` kullanın. Klavye desteği hazır gelir: oklar, Home/End,
+harfle atlama, Enter ve Esc.
+
 ### Admin layout
 
 ```html

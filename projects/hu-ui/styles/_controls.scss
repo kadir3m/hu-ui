@@ -1,7 +1,7 @@
 // =============================================================================
 // HU UI — Directive tabanlı kontrollerin stilleri
-// Directive'lerin kendi stil dosyası olamadığından huInput ve huDropdownItem
-// stilleri burada tanımlanır.
+// Directive'lerin kendi stil dosyası olamadığından huInput stilleri burada
+// tanımlanır.
 // =============================================================================
 
 // --- huInput (input / textarea / select) -------------------------------------
@@ -91,56 +91,4 @@ select.hu-input {
     padding-right: 1.75rem;
     background-position: right 0.375rem center;
   }
-}
-
-// --- huDropdownItem --------------------------------------------------------------
-.hu-dropdown-item {
-  display: flex;
-  align-items: center;
-  gap: var(--hu-space-2);
-  width: 100%;
-  padding: var(--hu-space-2) var(--hu-space-3);
-  font: inherit;
-  font-size: var(--hu-text-sm);
-  color: var(--hu-text);
-  text-align: left;
-  text-decoration: none;
-  background: none;
-  border: 0;
-  border-radius: var(--hu-radius-sm);
-  cursor: pointer;
-
-  .hu-icon {
-    color: var(--hu-text-subtle);
-  }
-
-  &:hover,
-  &:focus-visible {
-    outline: none;
-    background: var(--hu-surface-3);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &--danger,
-  &--danger .hu-icon {
-    color: var(--hu-danger);
-  }
-}
-
-.hu-dropdown-divider {
-  height: 1px;
-  margin: var(--hu-space-1) calc(var(--hu-space-1) * -1);
-  background: var(--hu-border);
-  border: 0;
-}
-
-.hu-dropdown-label {
-  padding: var(--hu-space-2) var(--hu-space-3) var(--hu-space-1);
-  font-size: var(--hu-text-xs);
-  font-weight: 600;
-  color: var(--hu-text-subtle);
 }

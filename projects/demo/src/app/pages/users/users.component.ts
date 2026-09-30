@@ -15,8 +15,7 @@ import {
   HuIcon,
   HuInput,
   HuDropdown,
-  HuDropdownItem,
-  HuDropdownTrigger,
+  HuDropdownEntry,
   HuPaginator,
   HuPrefix,
   HuDatePicker,
@@ -28,6 +27,8 @@ import {
   HuToastService,
 } from '@ucme-ui/angular';
 import { DEPARTMENTS, ROLES, STATUS_LABELS, User, UserStatus, createUsers } from '../../data/users';
+
+type RowAction = 'edit' | 'toggle' | 'delete';
 
 /** Demo: yalnızca kurum alan adındaki adresler kabul edilir. */
 const CORPORATE_DOMAIN = '@example.com';
@@ -55,8 +56,6 @@ const collator = new Intl.Collator('tr-TR', { numeric: true });
     HuIcon,
     HuInput,
     HuDropdown,
-    HuDropdownItem,
-    HuDropdownTrigger,
     HuPaginator,
     HuPrefix,
     HuTable,
@@ -223,6 +222,31 @@ export class UsersComponent {
     const status: UserStatus = user.status === 'aktif' ? 'pasif' : 'aktif';
     this.users.update((list) => list.map((u) => (u.id === user.id ? { ...u, status } : u)));
     this.toast.info(`${user.name} artık ${STATUS_LABELS[status].toLocaleLowerCase('tr-TR')}.`);
+  }
+
+  // --- Satır menüsü ------------------------------------------------------------------
+  /** Görünen sayfadaki her kullanıcı için menü seçenekleri (durum etiketine göre değişir). */
+  protected readonly rowActions = computed(
+    () =>
+      new Map(
+        this.page().map((user): [number, HuDropdownEntry<RowAction>[]] => [
+          user.id,
+          [
+            { label: 'Düzenle', value: 'edit', icon: 'edit' },
+            user.status === 'aktif'
+              ? { label: 'Pasifleştir', value: 'toggle', icon: 'lock' }
+              : { label: 'Aktifleştir', value: 'toggle', icon: 'check' },
+            { divider: true },
+            { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+          ],
+        ]),
+      ),
+  );
+
+  protected onRowAction(user: User, action: RowAction): void {
+    if (action === 'edit') this.openEdit(user);
+    else if (action === 'toggle') this.toggleStatus(user);
+    else this.deleting.set(user);
   }
 
   protected exportCsv(): void {

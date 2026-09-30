@@ -58,32 +58,8 @@
   border-radius: 50%;
 }
 
-.notif-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--hu-space-3);
-  min-width: 20rem;
-  padding: var(--hu-space-2) var(--hu-space-3);
-}
-
-.notif-item {
-  align-items: flex-start;
-
-  hu-icon {
-    margin-top: 2px;
-  }
-}
-
-.notif-text {
-  display: block;
-  white-space: normal;
-}
-
-.notif-time {
-  display: block;
-  font-size: var(--hu-text-xs);
-  color: var(--hu-text-subtle);
+.notifications {
+  --hu-dropdown-min-width: 20rem;
 }
 
 .user-trigger {
