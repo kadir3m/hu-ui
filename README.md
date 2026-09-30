@@ -20,10 +20,10 @@ projects/
 | `npm run pack:ui` | Yayınlamadan denemek için `dist/hu-ui-x.y.z.tgz` üretir |
 | `npm run publish:ui` | Derler ve npmjs.org'a elle yayınlar (normalde CI yapar) |
 
-Geliştirme sırasında `tsconfig.json` içindeki `hu-ui` yolu doğrudan kaynağa bakar. Bu yüzden
+Geliştirme sırasında `tsconfig.json` içindeki `@kadirucme/hu-ui` yolu doğrudan kaynağa bakar. Bu yüzden
 kütüphanede yaptığınız değişiklik demo'ya derleme gerektirmeden yansır.
 
-## Yayınlama (`hu-ui` → npmjs.org)
+## Yayınlama (`@kadirucme/hu-ui` → npmjs.org)
 
 Yayını GitHub Actions yapar ([.github/workflows/publish.yml](.github/workflows/publish.yml)).
 Sürüm etiketi push'landığında paket derlenir ve provenance ile yayınlanır:
@@ -44,13 +44,13 @@ Yayınlanan bir sürüm yalnızca 72 saat içinde geri çekilebilir ve aynı num
 ## Başka bir projede kullanım
 
 ```bash
-npm install hu-ui
+npm install @kadirucme/hu-ui
 ```
 
 ```scss
 // styles.scss
-@use 'hu-ui/styles';          // token'lar + reset + kontrol stilleri
-// @use 'hu-ui/styles/tokens'; // yalnızca CSS değişkenleri
+@use '@kadirucme/hu-ui/styles';          // token'lar + reset + kontrol stilleri
+// @use '@kadirucme/hu-ui/styles/tokens'; // yalnızca CSS değişkenleri
 ```
 
 ```html
@@ -59,7 +59,7 @@ npm install hu-ui
 ```
 
 ```ts
-import { HuButton, HU_FORM_FIELD_IMPORTS, HU_TABLE_IMPORTS } from 'hu-ui';
+import { HuButton, HU_FORM_FIELD_IMPORTS, HU_TABLE_IMPORTS } from '@kadirucme/hu-ui';
 
 imports: [HuButton, HU_FORM_FIELD_IMPORTS, HU_TABLE_IMPORTS]
 ```

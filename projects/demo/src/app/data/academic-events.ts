@@ -1,4 +1,4 @@
-import { HuMarkerVariant } from 'hu-ui';
+import { HuMarkerVariant } from '@kadirucme/hu-ui';
 
 export type EventCategory = 'ders' | 'kayit' | 'sinav' | 'tatil' | 'etkinlik';
 

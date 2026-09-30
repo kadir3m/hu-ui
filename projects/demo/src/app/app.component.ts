@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { HuThemeService, HuToaster } from 'hu-ui';
+import { HuThemeService, HuToaster } from '@kadirucme/hu-ui';
 
 @Component({
   selector: 'app-root',

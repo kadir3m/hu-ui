@@ -14,7 +14,7 @@ import {
   HuThemeMode,
   HuThemeService,
   HuToastService,
-} from 'hu-ui';
+} from '@kadirucme/hu-ui';
 
 @Component({
   selector: 'app-settings',

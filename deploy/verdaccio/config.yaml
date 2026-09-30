@@ -14,7 +14,7 @@ uplinks:
 
 packages:
   # Kurum paketleri: ASLA npmjs'ten proxy'lenmez (dependency confusion koruması).
-  'hu-ui':
+  '@kadirucme/*':
     access: $authenticated
     publish: hu-publisher
     unpublish: hu-publisher

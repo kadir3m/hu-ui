@@ -18,7 +18,7 @@ import {
   HuThemeToggle,
   HuTopbarEnd,
   HuTopbarStart,
-} from 'hu-ui';
+} from '@kadirucme/hu-ui';
 
 @Component({
   selector: 'app-admin-layout',
