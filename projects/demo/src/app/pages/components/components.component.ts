@@ -42,7 +42,7 @@ import {
   HuTable,
   HuTabs,
   HuToastService,
-} from '@kadirucme/hu-ui';
+} from '@ucme-ui/angular';
 
 interface Course {
   code: string;

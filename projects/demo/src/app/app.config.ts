@@ -2,7 +2,7 @@ import { registerLocaleData } from '@angular/common';
 import localeTr from '@angular/common/locales/tr';
 import { ApplicationConfig, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
-import { provideHuErrorMessages } from '@kadirucme/hu-ui';
+import { provideHuErrorMessages } from '@ucme-ui/angular';
 
 import { routes } from './app.routes';
 

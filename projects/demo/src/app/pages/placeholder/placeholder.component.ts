@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HuCard, HuIcon } from '@kadirucme/hu-ui';
+import { HuCard, HuIcon } from '@ucme-ui/angular';
 
 /** Henüz geliştirilmemiş sayfalar için yer tutucu. */
 @Component({

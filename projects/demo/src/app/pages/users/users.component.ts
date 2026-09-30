@@ -26,7 +26,7 @@ import {
   HuTable,
   compareDays,
   HuToastService,
-} from '@kadirucme/hu-ui';
+} from '@ucme-ui/angular';
 import { DEPARTMENTS, ROLES, STATUS_LABELS, User, UserStatus, createUsers } from '../../data/users';
 
 /** Demo: yalnızca kurum alan adındaki adresler kabul edilir. */

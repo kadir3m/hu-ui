@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HuAlert, HuButton, HuCheckbox, HuFormField, HuIcon, HuInput, HuPrefix, HuSuffix, HuThemeToggle } from '@kadirucme/hu-ui';
+import { HuAlert, HuButton, HuCheckbox, HuFormField, HuIcon, HuInput, HuPrefix, HuSuffix, HuThemeToggle } from '@ucme-ui/angular';
 
 @Component({
   selector: 'app-login',

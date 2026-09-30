@@ -18,7 +18,7 @@ import {
   compareDays,
   isSameDay,
   startOfDay,
-} from '@kadirucme/hu-ui';
+} from '@ucme-ui/angular';
 import { ACADEMIC_EVENTS, AcademicEvent, CATEGORIES, EventCategory } from '../../data/academic-events';
 
 @Component({

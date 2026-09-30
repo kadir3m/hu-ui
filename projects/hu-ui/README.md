@@ -1,4 +1,4 @@
-# @kadirucme/hu-ui
+# @ucme-ui/angular
 
 Admin panelleri için Angular 19 component kütüphanesi. Hazır bir admin layout, form, tablo,
 takvim ve geri bildirim componentleri içerir.
@@ -15,7 +15,7 @@ takvim ve geri bildirim componentleri içerir.
 ## Kurulum
 
 ```bash
-npm install @kadirucme/hu-ui
+npm install @ucme-ui/angular
 ```
 
 Gereksinim: Angular `^19.2` (`@angular/common`, `core`, `forms`, `router`).
@@ -23,7 +23,7 @@ Gereksinim: Angular `^19.2` (`@angular/common`, `core`, `forms`, `router`).
 **1. Stiller** (`src/styles.scss`)
 
 ```scss
-@use '@kadirucme/hu-ui/styles';
+@use '@ucme-ui/angular/styles';
 ```
 
 **2. Font** (`index.html`, isteğe bağlı). Tasarım Inter ile yapıldı; eklenmezse sistem fontu kullanılır.
@@ -37,7 +37,7 @@ Gereksinim: Angular `^19.2` (`@angular/common`, `core`, `forms`, `router`).
 ```ts
 import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormControl, Validators } from '@angular/forms';
-import { HuButton, HU_FORM_FIELD_IMPORTS, HuDatePicker, HuToastService } from '@kadirucme/hu-ui';
+import { HuButton, HU_FORM_FIELD_IMPORTS, HuDatePicker, HuToastService } from '@ucme-ui/angular';
 
 @Component({
   selector: 'app-example',

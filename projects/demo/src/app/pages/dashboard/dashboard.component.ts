@@ -13,7 +13,7 @@ import {
   HuColumn,
   HuIcon,
   HuTable,
-} from '@kadirucme/hu-ui';
+} from '@ucme-ui/angular';
 import { STATUS_LABELS, User, UserStatus, createUsers } from '../../data/users';
 
 interface Stat {
