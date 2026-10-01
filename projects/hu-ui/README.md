@@ -69,6 +69,10 @@ Toast'ların görünmesi için kök componente bir kez `<hu-toaster />` ekleyin.
 
 ## Componentler
 
+> Her component'in bütün input, output ve seçenekleri:
+> **[API referansı](https://github.com/kadir3m/hu-ui/blob/main/projects/hu-ui/API.md)**.
+> Aynı dosya pakette de `node_modules/@ucme-ui/angular/API.md` olarak bulunur.
+
 | Grup | |
 | --- | --- |
 | **Layout** | `hu-shell` (daraltılabilir sidebar, mobil çekmece, topbar), `hu-sidebar-nav`, `hu-breadcrumb`, `hu-theme-toggle` |

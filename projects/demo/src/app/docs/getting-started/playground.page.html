@@ -1,0 +1,190 @@
+<header class="guide-header">
+  <p class="guide-eyebrow">Başlarken</p>
+  <h1>Playground</h1>
+  <p>Bir component seçin, ayarlarını değiştirin ve oluşan kodu kopyalayın.</p>
+</header>
+
+<hu-button-group class="targets" aria-label="Component">
+  @for (t of targets; track t.value) {
+    <button hu-button variant="outline" [attr.aria-pressed]="target() === t.value" (click)="target.set(t.value)">
+      <hu-icon [name]="t.icon" [size]="16" /> {{ t.label }}
+    </button>
+  }
+</hu-button-group>
+
+<div class="playground">
+  <!-- Önizleme -->
+  <div class="preview" aria-live="polite">
+    @switch (target()) {
+      @case ('button') {
+        <div [class.preview__block]="btnBlock()">
+          <button
+            hu-button
+            [variant]="btnVariant()"
+            [color]="btnColor() || undefined"
+            [size]="btnSize()"
+            [iconOnly]="btnIconOnly() && !!btnIcon()"
+            [pill]="btnPill()"
+            [loading]="btnLoading()"
+            [disabled]="btnDisabled()"
+            [block]="btnBlock()"
+            [attr.aria-label]="btnIconOnly() && btnIcon() ? btnLabel() : null"
+          >
+            @if (btnIcon()) {
+              <hu-icon [name]="btnIcon()" [size]="16" />
+            }
+            @if (!(btnIconOnly() && btnIcon())) {
+              {{ btnLabel() }}
+            }
+          </button>
+        </div>
+      }
+      @case ('badge') {
+        <hu-badge [variant]="badgeVariant()" [dot]="badgeDot()">{{ badgeText() }}</hu-badge>
+      }
+      @case ('alert') {
+        <div class="preview__wide">
+          @for (k of [alertKey()]; track k) {
+            <hu-alert [variant]="alertVariant()" [title]="alertTitle()" [dismissible]="alertDismissible()">{{ alertText() }}</hu-alert>
+          }
+        </div>
+      }
+      @case ('avatar') {
+        <hu-avatar [name]="avatarName()" [size]="avatarSize()" />
+      }
+      @case ('dropdown') {
+        <div class="preview__stack">
+          <hu-dropdown
+            [label]="ddLabel() || undefined"
+            [icon]="ddIcon() || undefined"
+            [variant]="ddVariant()"
+            [align]="ddAlign()"
+            ariaLabel="İşlemler"
+            [options]="ddOptions"
+            (selected)="ddLast.set($event.label)"
+          />
+          <span class="demo-label">Seçilen: {{ ddLast() || '—' }}</span>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Ayarlar -->
+  <form class="controls" (submit)="$event.preventDefault()" aria-label="Ayarlar">
+    @switch (target()) {
+      @case ('button') {
+        <hu-form-field label="Metin">
+          <input huInput size="sm" [value]="btnLabel()" (input)="btnLabel.set(text($event))" />
+        </hu-form-field>
+        <hu-form-field label="variant">
+          <select huInput size="sm" (change)="btnVariant.set($any(text($event)))">
+            @for (v of buttonVariants; track v) {
+              <option [value]="v" [selected]="v === btnVariant()">{{ v }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="color">
+          <select huInput size="sm" (change)="btnColor.set($any(text($event)))">
+            @for (c of buttonColors; track c) {
+              <option [value]="c" [selected]="c === btnColor()">{{ c || '(otomatik)' }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="size">
+          <select huInput size="sm" (change)="btnSize.set($any(text($event)))">
+            @for (s of buttonSizes; track s) {
+              <option [value]="s" [selected]="s === btnSize()">{{ s }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="İkon">
+          <select huInput size="sm" (change)="btnIcon.set(text($event))">
+            @for (i of iconChoices; track i) {
+              <option [value]="i" [selected]="i === btnIcon()">{{ i || '(yok)' }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <div class="switches">
+          <hu-switch [checked]="btnIconOnly()" (checkedChange)="btnIconOnly.set($event)" [disabled]="!btnIcon()">iconOnly</hu-switch>
+          <hu-switch [checked]="btnPill()" (checkedChange)="btnPill.set($event)">pill</hu-switch>
+          <hu-switch [checked]="btnLoading()" (checkedChange)="btnLoading.set($event)">loading</hu-switch>
+          <hu-switch [checked]="btnDisabled()" (checkedChange)="btnDisabled.set($event)">disabled</hu-switch>
+          <hu-switch [checked]="btnBlock()" (checkedChange)="btnBlock.set($event)">block</hu-switch>
+        </div>
+      }
+      @case ('badge') {
+        <hu-form-field label="Metin">
+          <input huInput size="sm" [value]="badgeText()" (input)="badgeText.set(text($event))" />
+        </hu-form-field>
+        <hu-form-field label="variant">
+          <select huInput size="sm" (change)="badgeVariant.set($any(text($event)))">
+            @for (v of badgeVariants; track v) {
+              <option [value]="v" [selected]="v === badgeVariant()">{{ v }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <div class="switches">
+          <hu-switch [checked]="badgeDot()" (checkedChange)="badgeDot.set($event)">dot</hu-switch>
+        </div>
+      }
+      @case ('alert') {
+        <hu-form-field label="variant">
+          <select huInput size="sm" (change)="alertVariant.set($any(text($event)))">
+            @for (v of statusVariants; track v) {
+              <option [value]="v" [selected]="v === alertVariant()">{{ v }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="title">
+          <input huInput size="sm" [value]="alertTitle()" (input)="alertTitle.set(text($event))" />
+        </hu-form-field>
+        <hu-form-field label="Metin">
+          <textarea huInput rows="2" [value]="alertText()" (input)="alertText.set(text($event))"></textarea>
+        </hu-form-field>
+        <div class="switches">
+          <hu-switch [checked]="alertDismissible()" (checkedChange)="alertDismissible.set($event)">dismissible</hu-switch>
+        </div>
+        <button hu-button variant="ghost" size="sm" type="button" (click)="resetAlert()">Kapatılan alert'i geri getir</button>
+      }
+      @case ('avatar') {
+        <hu-form-field label="name">
+          <input huInput size="sm" [value]="avatarName()" (input)="avatarName.set(text($event))" />
+        </hu-form-field>
+        <hu-form-field label="size">
+          <select huInput size="sm" (change)="avatarSize.set($any(text($event)))">
+            @for (s of avatarSizes; track s) {
+              <option [value]="s" [selected]="s === avatarSize()">{{ s }}</option>
+            }
+          </select>
+        </hu-form-field>
+      }
+      @case ('dropdown') {
+        <hu-form-field label="label" hint="Boş bırakıp ikon seçerseniz kare ikon butonu olur.">
+          <input huInput size="sm" [value]="ddLabel()" (input)="ddLabel.set(text($event))" />
+        </hu-form-field>
+        <hu-form-field label="icon">
+          <select huInput size="sm" (change)="ddIcon.set(text($event))">
+            @for (i of iconChoices; track i) {
+              <option [value]="i" [selected]="i === ddIcon()">{{ i || '(yok)' }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="variant">
+          <select huInput size="sm" (change)="ddVariant.set($any(text($event)))">
+            @for (v of buttonVariants; track v) {
+              <option [value]="v" [selected]="v === ddVariant()">{{ v }}</option>
+            }
+          </select>
+        </hu-form-field>
+        <hu-form-field label="align">
+          <select huInput size="sm" (change)="ddAlign.set($any(text($event)))">
+            <option value="start" [selected]="ddAlign() === 'start'">start</option>
+            <option value="end" [selected]="ddAlign() === 'end'">end</option>
+          </select>
+        </hu-form-field>
+      }
+    }
+  </form>
+</div>
+
+<app-doc-code class="code" [code]="code()" />

@@ -76,7 +76,8 @@ imports: [HuButton, HU_FORM_FIELD_IMPORTS, HU_TABLE_IMPORTS]
 | Layout | `hu-shell`, `hu-sidebar-nav`, `hu-theme-toggle`, `HuThemeService` |
 | Çekirdek | `hu-icon` (+`provideHuIcons`), `provideHuErrorMessages`, `huMediaQuery` |
 
-Kullanım örnekleri her component dosyasının JSDoc'unda ve `demo/src/app/pages` altında.
+Her component'in input, output ve seçenekleri: **[projects/hu-ui/API.md](projects/hu-ui/API.md)**.
+Canlı örnekler `demo/src/app/pages` altında.
 
 ## Tasarım kuralları
 

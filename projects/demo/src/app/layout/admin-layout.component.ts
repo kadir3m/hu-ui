@@ -19,6 +19,7 @@ import {
   HuTopbarEnd,
   HuTopbarStart,
 } from '@ucme-ui/angular';
+import { docsNavItem, gettingStartedNavItem } from '../docs/doc-registry';
 
 @Component({
   selector: 'app-admin-layout',
@@ -46,36 +47,8 @@ export class AdminLayoutComponent {
 
   protected readonly user = { name: 'Kadir Üçme', role: 'Sistem Yöneticisi', email: 'kadir.ucme@example.com' };
 
-  protected readonly nav: HuNavGroup[] = [
-    {
-      items: [
-        { label: 'Genel Bakış', icon: 'home', link: '/', exact: true },
-        { label: 'Raporlar', icon: 'bar-chart', link: '/raporlar' },
-      ],
-    },
-    {
-      title: 'Yönetim',
-      items: [
-        { label: 'Kullanıcılar', icon: 'users', link: '/kullanicilar', badge: 12 },
-        {
-          label: 'Akademik',
-          icon: 'graduation-cap',
-          children: [
-            { label: 'Bölümler', link: '/akademik/bolumler' },
-            { label: 'Dersler', link: '/akademik/dersler' },
-            { label: 'Akademik Takvim', link: '/akademik/takvim' },
-          ],
-        },
-      ],
-    },
-    {
-      title: 'Sistem',
-      items: [
-        { label: 'Component Kataloğu', icon: 'layers', link: '/componentler' },
-        { label: 'Ayarlar', icon: 'settings', link: '/ayarlar' },
-      ],
-    },
-  ];
+  /** Dokümantasyon menüsü: Başlarken + Componentler (ikisi de kayıt dosyasından üretilir). */
+  protected readonly nav: HuNavGroup[] = [{ items: [gettingStartedNavItem(), docsNavItem()] }];
 
   protected readonly notifications: HuDropdownOption[] = [
     { value: 'approvals', icon: 'users', label: '3 yeni kullanıcı kaydı onay bekliyor', description: '5 dk önce', link: '/kullanicilar' },
@@ -108,7 +81,7 @@ export class AdminLayoutComponent {
     let route = this.route.snapshot;
     while (route.firstChild) route = route.firstChild;
     const items: HuBreadcrumbItem[] = [{ label: 'Ana Sayfa', link: '/', icon: 'home' }];
-    if (route.data['section']) items.push({ label: route.data['section'] });
+    if (route.data['section']) items.push({ label: route.data['section'], link: route.data['sectionLink'] });
     if (route.data['breadcrumb']) items.push({ label: route.data['breadcrumb'] });
     return items;
   }

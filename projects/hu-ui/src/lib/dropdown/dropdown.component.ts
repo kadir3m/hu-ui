@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Directive,
   ElementRef,
   Injector,
@@ -8,10 +9,12 @@ import {
   afterNextRender,
   booleanAttribute,
   contentChild,
+  effect,
   inject,
   input,
   model,
   output,
+  viewChild,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -107,8 +110,34 @@ export class HuDropdown<T = string> {
   protected readonly isDivider = isDropdownDivider;
   protected readonly isHeader = isDropdownHeader;
 
+  /**
+   * Panel Popover API ile sayfanın üst katmanında (top layer) açılır: "appendTo body"
+   * gibi davranır, kart/tablo/dialog'un overflow'u tarafından kesilmez. DOM'da yerinde
+   * kaldığı için odak ve dışarı tıklama mantığı aynen çalışır.
+   */
+  protected readonly supportsPopover = typeof HTMLElement !== 'undefined' && 'showPopover' in HTMLElement.prototype;
+  private readonly panel = viewChild.required<ElementRef<HTMLElement>>('panel');
+  private focusOnOpen = false;
+
   private typeahead = '';
   private typeaheadTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    // open dışarıdan ([(open)]) da değişebilir: paneli her durumda eşitle.
+    effect(() => {
+      const open = this.open();
+      afterNextRender(() => this.syncPanel(open), { injector: this.injector });
+    });
+
+    const win = this.host.nativeElement.ownerDocument.defaultView;
+    const reposition = () => this.open() && this.positionPanel();
+    win?.addEventListener('resize', reposition);
+    win?.addEventListener('scroll', reposition, true);
+    inject(DestroyRef).onDestroy(() => {
+      win?.removeEventListener('resize', reposition);
+      win?.removeEventListener('scroll', reposition, true);
+    });
+  }
 
   toggle(): void {
     if (this.open()) this.close();
@@ -117,8 +146,8 @@ export class HuDropdown<T = string> {
 
   show(): void {
     if (this.disabled()) return;
+    this.focusOnOpen = true;
     this.open.set(true);
-    afterNextRender(() => this.items()[0]?.focus(), { injector: this.injector });
   }
 
   close(restoreFocus = false): void {
@@ -176,6 +205,47 @@ export class HuDropdown<T = string> {
       if (text.startsWith(this.typeahead)) return index;
     }
     return -1;
+  }
+
+  private syncPanel(open: boolean): void {
+    const panel = this.panel().nativeElement;
+    if (this.supportsPopover) {
+      const isOpen = panel.matches(':popover-open');
+      if (open && !isOpen) panel.showPopover();
+      else if (!open && isOpen) panel.hidePopover();
+    }
+    if (!open) return;
+    this.positionPanel();
+    if (this.focusOnOpen) {
+      this.focusOnOpen = false;
+      this.items()[0]?.focus({ preventScroll: true });
+    }
+  }
+
+  /** Tetikleyicinin altına (yer yoksa üstüne) yerleştirir; ekran kenarından taşırmaz. */
+  private positionPanel(): void {
+    if (!this.supportsPopover) return;
+    const panel = this.panel().nativeElement;
+    const trigger = this.triggerElement() ?? this.host.nativeElement;
+    const win = this.host.nativeElement.ownerDocument.defaultView;
+    if (!win) return;
+
+    const anchor = trigger.getBoundingClientRect();
+    const { offsetWidth: width, offsetHeight: height } = panel;
+    const gap = 6;
+    const edge = 8;
+
+    let left = this.align() === 'end' ? anchor.right - width : anchor.left;
+    left = Math.max(edge, Math.min(left, win.innerWidth - width - edge));
+
+    const below = anchor.bottom + gap;
+    const above = anchor.top - gap - height;
+    const fitsBelow = below + height <= win.innerHeight - edge;
+    const top = fitsBelow || above < edge ? below : above;
+
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+    panel.dataset['placement'] = top === below ? 'bottom' : 'top';
   }
 
   private items(): HTMLElement[] {

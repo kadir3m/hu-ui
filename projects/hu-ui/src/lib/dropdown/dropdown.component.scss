@@ -13,31 +13,52 @@
   }
 }
 
+// Panel Popover API ile üst katmanda (top layer) açılır; konumu JS ile verilir.
+// Not: `display` yalnızca açıkken verilir, yoksa tarayıcının kapalı popover'ı
+// gizleyen kuralını ezer.
 .hu-dropdown__panel {
-  position: absolute;
-  top: calc(100% + 6px);
-  z-index: 1000;
-  display: flex;
+  position: fixed;
+  inset: auto;
+  margin: 0;
   flex-direction: column;
   min-width: var(--hu-dropdown-min-width, 12rem);
   max-width: min(var(--hu-dropdown-max-width, 24rem), calc(100vw - 2rem));
+  max-height: min(var(--hu-dropdown-max-height, 24rem), calc(100dvh - 2rem));
+  overflow-y: auto;
   padding: var(--hu-space-1);
+  color: var(--hu-text);
   background: var(--hu-surface);
   border: 1px solid var(--hu-border);
   border-radius: var(--hu-radius-lg);
   box-shadow: var(--hu-shadow-lg);
-  animation: hu-dropdown-in 120ms ease-out;
 
-  &[hidden] {
-    display: none;
+  &:popover-open {
+    display: flex;
+    animation: hu-dropdown-in 120ms ease-out;
   }
 
-  &[data-align='start'] {
-    left: 0;
+  &[data-placement='top']:popover-open {
+    animation-name: hu-dropdown-in-up;
   }
 
-  &[data-align='end'] {
-    right: 0;
+  // Popover desteklemeyen tarayıcılar: eski davranış (tetikleyiciye göre absolute)
+  &--inline {
+    position: absolute;
+    top: calc(100% + 6px);
+    z-index: 1000;
+    display: flex;
+
+    &[hidden] {
+      display: none;
+    }
+
+    &[data-align='start'] {
+      left: 0;
+    }
+
+    &[data-align='end'] {
+      right: 0;
+    }
   }
 }
 
@@ -122,5 +143,12 @@
   from {
     opacity: 0;
     transform: translateY(-4px);
+  }
+}
+
+@keyframes hu-dropdown-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
 }

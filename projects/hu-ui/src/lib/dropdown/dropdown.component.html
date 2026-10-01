@@ -29,12 +29,15 @@
 <ng-content select="[huDropdownTrigger]" />
 
 <div
+  #panel
+  popover="manual"
   class="hu-dropdown__panel"
   role="menu"
+  [class.hu-dropdown__panel--inline]="!supportsPopover"
   [id]="panelId"
   [attr.aria-label]="label() || ariaLabel() || null"
   [attr.data-align]="align()"
-  [hidden]="!open()"
+  [attr.hidden]="!supportsPopover && !open() ? '' : null"
   (keydown)="onPanelKeydown($event)"
 >
   <ng-content select="[huDropdownHeader]" />

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layout/admin-layout.component';
+import { docsRoutes, gettingStartedRoutes } from './docs/doc-registry';
 
 export const routes: Routes = [
   {
@@ -11,8 +12,13 @@ export const routes: Routes = [
     path: '',
     component: AdminLayoutComponent,
     children: [
+      // Açılış: dokümantasyonun ilk sayfası
+      { path: '', pathMatch: 'full', redirectTo: 'baslarken/kurulum' },
+      { path: 'baslarken', children: gettingStartedRoutes() },
+
+      // Örnek admin sayfaları: menüde yok, adresle açılabilir
       {
-        path: '',
+        path: 'genel-bakis',
         title: 'Genel Bakış · Yönetim Paneli',
         data: { breadcrumb: 'Genel Bakış' },
         loadComponent: () => import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
@@ -49,10 +55,9 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/placeholder/placeholder.component').then((m) => m.PlaceholderComponent),
       },
       {
+        // Her component'in kendi sayfası: /componentler/button, /componentler/dropdown …
         path: 'componentler',
-        title: 'Componentler · Yönetim Paneli',
-        data: { breadcrumb: 'Component Kataloğu', section: 'Geliştirici' },
-        loadComponent: () => import('./pages/components/components.component').then((m) => m.ComponentsComponent),
+        children: docsRoutes(),
       },
       {
         path: 'ayarlar',

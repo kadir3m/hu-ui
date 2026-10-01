@@ -1,0 +1,119 @@
+:host {
+  display: block;
+  max-width: 64rem;
+}
+
+.doc-header {
+  margin-bottom: var(--hu-space-8);
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: var(--hu-space-3);
+    font-size: var(--hu-text-3xl);
+  }
+}
+
+.doc-header__category {
+  margin-bottom: var(--hu-space-1);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hu-primary);
+}
+
+.doc-header__desc {
+  max-width: 44rem;
+  margin-top: var(--hu-space-3);
+  font-size: var(--hu-text-md);
+  color: var(--hu-text-muted);
+}
+
+.doc-header__selector {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  margin-top: var(--hu-space-3);
+  color: var(--hu-text-subtle);
+
+  code {
+    font-family: var(--hu-font-mono);
+    font-size: var(--hu-text-xs);
+  }
+}
+
+.doc-section {
+  margin-bottom: var(--hu-space-10);
+
+  h2 {
+    margin-bottom: var(--hu-space-4);
+    padding-bottom: var(--hu-space-2);
+    font-size: var(--hu-text-xl);
+    border-bottom: 1px solid var(--hu-border);
+  }
+
+  h3 {
+    margin: var(--hu-space-6) 0 var(--hu-space-3);
+    font-size: var(--hu-text-md);
+  }
+}
+
+.doc-examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-6);
+}
+
+.api-table {
+  overflow-x: auto;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--hu-text-sm);
+  }
+
+  th,
+  td {
+    padding: var(--hu-space-2) var(--hu-space-4);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--hu-border);
+  }
+
+  th {
+    font-size: var(--hu-text-xs);
+    font-weight: 600;
+    color: var(--hu-text-muted);
+    background: var(--hu-surface-2);
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+
+  code {
+    font-family: var(--hu-font-mono);
+    font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+}
+
+.api-name {
+  font-weight: 600;
+  color: var(--hu-primary-soft-fg);
+}
+
+.api-type {
+  color: var(--hu-info-fg);
+  white-space: normal !important;
+}
+
+.doc-more {
+  margin-top: var(--hu-space-4);
+  font-size: var(--hu-text-xs);
+}

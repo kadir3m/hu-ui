@@ -1,7 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
   ViewEncapsulation,
+  afterNextRender,
   booleanAttribute,
   effect,
   inject,
@@ -10,6 +13,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter, map } from 'rxjs';
@@ -19,7 +23,7 @@ import { HuNavGroup, HuNavItem } from './nav.types';
 /** Yan menü navigasyonu. Genellikle `hu-shell` içinde otomatik kullanılır. */
 @Component({
   selector: 'hu-sidebar-nav',
-  imports: [RouterLink, RouterLinkActive, HuIcon],
+  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive, HuIcon],
   templateUrl: './sidebar-nav.component.html',
   host: { class: 'hu-nav', '[class.hu-nav--collapsed]': 'collapsed()' },
   encapsulation: ViewEncapsulation.None,
@@ -27,6 +31,8 @@ import { HuNavGroup, HuNavItem } from './nav.types';
 })
 export class HuSidebarNav {
   private readonly router = inject(Router);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly groups = input<HuNavGroup[]>([]);
   readonly collapsed = input(false, { transform: booleanAttribute });
@@ -55,11 +61,34 @@ export class HuSidebarNav {
         untracked(() => this.openItems.update((set) => new Set([...set, ...parents])));
       }
     });
+
+    // Uzun menülerde aktif link görünür alanda kalsın. routerLinkActive sınıfını
+    // bir microtask sonra eklediği için render'dan sonraki turu bekle.
+    effect(() => {
+      this.url();
+      afterNextRender(
+        () =>
+          setTimeout(() =>
+            this.host.nativeElement
+              .querySelector<HTMLElement>('.hu-nav__link--active')
+              ?.scrollIntoView({ block: 'nearest' }),
+          ),
+        { injector: this.injector },
+      );
+    });
   }
 
+  /** Öğenin herhangi bir alt (veya kategori altı) linki aktif mi? */
   protected isParentActive(item: HuNavItem, url = this.url()): boolean {
     const path = url.split(/[?#]/)[0];
-    return !!item.children?.some((c) => c.link && (path === c.link || path.startsWith(c.link + '/')));
+    const matches = (c: HuNavItem): boolean =>
+      (!!c.link && (path === c.link || path.startsWith(c.link + '/'))) || !!c.children?.some(matches);
+    return !!item.children?.some(matches);
+  }
+
+  /** `'Yeni'` gibi metin rozetleri sayılardan farklı görünür. */
+  protected isTextBadge(badge: string | number): boolean {
+    return typeof badge === 'string' && Number.isNaN(Number(badge));
   }
 
   protected toggle(item: HuNavItem): void {

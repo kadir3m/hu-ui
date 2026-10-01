@@ -382,6 +382,37 @@
   color: var(--hu-primary-fg);
   background: var(--hu-primary);
   border-radius: var(--hu-radius-full);
+
+  // 'Yeni' gibi metin rozetleri: açık renkli, küçük etiket
+  &--text {
+    height: 1.125rem;
+    padding: 0 0.4375rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--hu-info-fg);
+    background: var(--hu-info-soft);
+    border-radius: var(--hu-radius-sm);
+  }
+}
+
+// Alt menü içindeki kategori başlığı (örn. "Form", "Veri")
+.hu-nav__subheader {
+  padding: var(--hu-space-3) var(--hu-space-3) var(--hu-space-1);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--hu-text);
+  white-space: nowrap;
+
+  .hu-shell__sidebar--dark & {
+    color: #fff;
+  }
+
+  &:first-child {
+    padding-top: var(--hu-space-2);
+  }
 }
 
 .hu-nav--collapsed {
