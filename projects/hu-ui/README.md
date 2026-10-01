@@ -76,7 +76,7 @@ Toast'ların görünmesi için kök componente bir kez `<hu-toaster />` ekleyin.
 | Grup | |
 | --- | --- |
 | **Layout** | `hu-shell` (daraltılabilir sidebar, mobil çekmece, topbar), `hu-sidebar-nav`, `hu-breadcrumb`, `hu-theme-toggle` |
-| **Form** | `hu-button`, `hu-button-group`, `huInput`, `hu-form-field`, `hu-checkbox`, `hu-switch`, `hu-date-picker` |
+| **Form** | `hu-button`, `hu-button-group`, `huInput`, `hu-form-field`, `hu-checkbox`, `hu-switch`, `hu-date-picker`, `hu-editor` (zengin metin) |
 | **Tarih** | `hu-calendar`: tek gün/aralık seçimi, min/max, `dateFilter`, etkinlik işaretleri |
 | **Veri** | `hu-table` (sıralama, özel hücreler), `hu-paginator`, `hu-tabs`, `hu-card`, `hu-dropdown` |
 | **Geri bildirim** | `hu-alert`, `hu-dialog`, `HuToastService`, `hu-badge`, `hu-avatar`, `hu-spinner` |

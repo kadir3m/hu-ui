@@ -15,7 +15,7 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 ## İçindekiler
 
 - **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor)
 - **Tarih:** [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
 - **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
 - **Geri bildirim:** [hu-dialog](#hu-dialog) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
@@ -276,6 +276,77 @@ Tarih seçici form kontrolü. Tarih elle yazılabilir veya açılan takvimden se
 </hu-form-field>
 
 <hu-date-picker mode="range" [(value)]="period" placeholder="Tarih aralığı" />
+```
+
+### hu-editor
+
+Zengin metin editörü. Değer **HTML metnidir**; form kontrolü olarak (`formControlName`, `[formControl]`) veya
+`[(value)]` ile kullanılır. Bağımlılık yoktur, tarayıcının `contenteditable` alanı üzerine kuruludur.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `toolbar` | `HuEditorTool[]` | `HU_EDITOR_DEFAULT_TOOLBAR` | Araç çubuğu öğeleri (aşağıda); `'\|'` ayraç |
+| `placeholder` | `string` | `'Yazmaya başlayın…'` | Boşken görünen metin |
+| `readonly` | `boolean` | `false` | Araç çubuğu gizlenir, içerik düzenlenemez |
+| `disabled` | `boolean` | `false` | Devre dışı |
+| `showCount` | `boolean` | `false` | Altta kelime ve karakter sayısı |
+| `ariaLabel` | `string` | — | `hu-form-field` dışında kullanırken ekran okuyucu etiketi |
+| `id` | `string` | otomatik | İçerik alanının id'si |
+| `textColors` | `HuEditorColor[]` | `HU_EDITOR_TEXT_COLORS` | Yazı rengi paleti (`{ label, value }`) |
+| `highlightColors` | `HuEditorColor[]` | `HU_EDITOR_HIGHLIGHT_COLORS` | Vurgu (arka plan) paleti |
+| `imageUpload` | `(file: File) => Promise<string>` | `null` | Dosyayı sunucuya yükleyip görselin adresini döndürür. Verilmezse görsel data URL olarak HTML'e gömülür |
+| `maxImageSize` | `number` (bayt) | `2 * 1024 * 1024` | Kabul edilen en büyük görsel dosyası |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `string` (HTML) | `''` | Görünür metin yoksa `''` döner, bu yüzden `Validators.required` doğru çalışır |
+
+**Araç çubuğu öğeleri (`HuEditorTool`):** `heading` (Paragraf / Başlık 1–3 seçici), `bold`, `italic`, `underline`,
+`strike`, `textColor`, `highlight`, `bulletList`, `orderedList`, `blockquote`, `codeBlock`, `link`, `image`,
+`clear` (biçimi temizle), `undo`, `redo`, `'|'`.
+Hazır listeler: `HU_EDITOR_DEFAULT_TOOLBAR` (hepsi), `HU_EDITOR_MINIMAL_TOOLBAR` (kalın, italik, altı çizili, listeler, link).
+
+**Kısayollar:** Ctrl+B / I / U, Ctrl+K (link), Ctrl+Z / Y.
+
+**Renkler:** Renkler `<span style="color: …; background-color: …">` olarak kaydedilir. Yalnızca paletteki renkler
+kalıcıdır; tarayıcının kendiliğinden eklediği veya başka sayfalardan yapıştırılan renkler temizlenir (koyu temada
+okunmaz hale gelmesinler diye). Varsayılan vurgu renkleri yarı saydamdır.
+
+**Görseller:** Görsel butonu adres girme ve dosya seçme paneli açar; görseller yapıştırılarak veya sürüklenerek de
+eklenebilir. Yalnızca PNG, JPEG, GIF ve WebP kabul edilir. `imageUpload` verilmediğinde dosya base64 olarak HTML'e
+gömülür; bu küçük görseller için uygundur, büyük içerikte kendi yükleme fonksiyonunuzu verin:
+
+```ts
+upload: HuEditorImageUpload = async (file) => {
+  const body = new FormData();
+  body.append('file', file);
+  const res = await fetch('/api/uploads', { method: 'POST', body });
+  return (await res.json()).url;
+};
+```
+
+**Güvenlik:** Yapıştırılan, sürüklenen ve dışarıdan verilen HTML izin listesiyle temizlenir. Yalnızca `p`, `br`,
+`strong`, `em`, `u`, `s`, `h1`–`h3`, `ul`, `ol`, `li`, `blockquote`, `pre`, `code`, `a`, `img` ve `span` kalır. Bütün
+öznitelikler silinir; linklerde yalnızca `href`, görsellerde `src` ve `alt`, `span`'de yalnızca renk kalır.
+`javascript:` adresleri ve SVG görselleri (içine betik gömülebilir) reddedilir. Aynı temizleyiciyi, kayıtlı HTML'i
+göstermeden önce kendiniz de kullanabilirsiniz:
+
+```ts
+import { huSanitizeHtml } from '@ucme-ui/angular';
+safeHtml = huSanitizeHtml(announcement.body);
+```
+
+| CSS değişkeni | Varsayılan | Açıklama |
+| --- | --- | --- |
+| `--hu-editor-min-height` | `10rem` | İçerik alanının en küçük yüksekliği |
+| `--hu-editor-max-height` | `32rem` | Bu yükseklikten sonra içerik kaydırılır |
+
+```html
+<hu-form-field label="Duyuru metni" required>
+  <hu-editor formControlName="body" placeholder="Duyurunun ayrıntılarını yazın…" showCount />
+</hu-form-field>
+
+<hu-editor [(value)]="html" [toolbar]="['bold', 'italic', '|', 'bulletList', 'link']" ariaLabel="Yorum" />
 ```
 
 ---

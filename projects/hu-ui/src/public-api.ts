@@ -20,6 +20,9 @@ export * from './lib/switch/switch.component';
 export * from './lib/calendar/date-utils';
 export * from './lib/calendar/calendar.component';
 export * from './lib/calendar/date-picker.component';
+export * from './lib/editor/sanitize-html';
+export * from './lib/editor/editor.tools';
+export * from './lib/editor/editor.component';
 
 // Geri bildirim
 export * from './lib/spinner/spinner.component';

@@ -1,0 +1,197 @@
+@if (!readonly()) {
+  <div class="hu-editor__toolbar" role="toolbar" aria-label="Biçimlendirme" [attr.aria-controls]="id()">
+    @for (tool of toolbar(); track $index) {
+      @if (tool === '|') {
+        <span class="hu-editor__sep" role="separator"></span>
+      } @else if (tool === 'heading') {
+        <select
+          class="hu-input hu-editor__block"
+          data-size="sm"
+          aria-label="Paragraf biçimi"
+          [disabled]="!editable()"
+          (change)="setBlock($any($event.target).value)"
+        >
+          @for (b of blocks; track b.value) {
+            <option [value]="b.value" [selected]="b.value === block()">{{ b.label }}</option>
+          }
+        </select>
+      } @else {
+        @let b = buttons[tool];
+        <button
+          type="button"
+          class="hu-editor__btn"
+          [class.hu-editor__btn--active]="active().has(tool) || panel() === tool"
+          [attr.aria-pressed]="isToggle(tool) ? active().has(tool) : null"
+          [attr.aria-expanded]="isPanelTool(tool) ? panel() === tool : null"
+          [attr.aria-label]="b.label"
+          [attr.title]="b.shortcut ? b.label + ' (' + b.shortcut + ')' : b.label"
+          [disabled]="!editable()"
+          (mousedown)="$event.preventDefault()"
+          (click)="run(tool)"
+        >
+          <hu-icon [name]="b.icon" [size]="16" />
+          @if (tool === 'textColor') {
+            <span class="hu-editor__btn-swatch" [style.background]="lastTextColor() ?? 'currentColor'"></span>
+          } @else if (tool === 'highlight') {
+            <span class="hu-editor__btn-swatch" [style.background]="lastHighlight() ?? 'transparent'"></span>
+          }
+        </button>
+      }
+    }
+  </div>
+}
+
+@switch (panel()) {
+  @case ('link') {
+    <div class="hu-editor__panel" (keydown.escape)="$event.stopPropagation(); closePanel()">
+      <hu-icon class="hu-editor__panel-icon" name="link" [size]="14" />
+      <input
+        #panelInput
+        class="hu-input"
+        data-size="sm"
+        type="text"
+        inputmode="url"
+        placeholder="https://ornek.com"
+        aria-label="Link adresi"
+        [class.hu-input--invalid]="!!panelError()"
+        [attr.aria-invalid]="!!panelError() || null"
+        [value]="linkUrl()"
+        (input)="linkUrl.set($any($event.target).value); panelError.set('')"
+        (keydown.enter)="$event.preventDefault(); applyLink()"
+      />
+      <button hu-button size="sm" type="button" (click)="applyLink()">Uygula</button>
+      @if (hasLink()) {
+        <button hu-button size="sm" variant="ghost" color="danger" type="button" (click)="removeLink()">
+          <hu-icon name="unlink" [size]="14" /> Kaldır
+        </button>
+      }
+      <ng-container *ngTemplateOutlet="closeBtn" />
+    </div>
+  }
+  @case ('image') {
+    <div class="hu-editor__panel" (keydown.escape)="$event.stopPropagation(); closePanel()">
+      <hu-icon class="hu-editor__panel-icon" name="image" [size]="14" />
+      <input
+        #panelInput
+        class="hu-input hu-editor__panel-grow"
+        data-size="sm"
+        type="text"
+        inputmode="url"
+        placeholder="Görsel adresi (https://…)"
+        aria-label="Görsel adresi"
+        [class.hu-input--invalid]="!!panelError()"
+        [value]="imageUrl()"
+        [disabled]="uploading()"
+        (input)="imageUrl.set($any($event.target).value); panelError.set('')"
+        (keydown.enter)="$event.preventDefault(); insertImageFromUrl()"
+      />
+      <input
+        class="hu-input hu-editor__panel-alt"
+        data-size="sm"
+        type="text"
+        placeholder="Açıklama (alt)"
+        aria-label="Görsel açıklaması"
+        [value]="imageAlt()"
+        [disabled]="uploading()"
+        (input)="imageAlt.set($any($event.target).value)"
+        (keydown.enter)="$event.preventDefault(); insertImageFromUrl()"
+      />
+      <button hu-button size="sm" type="button" [disabled]="uploading() || !imageUrl().trim()" (click)="insertImageFromUrl()">
+        Ekle
+      </button>
+      <button hu-button size="sm" variant="outline" type="button" [disabled]="uploading()" (click)="chooseFile()">
+        @if (uploading()) {
+          <hu-spinner size="sm" /> Yükleniyor…
+        } @else {
+          <hu-icon name="upload" [size]="14" /> Dosya seç
+        }
+      </button>
+      <ng-container *ngTemplateOutlet="closeBtn" />
+    </div>
+  }
+  @case ('textColor') {
+    <ng-container *ngTemplateOutlet="colors; context: { kind: 'textColor', list: textColors(), label: 'Yazı rengi' }" />
+  }
+  @case ('highlight') {
+    <ng-container *ngTemplateOutlet="colors; context: { kind: 'highlight', list: highlightColors(), label: 'Vurgu rengi' }" />
+  }
+}
+@if (panel() && panelError()) {
+  <div class="hu-editor__panel-error" role="alert">{{ panelError() }}</div>
+}
+
+<ng-template #colors let-kind="kind" let-list="list" let-label="label">
+  <div
+    class="hu-editor__panel"
+    role="group"
+    [attr.aria-label]="label"
+    (keydown.escape)="$event.stopPropagation(); closePanel()"
+  >
+    <span class="hu-editor__panel-label">{{ label }}</span>
+    <div class="hu-editor__swatches">
+      @for (c of list; track c.value) {
+        <button
+          type="button"
+          class="hu-editor__swatch"
+          [class.hu-editor__swatch--text]="kind === 'textColor'"
+          [style.--hu-swatch]="c.value"
+          [attr.aria-label]="c.label"
+          [attr.title]="c.label"
+          (mousedown)="$event.preventDefault()"
+          (click)="applyColor(kind, c.value)"
+        >
+          @if (kind === 'textColor') {
+            A
+          }
+        </button>
+      }
+    </div>
+    <button
+      hu-button
+      size="sm"
+      variant="ghost"
+      type="button"
+      (mousedown)="$event.preventDefault()"
+      (click)="applyColor(kind, null)"
+    >
+      <hu-icon name="eraser" [size]="14" /> Rengi kaldır
+    </button>
+    <ng-container *ngTemplateOutlet="closeBtn" />
+  </div>
+</ng-template>
+
+<ng-template #closeBtn>
+  <button hu-button size="sm" variant="ghost" iconOnly type="button" aria-label="Kapat" class="hu-editor__panel-close" (click)="closePanel()">
+    <hu-icon name="x" [size]="14" />
+  </button>
+</ng-template>
+
+<input #fileInput type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden (change)="onFileChosen($event)" />
+
+<!-- İçerik Angular tarafından değil, editör tarafından yönetilir (innerHTML) -->
+<div
+  #content
+  class="hu-editor__content"
+  role="textbox"
+  aria-multiline="true"
+  spellcheck="true"
+  [id]="id()"
+  [attr.contenteditable]="editable() ? 'true' : 'false'"
+  [attr.aria-label]="ariaLabel() || null"
+  [attr.aria-describedby]="field?.describedBy() ?? null"
+  [attr.aria-invalid]="isInvalid() || null"
+  [attr.aria-readonly]="readonly() || null"
+  [attr.aria-disabled]="isDisabled() || null"
+  [attr.data-placeholder]="placeholder()"
+  [attr.data-empty]="isEmpty()"
+  (input)="onInput()"
+  (focus)="onFocus()"
+  (keydown)="onKeydown($event)"
+  (click)="onContentClick($event)"
+  (paste)="onPaste($event)"
+  (drop)="onDrop($event)"
+></div>
+
+@if (showCount()) {
+  <div class="hu-editor__footer" aria-live="polite">{{ counts().words }} kelime · {{ counts().chars }} karakter</div>
+}
