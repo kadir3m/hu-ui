@@ -83,6 +83,8 @@ export class HuTable<T = any> {
   /** `client`: tablo kendisi sıralar. `server`: yalnızca `sort` değişir, veriyi siz getirirsiniz. */
   readonly sortMode = input<'client' | 'server'>('client');
   readonly sort = model<HuSort>({ key: '', direction: '' });
+  /** null/undefined verilirse sıralama yok sayılır. */
+  protected readonly currentSort = computed<HuSort>(() => this.sort() ?? { key: '', direction: '' });
   readonly trackBy = input<(row: T) => unknown>((row: T) => row);
   readonly striped = input(false, { transform: booleanAttribute });
   readonly dense = input(false, { transform: booleanAttribute });
@@ -95,7 +97,7 @@ export class HuTable<T = any> {
 
   protected readonly rows = computed(() => {
     const data = this.data();
-    const { key, direction } = this.sort();
+    const { key, direction } = this.currentSort();
     if (this.sortMode() === 'server' || !key || !direction) return data;
     const column = this.columns().find((c) => c.key === key);
     if (!column) return data;
@@ -108,7 +110,7 @@ export class HuTable<T = any> {
   }
 
   protected toggleSort(column: HuColumn<T>): void {
-    const current = this.sort();
+    const current = this.currentSort();
     if (current.key !== column.key || !current.direction) {
       this.sort.set({ key: column.key, direction: 'asc' });
     } else if (current.direction === 'asc') {
@@ -119,14 +121,14 @@ export class HuTable<T = any> {
   }
 
   protected sortIcon(column: HuColumn<T>): string {
-    const { key, direction } = this.sort();
+    const { key, direction } = this.currentSort();
     if (key !== column.key || !direction) return 'chevrons-up-down';
     return direction === 'asc' ? 'arrow-up' : 'arrow-down';
   }
 
   protected ariaSort(column: HuColumn<T>): string | null {
     if (!column.sortable) return null;
-    const { key, direction } = this.sort();
+    const { key, direction } = this.currentSort();
     if (key !== column.key || !direction) return 'none';
     return direction === 'asc' ? 'ascending' : 'descending';
   }

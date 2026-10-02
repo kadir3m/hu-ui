@@ -1,14 +1,15 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 import { HuButton, HuIcon } from '@ucme-ui/angular';
-import { DocCode } from './doc-code.component';
+import { DocCodeViewer } from './doc-code-viewer.component';
 
 /**
- * Canlı örnek + açılır kod.
+ * Canlı örnek + açılır kod (HTML / TS sekmeleri, tam kod, StackBlitz).
+ * `code` içindeki TS ve HTML blokları kendiliğinden ayrılır; istenirse `html` / `ts` ayrı verilir.
  * @example <app-doc-example title="Boyutlar" [code]="sizesCode"> …canlı örnek… </app-doc-example>
  */
 @Component({
   selector: 'app-doc-example',
-  imports: [HuButton, HuIcon, DocCode],
+  imports: [HuButton, HuIcon, DocCodeViewer],
   template: `
     <section class="example" [attr.aria-label]="title()">
       <header class="example__head">
@@ -18,7 +19,7 @@ import { DocCode } from './doc-code.component';
             <p class="example__desc">{{ description() }}</p>
           }
         </div>
-        @if (code()) {
+        @if (hasCode()) {
           <button
             hu-button
             variant="ghost"
@@ -26,14 +27,14 @@ import { DocCode } from './doc-code.component';
             [attr.aria-expanded]="showCode()"
             (click)="showCode.set(!showCode())"
           >
-            <hu-icon name="chevrons-up-down" [size]="14" />
+            <hu-icon name="code" [size]="14" />
             {{ showCode() ? 'Kodu gizle' : 'Kodu göster' }}
           </button>
         }
       </header>
       <div class="example__preview"><ng-content /></div>
-      @if (showCode() && code()) {
-        <app-doc-code class="example__code" [code]="code()!" />
+      @if (showCode() && hasCode()) {
+        <app-doc-code-viewer class="example__code" [code]="code() ?? ''" [html]="html()" [ts]="ts()" [title]="title()" />
       }
     </section>
   `,
@@ -62,5 +63,11 @@ export class DocExample {
   readonly title = input.required<string>();
   readonly description = input<string>();
   readonly code = input<string>();
+  readonly html = input<string>();
+  readonly ts = input<string>();
   protected readonly showCode = signal(false);
+
+  protected hasCode(): boolean {
+    return !!(this.code() || this.html() || this.ts());
+  }
 }

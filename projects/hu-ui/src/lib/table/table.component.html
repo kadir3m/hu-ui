@@ -11,7 +11,7 @@
             [class.hu-table__cell--hide-mobile]="col.hideOnMobile"
           >
             @if (col.sortable) {
-              <button type="button" class="hu-table__sort" [class.hu-table__sort--active]="sort().key === col.key && sort().direction" (click)="toggleSort(col)">
+              <button type="button" class="hu-table__sort" [class.hu-table__sort--active]="currentSort().key === col.key && currentSort().direction" (click)="toggleSort(col)">
                 {{ col.header }}
                 <hu-icon [name]="sortIcon(col)" [size]="14" />
               </button>

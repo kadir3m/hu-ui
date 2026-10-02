@@ -142,8 +142,12 @@ departments: HuSelectOption[] = [
 <hu-multi-select [options]="departments" [(value)]="selected" [maxSelectedLabels]="3" />`;
 
   protected readonly formCode = `
+courses: Course[] = [
+  { code: 'BİL 401', name: 'Yapay Zekâ' },
+  { code: 'BİL 409', name: 'Makine Öğrenmesi' },
+];
 // Nesne değerler için compareWith verin
-courseOptions = courses.map((c) => ({ label: c.name, value: c, description: c.code }));
+courseOptions: HuSelectOption<Course>[] = this.courses.map((c) => ({ label: c.name, value: c, description: c.code }));
 sameCourse = (a: Course, b: Course) => a.code === b.code;
 
 form = this.fb.group({ courses: [[] as Course[], Validators.required] });

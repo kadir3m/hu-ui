@@ -82,6 +82,8 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
 
   readonly options = input<readonly HuSelectOption<T>[]>([]);
   readonly value = model<T[]>([]);
+  /** null/undefined verilirse boş dizi (henüz yüklenmemiş veri, form reset vb.). */
+  protected readonly values = computed(() => this.value() ?? []);
   readonly placeholder = input('Seçin');
   /** Panelde arama kutusu. */
   readonly filter = input(true, { transform: booleanAttribute });
@@ -117,7 +119,7 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
 
   protected readonly selectedOptions = computed(() => {
     const cmp = this.compareWith();
-    return this.value()
+    return this.values()
       .map((v) => this.options().find((o) => cmp(o.value, v)))
       .filter((o): o is HuSelectOption<T> => !!o);
   });
@@ -143,7 +145,7 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
   protected readonly someSelected = computed(() => !this.allSelected() && this.selectable().some((o) => this.isSelected(o)));
   protected readonly limitReached = computed(() => {
     const limit = this.selectionLimit();
-    return limit != null && this.value().length >= limit;
+    return limit != null && this.values().length >= limit;
   });
   /** Tetikleyicide gösterilecek metin (`display="text"` veya çok seçimde). */
   protected readonly summary = computed(() => {
@@ -226,17 +228,17 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
   // --- Seçim -------------------------------------------------------------------------
   protected isSelected(option: HuSelectOption<T>): boolean {
     const cmp = this.compareWith();
-    return this.value().some((v) => cmp(v, option.value));
+    return this.values().some((v) => cmp(v, option.value));
   }
 
   protected toggleOption(option: HuSelectOption<T>): void {
     if (option.disabled || this.isDisabled()) return;
     const cmp = this.compareWith();
     if (this.isSelected(option)) {
-      this.commit(this.value().filter((v) => !cmp(v, option.value)));
+      this.commit(this.values().filter((v) => !cmp(v, option.value)));
     } else if (!this.limitReached()) {
       // Seçenek sırasını koru (seçim sırasına göre değil)
-      const next = [...this.value(), option.value];
+      const next = [...this.values(), option.value];
       this.commit(this.sortByOptions(next));
     }
   }
@@ -245,12 +247,12 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
     const cmp = this.compareWith();
     const visible = this.selectable();
     if (this.allSelected()) {
-      this.commit(this.value().filter((v) => !visible.some((o) => cmp(o.value, v))));
+      this.commit(this.values().filter((v) => !visible.some((o) => cmp(o.value, v))));
     } else {
       const add = visible.filter((o) => !this.isSelected(o)).map((o) => o.value);
       const limit = this.selectionLimit();
-      const room = limit == null ? add.length : Math.max(0, limit - this.value().length);
-      this.commit(this.sortByOptions([...this.value(), ...add.slice(0, room)]));
+      const room = limit == null ? add.length : Math.max(0, limit - this.values().length);
+      this.commit(this.sortByOptions([...this.values(), ...add.slice(0, room)]));
     }
   }
 
@@ -258,7 +260,7 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
     event.stopPropagation();
     if (this.isDisabled()) return;
     const cmp = this.compareWith();
-    this.commit(this.value().filter((v) => !cmp(v, option.value)));
+    this.commit(this.values().filter((v) => !cmp(v, option.value)));
   }
 
   protected clearAll(event: Event): void {
@@ -273,9 +275,9 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
     if (['Enter', ' ', 'ArrowDown', 'ArrowUp'].includes(event.key)) {
       event.preventDefault();
       this.show();
-    } else if (event.key === 'Backspace' && !this.open() && this.value().length) {
+    } else if (event.key === 'Backspace' && !this.open() && this.values().length) {
       // Son seçimi kaldır
-      this.commit(this.value().slice(0, -1));
+      this.commit(this.values().slice(0, -1));
     }
   }
 

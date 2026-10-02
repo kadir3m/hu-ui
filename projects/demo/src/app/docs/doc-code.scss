@@ -1,0 +1,186 @@
+// Kod blokları her iki temada da koyu. Renklendirme [innerHTML] ile geldiği için
+// stiller kapsüllenmez; çakışmasın diye element adlarıyla kapsanır.
+app-doc-code,
+app-doc-code-viewer {
+  --code-bg: #1e293b;
+  --code-bar: #0f172a;
+  --code-border: rgb(255 255 255 / 0.08);
+  --code-fg: #e2e8f0;
+  --code-muted: #94a3b8;
+
+  display: block;
+  min-width: 0;
+
+  .tk-comment {
+    color: #64748b;
+    font-style: italic;
+  }
+  .tk-string {
+    color: #86efac;
+  }
+  .tk-keyword {
+    color: #f472b6;
+  }
+  .tk-decorator {
+    color: #fbbf24;
+  }
+  .tk-number {
+    color: #fdba74;
+  }
+  .tk-type {
+    color: #67e8f9;
+  }
+  .tk-fn {
+    color: #93c5fd;
+  }
+  .tk-tag {
+    color: #60a5fa;
+  }
+  .tk-attr {
+    color: #c4b5fd;
+  }
+  .tk-interp {
+    color: #fde68a;
+  }
+}
+
+// --- Düz kod bloğu (kurulum sayfaları, import satırı) --------------------------------
+app-doc-code .code {
+  position: relative;
+  background: var(--code-bg);
+  border-radius: var(--hu-radius-lg);
+
+  pre {
+    margin: 0;
+    padding: var(--hu-space-4) var(--hu-space-5);
+    padding-right: 3rem;
+    overflow-x: auto;
+    font-family: var(--hu-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--code-fg);
+  }
+}
+
+app-doc-code .code__copy,
+app-doc-code-viewer .viewer__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--code-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+  transition:
+    color var(--hu-transition),
+    background-color var(--hu-transition);
+
+  &:hover {
+    color: #fff;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 1px;
+  }
+
+  &[aria-pressed='true'] {
+    color: #fff;
+    background: rgb(255 255 255 / 0.12);
+  }
+}
+
+app-doc-code .code__copy {
+  position: absolute;
+  top: var(--hu-space-2);
+  right: var(--hu-space-2);
+}
+
+// --- Örnek kodu görüntüleyici ----------------------------------------------------------
+app-doc-code-viewer {
+  .viewer {
+    position: relative;
+    overflow: hidden;
+    background: var(--code-bg);
+    border-radius: var(--hu-radius-lg);
+  }
+
+  // Sağ üstteki araç kutusu (PrimeNG'deki gibi kodun üstünde yüzer)
+  .viewer__bar {
+    position: absolute;
+    top: var(--hu-space-3);
+    right: var(--hu-space-3);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--code-bar);
+    border: 1px solid var(--code-border);
+    border-radius: var(--hu-radius-md);
+  }
+
+  .viewer__tabs {
+    display: flex;
+    gap: 2px;
+    padding-right: 3px;
+    margin-right: 1px;
+    border-right: 1px solid var(--code-border);
+  }
+
+  .viewer__tab {
+    height: 2rem;
+    padding: 0 var(--hu-space-3);
+    font: inherit;
+    font-size: var(--hu-text-sm);
+    font-weight: 500;
+    color: var(--code-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--hu-radius-sm);
+    cursor: pointer;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #60a5fa;
+      outline-offset: 1px;
+    }
+
+    &[aria-selected='true'] {
+      color: #fff;
+      background: rgb(255 255 255 / 0.12);
+    }
+  }
+
+  // Tam kodda dosya adı: araç kutusuyla aynı satırda, solda
+  .viewer__file {
+    position: absolute;
+    top: var(--hu-space-3);
+    left: var(--hu-space-5);
+    line-height: 2.5rem;
+    font-family: var(--hu-font-mono);
+    font-size: var(--hu-text-xs);
+    color: var(--code-muted);
+  }
+
+  .viewer__code {
+    max-height: 32rem;
+    margin: 0;
+    padding: var(--hu-space-5);
+    padding-top: calc(var(--hu-space-3) + 2.75rem); // araç kutusunun altında başlasın
+    overflow: auto;
+    font-family: var(--hu-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    tab-size: 2;
+    color: var(--code-fg);
+  }
+}

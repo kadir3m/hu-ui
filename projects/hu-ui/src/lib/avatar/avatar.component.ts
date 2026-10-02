@@ -51,7 +51,8 @@ export class HuAvatar {
 
   protected readonly failed = signal(false);
   protected readonly initials = computed(() => {
-    const parts = this.name().trim().split(/\s+/).filter(Boolean);
+    // Veri henüz yüklenmediyse (null/undefined) "?" göster
+    const parts = (this.name() ?? '').trim().split(/\s+/).filter(Boolean);
     if (!parts.length) return '?';
     const first = parts[0][0];
     const last = parts.length > 1 ? parts[parts.length - 1][0] : '';

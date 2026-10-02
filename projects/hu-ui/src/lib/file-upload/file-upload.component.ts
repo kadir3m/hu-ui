@@ -87,6 +87,8 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
 
   /** Seçilen dosyalar. */
   readonly files = model<File[]>([]);
+  /** null/undefined verilirse boş liste. */
+  protected readonly fileList = computed(() => this.files() ?? []);
   /** Kabul edilen türler, `<input accept>` biçiminde: `'image/*,.pdf'`. */
   readonly accept = input('');
   readonly multiple = input(false, { transform: booleanAttribute });
@@ -124,7 +126,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
 
   protected readonly items = computed<Entry[]>(() => {
     const meta = this.meta();
-    return this.files().map((file) => ({ file, ...(meta.get(file) ?? EMPTY_META) }));
+    return this.fileList().map((file) => ({ file, ...(meta.get(file) ?? EMPTY_META) }));
   });
 
   protected readonly hintText = computed(() => {
@@ -162,7 +164,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
   constructor() {
     // files dışarıdan da ([(files)], form) değişebilir: önizlemeleri eşitle
     effect(() => {
-      const files = this.files();
+      const files = this.fileList();
       untracked(() => this.syncMeta(files));
     });
     inject(DestroyRef).onDestroy(() => this.meta().forEach((m) => m.preview && URL.revokeObjectURL(m.preview)));
@@ -221,7 +223,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
 
   protected remove(entry: Entry): void {
     if (this.isDisabled()) return;
-    this.setFiles(this.files().filter((f) => f !== entry.file));
+    this.setFiles(this.fileList().filter((f) => f !== entry.file));
     this.removed.emit(entry.file);
   }
 
@@ -276,12 +278,12 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
     let next: File[];
     if (!this.multiple()) {
       // Tekli modda yeni dosya eskisinin yerine geçer
-      next = accepted.length ? accepted.slice(-1) : this.files();
+      next = accepted.length ? accepted.slice(-1) : this.fileList();
     } else {
       // Aynı dosya iki kez eklenmesin (ad + boyut + tarih)
       const key = (f: File) => `${f.name}|${f.size}|${f.lastModified}`;
-      const existing = new Set(this.files().map(key));
-      next = [...this.files(), ...accepted.filter((f) => !existing.has(key(f)))];
+      const existing = new Set(this.fileList().map(key));
+      next = [...this.fileList(), ...accepted.filter((f) => !existing.has(key(f)))];
       const limit = this.maxFiles();
       if (limit && next.length > limit) {
         next.slice(limit).forEach((file) =>
@@ -294,7 +296,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
     this.messages.set(rejections.map((r) => r.message));
     if (rejections.length) this.rejected.emit(rejections);
 
-    const before = new Set(this.files());
+    const before = new Set(this.fileList());
     this.setFiles(next);
     if (this.uploader()) next.filter((f) => !before.has(f)).forEach((file) => void this.upload(file));
   }

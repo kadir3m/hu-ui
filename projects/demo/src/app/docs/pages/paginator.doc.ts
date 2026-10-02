@@ -30,10 +30,15 @@ export class PaginatorDoc {
   protected readonly page2 = signal(2);
 
   protected readonly basicCode = `
-<hu-paginator [length]="total()" [(pageIndex)]="page" [(pageSize)]="size" />
+rows = signal(Array.from({ length: 248 }, (_, i) => \`Kayıt \${i + 1}\`));
+total = computed(() => this.rows().length);
+page = signal(0);
+size = signal(10);
 
 // İstemci tarafı sayfalama:
-pageRows = computed(() => rows().slice(page() * size(), (page() + 1) * size()));`;
+pageRows = computed(() => this.rows().slice(this.page() * this.size(), (this.page() + 1) * this.size()));
+
+<hu-paginator [length]="total()" [(pageIndex)]="page" [(pageSize)]="size" />`;
 
   protected readonly fixedCode = `<hu-paginator [length]="57" [(pageIndex)]="page" [pageSizeOptions]="[10]" />`;
 }

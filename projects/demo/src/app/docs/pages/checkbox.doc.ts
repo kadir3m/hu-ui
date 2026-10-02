@@ -93,8 +93,27 @@ terms = new FormControl(false, { nonNullable: true, validators: Validators.requi
 <hu-checkbox [formControl]="terms">Kullanım koşullarını kabul ediyorum</hu-checkbox>`;
 
   protected readonly triCode = `
-all  = computed(() => this.selected().size === this.permissions.length);
+permissions = [
+  { key: 'read', label: 'Kayıt görüntüleme' },
+  { key: 'update', label: 'Kayıt düzenleme' },
+  { key: 'delete', label: 'Kayıt silme' },
+];
+selected = signal<ReadonlySet<string>>(new Set(['read']));
+all = computed(() => this.selected().size === this.permissions.length);
 some = computed(() => this.selected().size > 0 && !this.all());
+
+setAll(checked: boolean) {
+  this.selected.set(new Set(checked ? this.permissions.map((p) => p.key) : []));
+}
+
+toggle(key: string, checked: boolean) {
+  this.selected.update((set) => {
+    const next = new Set(set);
+    if (checked) next.add(key);
+    else next.delete(key);
+    return next;
+  });
+}
 
 <hu-checkbox [checked]="all()" [indeterminate]="some()" (checkedChange)="setAll($event)">
   Tüm yetkiler

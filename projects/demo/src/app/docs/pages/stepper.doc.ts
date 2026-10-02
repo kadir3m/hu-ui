@@ -166,11 +166,19 @@ export class StepperDoc {
   protected readonly linearCode = `
 import { HU_STEPPER_IMPORTS } from '@ucme-ui/angular';
 
+step = signal(0);
+personal = this.fb.group({ name: ['', Validators.required] });
 personalValid = toSignal(this.personal.statusChanges.pipe(map((s) => s === 'VALID')), { initialValue: false });
+
+submit() {
+  // başvuruyu kaydet
+}
 
 <hu-stepper #stepper linear [(activeIndex)]="step" (blocked)="personal.markAllAsTouched()">
   <hu-step label="Kişisel bilgiler" description="Ad ve e-posta" [completed]="personalValid()">
-    <form [formGroup]="personal">…</form>
+    <form [formGroup]="personal">
+      <hu-form-field label="Ad Soyad" required><input huInput formControlName="name" /></hu-form-field>
+    </form>
     <button hu-button huStepperNext>İleri</button>
   </hu-step>
 

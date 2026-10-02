@@ -155,9 +155,9 @@
       }
     </ul>
 
-    @if (selectionLimit() != null || value().length) {
+    @if (selectionLimit() != null || values().length) {
       <div class="hu-multi-select__footer" aria-live="polite">
-        {{ value().length }}{{ selectionLimit() != null ? ' / ' + selectionLimit() : '' }} seçildi
+        {{ values().length }}{{ selectionLimit() != null ? ' / ' + selectionLimit() : '' }} seçildi
         @if (limitReached()) {
           · sınıra ulaşıldı
         }
