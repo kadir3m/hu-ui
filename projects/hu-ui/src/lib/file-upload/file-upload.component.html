@@ -1,0 +1,119 @@
+<input
+  #input
+  type="file"
+  class="hu-sr-only"
+  tabindex="-1"
+  aria-hidden="true"
+  [accept]="accept()"
+  [multiple]="multiple()"
+  [disabled]="isDisabled()"
+  (change)="onInputChange($event)"
+/>
+
+<button
+  type="button"
+  class="hu-file-upload__zone"
+  [id]="id()"
+  [class.hu-file-upload__zone--dragging]="dragging()"
+  [disabled]="isDisabled()"
+  [attr.aria-describedby]="field?.describedBy() ?? null"
+  [attr.aria-invalid]="isInvalid() || null"
+  (click)="browse()"
+  (dragenter)="onDragEnter($event)"
+  (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave()"
+  (drop)="onDrop($event)"
+>
+  <span class="hu-file-upload__zone-icon" aria-hidden="true"><hu-icon name="upload-cloud" [size]="22" /></span>
+  <span class="hu-file-upload__zone-text">
+    @if (dragging()) {
+      Bırakın, eklensin
+    } @else {
+      {{ label() }} <span class="hu-file-upload__browse">{{ multiple() ? 'dosya seçin' : 'bir dosya seçin' }}</span>
+    }
+  </span>
+  @if (hintText()) {
+    <span class="hu-file-upload__hint">{{ hintText() }}</span>
+  }
+</button>
+
+@if (messages().length) {
+  <ul class="hu-file-upload__errors" role="alert">
+    @for (m of messages(); track $index) {
+      <li><hu-icon name="alert-circle" [size]="14" /> {{ m }}</li>
+    }
+  </ul>
+}
+
+@if (items().length) {
+  <ul class="hu-file-upload__list" aria-label="Seçilen dosyalar">
+    @for (item of items(); track item.file) {
+      <li class="hu-file-upload__item" [attr.data-status]="item.status">
+        @if (item.preview) {
+          <img class="hu-file-upload__thumb" [src]="item.preview" alt="" />
+        } @else {
+          <span class="hu-file-upload__thumb hu-file-upload__thumb--icon" aria-hidden="true">
+            <hu-icon [name]="iconFor(item.file)" [size]="18" />
+          </span>
+        }
+        <div class="hu-file-upload__info">
+          <span class="hu-file-upload__name" [title]="item.file.name">{{ item.file.name }}</span>
+          <span class="hu-file-upload__meta">
+            {{ formatSize(item.file.size) }}
+            @switch (item.status) {
+              @case ('uploading') {
+                · %{{ item.progress }}
+              }
+              @case ('done') {
+                · <span class="hu-file-upload__ok"><hu-icon name="check" [size]="12" /> Yüklendi</span>
+              }
+              @case ('error') {
+                · <span class="hu-file-upload__fail">Yüklenemedi</span>
+              }
+            }
+          </span>
+          @if (item.status === 'uploading') {
+            <span
+              class="hu-file-upload__progress"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuenow]="item.progress"
+              [attr.aria-label]="item.file.name + ' yükleniyor'"
+            >
+              <span [style.width.%]="item.progress"></span>
+            </span>
+          }
+        </div>
+        @if (item.status === 'error') {
+          <button
+            hu-button
+            size="sm"
+            variant="ghost"
+            iconOnly
+            type="button"
+            [attr.aria-label]="item.file.name + ' tekrar yükle'"
+            title="Tekrar dene"
+            [disabled]="isDisabled()"
+            (click)="retry(item)"
+          >
+            <hu-icon name="rotate-cw" [size]="14" />
+          </button>
+        }
+        <button
+          hu-button
+          size="sm"
+          variant="ghost"
+          iconOnly
+          type="button"
+          [attr.aria-label]="item.file.name + ' kaldır'"
+          title="Kaldır"
+          [disabled]="isDisabled()"
+          (click)="remove(item)"
+        >
+          <hu-icon name="x" [size]="14" />
+        </button>
+      </li>
+    }
+  </ul>
+}

@@ -23,6 +23,7 @@ export * from './lib/calendar/date-picker.component';
 export * from './lib/editor/sanitize-html';
 export * from './lib/editor/editor.tools';
 export * from './lib/editor/editor.component';
+export * from './lib/file-upload/file-upload.component';
 
 // Geri bildirim
 export * from './lib/spinner/spinner.component';
@@ -32,6 +33,8 @@ export * from './lib/avatar/avatar.component';
 export * from './lib/toast/toast.service';
 export * from './lib/toast/toaster.component';
 export * from './lib/dialog/dialog.component';
+export * from './lib/confirm-popup/confirm-popup.component';
+export * from './lib/confirm-popup/confirm-popup.service';
 
 // Veri gösterimi
 export * from './lib/card/card.component';
@@ -39,6 +42,7 @@ export * from './lib/table/table.types';
 export * from './lib/table/table.component';
 export * from './lib/paginator/paginator.component';
 export * from './lib/tabs/tabs.component';
+export * from './lib/stepper/stepper.component';
 export * from './lib/breadcrumb/breadcrumb.component';
 export * from './lib/dropdown/dropdown.types';
 export * from './lib/dropdown/dropdown.component';

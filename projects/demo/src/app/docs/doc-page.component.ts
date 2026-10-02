@@ -81,8 +81,10 @@ export class DocPage {
 
   protected readonly doc = computed(() => findDoc(this.slug()));
 
-  protected readonly importLine = computed(
-    () => `import { ${this.doc()?.imports} } from '@ucme-ui/angular';`,
+  protected readonly importLine = computed(() =>
+    this.doc()?.imports
+      ? `import { ${this.doc()?.imports} } from '@ucme-ui/angular';`
+      : `// TypeScript import'u gerekmez: sınıflar global stillerle gelir.\n// src/styles.scss\n@use '@ucme-ui/angular/styles';`,
   );
 
   protected readonly tables = computed(() => {
@@ -94,6 +96,9 @@ export class DocPage {
     if (api.outputs?.length) tables.push({ title: 'Output', headers: ['Ad', 'Değer', 'Ne zaman'], rows: api.outputs });
     if (api.methods?.length) tables.push({ title: 'Servis', headers: ['Üye', 'Tip', 'Varsayılan', 'Açıklama'], rows: api.methods });
     if (api.slots?.length) tables.push({ title: 'Slot', headers: ['Öznitelik', 'Nereye yerleşir'], rows: api.slots });
+    if (api.classes?.length) tables.push({ title: 'CSS sınıfları', headers: ['Sınıf', 'Açıklama'], rows: api.classes });
+    if (api.cssVars?.length)
+      tables.push({ title: 'CSS değişkenleri', headers: ['Değişken', 'Varsayılan', 'Açıklama'], rows: api.cssVars });
     return tables;
   });
 }

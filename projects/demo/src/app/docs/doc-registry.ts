@@ -15,9 +15,13 @@ export interface DocApi {
   slots?: ApiRow[];
   /** Servis metotları vb. */
   methods?: ApiRow[];
+  /** [sınıf, —, —, açıklama] */
+  classes?: ApiRow[];
+  /** [değişken, varsayılan, —, açıklama] */
+  cssVars?: ApiRow[];
 }
 
-export const DOC_CATEGORIES = ['Form', 'Tarih', 'Veri', 'Navigasyon', 'Geri bildirim', 'Çekirdek'] as const;
+export const DOC_CATEGORIES = ['Yerleşim', 'Form', 'Tarih', 'Veri', 'Navigasyon', 'Geri bildirim', 'Çekirdek'] as const;
 export type DocCategory = (typeof DOC_CATEGORIES)[number];
 
 export interface DocEntry {
@@ -27,7 +31,7 @@ export interface DocEntry {
   description: string;
   /** Kullanımdaki etiket/öznitelik (örn. `button[hu-button]`). */
   selector: string;
-  /** `import { … } from '@ucme-ui/angular'` satırı. */
+  /** `import { … } from '@ucme-ui/angular'` satırı. Boşsa (yalnızca CSS) import gerekmez. */
   imports: string;
   icon: string;
   isNew?: boolean;
@@ -40,6 +44,36 @@ const BUTTON_COLOR = `'primary' | 'neutral' | 'success' | 'warning' | 'danger' |
 const BUTTON_SIZE = `'xs' | 'sm' | 'md' | 'lg' | 'xl'`;
 
 export const DOCS: DocEntry[] = [
+  // --- Yerleşim ------------------------------------------------------------------
+  {
+    slug: 'grid',
+    name: 'Grid',
+    category: 'Yerleşim',
+    icon: 'grid',
+    description:
+      '12 kolonlu responsive grid. CSS sınıflarıyla kullanılır; kırılımlar ekranın değil grid’in kendi genişliğine göre çalışır, bu yüzden kart ve dialog içinde de doğru davranır.',
+    selector: '.hu-grid',
+    imports: '',
+    api: {
+      classes: [
+        ['hu-grid', '', '', '12 kolonlu grid kapsayıcısı. Kolon sınıfı verilmeyen öğe tam satır kaplar'],
+        ['hu-col-{1-12}', '', '', 'Öğenin kapladığı kolon sayısı (tüm genişliklerde)'],
+        ['hu-col-{sm|md|lg|xl}-{1-12}', '', '', 'Grid bu genişlikten büyükse kolon sayısı: sm 480px, md 720px, lg 960px, xl 1200px'],
+        ['hu-col-start-{1-12}', '', '', 'Öğenin başladığı kolon (boşluk bırakmak için); kırılımlı hali: hu-col-md-start-4'],
+        ['hu-col-{bp}-hidden', '', '', 'O genişlikten itibaren gizler (yalnızca dar alanda görünür)'],
+        ['hu-col-{bp}-visible', '', '', 'Yalnızca o genişlikten itibaren görünür (dar alanda gizli)'],
+        ['hu-col-hidden', '', '', 'Her zaman gizli'],
+        ['hu-grid--auto', '', '', 'Kolon sayısı otomatik: her öğe en az --hu-grid-min genişliğinde (kart listeleri)'],
+        ['hu-grid--gap-{none|sm|lg|xl}', '', '', 'Aralık: 0, 0.5rem, 1.5rem, 2rem (varsayılan 1rem)'],
+      ],
+      cssVars: [
+        ['--hu-grid-gap', 'var(--hu-space-4)', '', 'Öğeler arası boşluk'],
+        ['--hu-grid-min', '16rem', '', 'hu-grid--auto: öğenin en küçük genişliği'],
+      ],
+    },
+    load: () => import('./pages/grid.doc').then((m) => m.GridDoc),
+  },
+
   // --- Form ----------------------------------------------------------------------
   {
     slug: 'button',
@@ -212,6 +246,43 @@ export const DOCS: DocEntry[] = [
     },
     load: () => import('./pages/switch.doc').then((m) => m.SwitchDoc),
   },
+  {
+    slug: 'file-upload',
+    name: 'FileUpload',
+    category: 'Form',
+    icon: 'upload',
+    isNew: true,
+    description:
+      'Sürükle-bırak destekli dosya seçme alanı. Tür, boyut ve adet kontrolü yapar; görselleri önizler. İsterseniz dosyaları ilerleme çubuğuyla hemen sunucuya yükler.',
+    selector: 'hu-file-upload',
+    imports: 'HuFileUpload',
+    api: {
+      inputs: [
+        ['accept', 'string', `''`, `Kabul edilen türler: 'image/*,.pdf'`],
+        ['multiple', 'boolean', 'false', 'Birden çok dosya; kapalıyken yeni dosya eskisinin yerine geçer'],
+        ['maxFileSize', 'number (bayt)', 'null', 'Dosya başına en büyük boyut'],
+        ['maxFiles', 'number', 'null', 'En fazla dosya sayısı'],
+        ['uploader', '(file, progress) => Promise', 'null', 'Verilirse dosyalar eklenince yüklenir; satırda ilerleme ve tekrar dene gösterilir'],
+        ['label', 'string', `'Dosyaları buraya sürükleyin veya'`, 'Alandaki metin'],
+        ['hint', 'string', 'otomatik', 'Alt bilgi; verilmezse accept ve boyuttan üretilir'],
+        ['preview', 'boolean', 'true', 'Görseller için küçük önizleme'],
+        ['disabled', 'boolean', 'false', 'Devre dışı'],
+      ],
+      models: [['files', 'File[]', '[]', 'Seçilen dosyalar (formControlName ile de çalışır)']],
+      outputs: [
+        ['rejected', 'HuFileRejection[]', '—', `Kurala uymayan dosyalar (reason: 'type' | 'size' | 'count')`],
+        ['uploaded', '{ file, result }', '—', 'uploader başarıyla bitince'],
+        ['uploadError', '{ file, error }', '—', 'uploader hata verince'],
+        ['removed', 'File', '—', 'Kullanıcı listeden kaldırınca'],
+      ],
+      methods: [
+        ['browse()', 'void', '—', 'Dosya seçme penceresini açar'],
+        ['clear()', 'void', '—', 'Tüm dosyaları kaldırır'],
+        ['formatFileSize(bytes)', 'string', '—', `1536 → '1,5 KB'`],
+      ],
+    },
+    load: () => import('./pages/file-upload.doc').then((m) => m.FileUploadDoc),
+  },
 
   // --- Tarih ---------------------------------------------------------------------
   {
@@ -379,6 +450,37 @@ export const DOCS: DocEntry[] = [
     load: () => import('./pages/dropdown.doc').then((m) => m.DropdownDoc),
   },
   {
+    slug: 'stepper',
+    name: 'Stepper',
+    category: 'Navigasyon',
+    icon: 'list-ordered',
+    isNew: true,
+    description:
+      'Çok adımlı formlar ve sihirbazlar. Yatay veya dikey; linear modda bir adım tamamlanmadan sonrakine geçilemez.',
+    selector: 'hu-stepper, hu-step',
+    imports: 'HU_STEPPER_IMPORTS',
+    api: {
+      inputs: [
+        ['orientation', `'horizontal' | 'vertical'`, `'horizontal'`, 'Yerleşim; dar alanda yatayda yalnızca aktif adımın adı görünür'],
+        ['linear', 'boolean', 'false', 'Adımlar sırayla tamamlanmalı'],
+        ['hu-step: label', 'string', '—', 'Adım adı (zorunlu)'],
+        ['hu-step: description', 'string', '—', 'Adın altındaki küçük açıklama'],
+        ['hu-step: completed', 'boolean', 'ziyarete göre', 'Tamamlandı mı? linear modda false ise ileri geçilmez'],
+        ['hu-step: error', 'boolean', 'false', 'Adımı hatalı (kırmızı) gösterir'],
+        ['hu-step: optional', 'boolean', 'false', 'İsteğe bağlı; linear modda atlanabilir'],
+        ['hu-step: icon / disabled', 'string / boolean', '—', 'Numara yerine ikon / tıklanamaz adım'],
+      ],
+      models: [['activeIndex', 'number', '0', 'Aktif adım']],
+      outputs: [['blocked', 'number', '—', 'Linear modda tamamlanmamış adımdan ileri gidilmek istenince (adımın index’i)']],
+      methods: [
+        ['next() / previous()', 'void', '—', 'Template referansıyla: #stepper → stepper.next()'],
+        ['select(index) / reset()', 'void', '—', 'Adıma git / başa dön'],
+        ['huStepperNext / huStepperPrevious', 'button direktifi', '—', 'Tıklanınca ileri / geri'],
+      ],
+    },
+    load: () => import('./pages/stepper.doc').then((m) => m.StepperDoc),
+  },
+  {
     slug: 'shell',
     name: 'Shell (Layout)',
     category: 'Navigasyon',
@@ -478,6 +580,37 @@ export const DOCS: DocEntry[] = [
       slots: [['huDialogFooter', '—', '—', 'Alttaki aksiyon butonları']],
     },
     load: () => import('./pages/dialog.doc').then((m) => m.DialogDoc),
+  },
+  {
+    slug: 'confirm-popup',
+    name: 'ConfirmPopup',
+    category: 'Geri bildirim',
+    icon: 'help-circle',
+    isNew: true,
+    description:
+      'Butonun yanında açılan küçük onay kutusu. Silme gibi geri alınamaz işlemlerden önce sorar; sayfaya ek bir şey yerleştirmek gerekmez.',
+    selector: '[huConfirm]',
+    imports: 'HuConfirm, HuConfirmPopupService',
+    api: {
+      inputs: [
+        ['huConfirm', 'string', '—', 'Sorulacak mesaj (zorunlu)'],
+        ['header', 'string', '—', 'Mesajın üstünde kalın başlık'],
+        ['icon', 'string | null', `'alert-triangle'`, 'İkon; null verilirse gösterilmez'],
+        ['acceptLabel / rejectLabel', 'string', `'Evet' / 'Hayır'`, 'Buton metinleri'],
+        ['acceptColor', BUTTON_COLOR, `'primary'`, `Onay butonu rengi; silmede 'danger'`],
+        ['defaultFocus', `'accept' | 'reject'`, `'accept'`, 'Açılınca odaklanacak buton'],
+        ['confirmDisabled', 'boolean', 'false', 'true ise sormadan doğrudan (confirmed) yayınlar'],
+      ],
+      outputs: [
+        ['confirmed', 'void', '—', 'Kullanıcı onaylayınca (işlemi buraya bağlayın, (click)’e değil)'],
+        ['rejected', 'void', '—', 'Hayır, Esc veya dışarı tıklama'],
+      ],
+      methods: [
+        ['confirm(options)', 'Promise<boolean>', '—', 'HuConfirmPopupService: { target: event.currentTarget, message, … }'],
+        ['close()', 'void', '—', 'Açık onay kutusunu kapatır'],
+      ],
+    },
+    load: () => import('./pages/confirm-popup.doc').then((m) => m.ConfirmPopupDoc),
   },
   {
     slug: 'spinner',

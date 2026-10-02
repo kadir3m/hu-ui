@@ -14,11 +14,11 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 
 ## İçindekiler
 
-- **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor)
+- **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle) · [Grid](#grid)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-file-upload](#hu-file-upload)
 - **Tarih:** [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
-- **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
-- **Geri bildirim:** [hu-dialog](#hu-dialog) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
+- **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
+- **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
 - **Çekirdek:** [hu-icon](#hu-icon) · [HuThemeService](#huthemeservice) · [Form hata mesajları](#form-hata-mesajları) · [Gruplu import'lar](#gruplu-importlar) · [Tasarım token'ları](#tasarım-tokenları)
 
 ---
@@ -114,6 +114,51 @@ Açık ve koyu tema arasında geçiş yapan ikon butonu. Input'u yoktur; [HuThem
 
 ```html
 <hu-theme-toggle />
+```
+
+### Grid
+
+12 kolonlu responsive grid. Yalnızca CSS sınıflarıdır, TypeScript import'u gerekmez
+(`@use '@ucme-ui/angular/styles'` ile gelir). Kırılımlar **ekranın değil grid'in kendi genişliğine** göre
+çalışır (container query), bu yüzden kart, dialog veya dar bir yan panel içinde de doğru davranır.
+Grid bulunduğu alanın tüm genişliğini kaplar. Kırılım değerleri ekran değil içerik alanı ölçüsüdür: örneğin
+1440 px ekranda sidebar ve kenar boşlukları çıkınca içerik alanı ~1000–1150 px olur ve `lg` (960 px) devreye girer.
+
+| Sınıf | Açıklama |
+| --- | --- |
+| `hu-grid` | Grid kapsayıcısı. Kolon sınıfı verilmeyen öğe tam satır kaplar |
+| `hu-col-{1-12}` | Öğenin kapladığı kolon sayısı |
+| `hu-col-{sm\|md\|lg\|xl}-{1-12}` | Grid bu genişlikten büyükse kolon sayısı (sm 480px, md 720px, lg 960px, xl 1200px) |
+| `hu-col-start-{1-12}`, `hu-col-{bp}-start-{1-12}` | Öğenin başladığı kolon |
+| `hu-col-{bp}-hidden` | O genişlikten itibaren gizli |
+| `hu-col-{bp}-visible` | Yalnızca o genişlikten itibaren görünür |
+| `hu-col-hidden` | Her zaman gizli |
+| `hu-grid--auto` | Kolon sayısı otomatik; her öğe en az `--hu-grid-min` genişliğinde |
+| `hu-grid--gap-{none\|sm\|lg\|xl}` | Aralık: 0 / 0.5rem / 1.5rem / 2rem (varsayılan 1rem) |
+
+| CSS değişkeni | Varsayılan | Açıklama |
+| --- | --- | --- |
+| `--hu-grid-gap` | `var(--hu-space-4)` | Öğeler arası boşluk |
+| `--hu-grid-min` | `16rem` | `hu-grid--auto` için en küçük öğe genişliği |
+
+```html
+<!-- Dar alanda alt alta, 720px üstünde 2, 960px üstünde 4 kolon -->
+<div class="hu-grid">
+  <hu-card class="hu-col-12 hu-col-md-6 hu-col-lg-3">…</hu-card>
+  <hu-card class="hu-col-12 hu-col-md-6 hu-col-lg-3">…</hu-card>
+  <hu-card class="hu-col-12 hu-col-lg-8">Ana içerik</hu-card>
+  <hu-card class="hu-col-12 hu-col-lg-4">Yan panel</hu-card>
+</div>
+
+<!-- Form: iki kolon, adres tam satır -->
+<form class="hu-grid">
+  <hu-form-field class="hu-col-12 hu-col-md-6" label="Ad"><input huInput /></hu-form-field>
+  <hu-form-field class="hu-col-12 hu-col-md-6" label="Soyad"><input huInput /></hu-form-field>
+  <hu-form-field class="hu-col-12" label="Adres"><textarea huInput></textarea></hu-form-field>
+</form>
+
+<!-- Kart listesi: kolon sayısı genişliğe göre -->
+<div class="hu-grid hu-grid--auto" style="--hu-grid-min: 14rem">…</div>
 ```
 
 ---
@@ -350,6 +395,62 @@ safeHtml = huSanitizeHtml(announcement.body);
 <hu-editor [(value)]="html" [toolbar]="['bold', 'italic', '|', 'bulletList', 'link']" ariaLabel="Yorum" />
 ```
 
+### hu-file-upload
+
+Sürükle-bırak destekli dosya seçme alanı. Değer `File[]`'dir; form kontrolü olarak veya `[(files)]` ile
+kullanılır ve `hu-form-field` içinde hata gösterir. Görseller küçük önizlemeyle listelenir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `accept` | `string` | `''` | Kabul edilen türler, `<input accept>` biçiminde: `'image/*,.pdf'` |
+| `multiple` | `boolean` | `false` | Birden çok dosya. Kapalıyken yeni dosya eskisinin yerine geçer |
+| `maxFileSize` | `number` (bayt) | `null` | Dosya başına en büyük boyut |
+| `maxFiles` | `number` | `null` | En fazla dosya sayısı |
+| `uploader` | `HuFileUploader` | `null` | Verilirse eklenen dosyalar hemen yüklenir; satırda ilerleme çubuğu, hata olursa "tekrar dene" |
+| `label` | `string` | `'Dosyaları buraya sürükleyin veya'` | Alandaki metin |
+| `hint` | `string` | otomatik | Alt bilgi; verilmezse `accept`, boyut ve adetten üretilir |
+| `preview` | `boolean` | `true` | Görsellerin önizlemesi |
+| `disabled` | `boolean` | `false` | Devre dışı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `files` | `File[]` | `[]` | Seçilen dosyalar |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `rejected` | `HuFileRejection[]` | Kurala uymayan dosyalar (`reason`: `'type' \| 'size' \| 'count'`, `message`). Mesajlar alanın altında da gösterilir |
+| `uploaded` | `{ file, result }` | `uploader` başarıyla bitince |
+| `uploadError` | `{ file, error }` | `uploader` hata verince |
+| `removed` | `File` | Kullanıcı listeden kaldırınca |
+
+Metotlar: `browse()` (seçme penceresini açar), `clear()`. Yardımcı: `formatFileSize(1536)` → `'1,5 KB'`.
+Aynı dosya iki kez eklenmez.
+
+`HuFileUploader = (file: File, progress: (percent: number) => void) => Promise<unknown>`:
+
+```ts
+upload: HuFileUploader = (file, progress) =>
+  new Promise((resolve, reject) => {
+    const body = new FormData();
+    body.append('file', file);
+    this.http.post('/api/uploads', body, { reportProgress: true, observe: 'events' }).subscribe({
+      next: (e) => {
+        if (e.type === HttpEventType.UploadProgress && e.total) progress((e.loaded / e.total) * 100);
+        if (e.type === HttpEventType.Response) resolve(e.body);
+      },
+      error: reject,
+    });
+  });
+```
+
+```html
+<hu-form-field label="Başvuru belgeleri" required>
+  <hu-file-upload formControlName="documents" accept=".pdf,.docx" multiple [maxFiles]="3" [maxFileSize]="2 * 1024 * 1024" />
+</hu-form-field>
+
+<hu-file-upload multiple [uploader]="upload" (uploaded)="onUploaded($event.result)" />
+```
+
 ---
 
 ## Tarih
@@ -469,6 +570,53 @@ Veri tablosu: sıralama, özel hücre şablonları, yükleniyor ve boş durumlar
 
 ```html
 <hu-paginator [length]="total()" [(pageIndex)]="page" [(pageSize)]="size" />
+```
+
+### hu-stepper / hu-step
+
+Çok adımlı formlar ve sihirbazlar. `HU_STEPPER_IMPORTS` ile import edin.
+
+**hu-stepper**
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `orientation` | `'horizontal' \| 'vertical'` | `'horizontal'` | Yerleşim. Dar alanda (< 640 px) yatayda yalnızca aktif adımın adı görünür |
+| `linear` | `boolean` | `false` | Bir adım tamamlanmadan sonrakine geçilemez (başlığa tıklayarak da) |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `activeIndex` | `number` | `0` | Aktif adım |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `blocked` | `number` | Linear modda tamamlanmamış adımdan ileri gidilmek istenince (o adımın sırası) |
+
+Metotlar (template referansıyla, `#stepper`): `next()`, `previous()`, `select(index)`, `reset()`.
+Butonlar için kısayol direktifleri: `huStepperNext`, `huStepperPrevious`.
+
+**hu-step**
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `label` | `string` | **zorunlu** | Adım adı |
+| `description` | `string` | — | Adın altındaki küçük açıklama |
+| `completed` | `boolean` | ziyarete göre | Tamamlandı mı? Verilmezse geçilen adımlar tamamlanmış sayılır. Linear modda `false` ise ileri geçilmez |
+| `error` | `boolean` | `false` | Adımı hatalı gösterir |
+| `optional` | `boolean` | `false` | İsteğe bağlı; linear modda atlanabilir |
+| `icon` | `string` | — | Numara yerine ikon |
+| `disabled` | `boolean` | `false` | Tıklanamaz adım |
+
+```html
+<hu-stepper #stepper linear [(activeIndex)]="step" (blocked)="personal.markAllAsTouched()">
+  <hu-step label="Kişisel bilgiler" [completed]="personalValid()">
+    <form [formGroup]="personal">…</form>
+    <button hu-button huStepperNext>İleri</button>
+  </hu-step>
+  <hu-step label="Onay">
+    <button hu-button variant="ghost" huStepperPrevious>Geri</button>
+    <button hu-button (click)="save(); stepper.reset()">Gönder</button>
+  </hu-step>
+</hu-stepper>
 ```
 
 ### hu-tabs / hu-tab
@@ -619,6 +767,46 @@ Modal pencere; native `<dialog>` kullanır (odak hapsi ve Esc hazır gelir).
     <button hu-button (click)="save()">Kaydet</button>
   </div>
 </hu-dialog>
+```
+
+### ConfirmPopup (huConfirm)
+
+Butonun yanında açılan küçük onay kutusu. Sayfaya bir şey yerleştirmeniz gerekmez. Popup üst katmanda
+açılır, kart veya tablonun taşma sınırına takılmaz ve dialog içinde de çalışır. Altta yer yoksa yukarı açılır.
+
+**Direktif:** İşlemi `(click)` yerine `(confirmed)` ile bağlayın.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `huConfirm` | `string` | **zorunlu** | Sorulacak mesaj |
+| `header` | `string` | — | Mesajın üstünde kalın başlık |
+| `icon` | `string \| null` | `'alert-triangle'` | İkon; `null` → ikon yok |
+| `acceptLabel` / `rejectLabel` | `string` | `'Evet'` / `'Hayır'` | Buton metinleri |
+| `acceptColor` | `HuButtonColor` | `'primary'` | Onay butonunun rengi (silmede `'danger'`) |
+| `defaultFocus` | `'accept' \| 'reject'` | `'accept'` | Açılınca odaklanan buton |
+| `confirmDisabled` | `boolean` | `false` | `true` ise sormadan doğrudan `(confirmed)` |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `confirmed` | `void` | Kullanıcı onaylayınca |
+| `rejected` | `void` | Hayır, Esc veya dışarı tıklama |
+
+**Servis (`HuConfirmPopupService`):** `confirm(options): Promise<boolean>`. Seçenekler direktifle aynıdır;
+ek olarak `target` (popup'ın bağlanacağı element, genellikle `event.currentTarget`) verilir. `close()` açık
+kutuyu kapatır.
+
+```html
+<button hu-button color="danger" huConfirm="Kayıt silinsin mi?" acceptLabel="Sil" acceptColor="danger"
+        (confirmed)="remove()">Sil</button>
+```
+
+```ts
+const ok = await inject(HuConfirmPopupService).confirm({
+  target: event.currentTarget,
+  message: `${user.name} silinsin mi?`,
+  acceptLabel: 'Sil',
+  acceptColor: 'danger',
+});
 ```
 
 ### HuToastService + hu-toaster
@@ -773,6 +961,7 @@ Birlikte kullanılan parçalar. Birini import etmeyi unutmak Angular'da sessizce
 | `HU_DIALOG_IMPORTS` | `HuDialog`, `HuDialogFooter` |
 | `HU_DROPDOWN_IMPORTS` | `HuDropdown`, `HuDropdownTrigger`, `HuDropdownHeaderSlot` |
 | `HU_TABS_IMPORTS` | `HuTabs`, `HuTab` |
+| `HU_STEPPER_IMPORTS` | `HuStepper`, `HuStep`, `HuStepperNext`, `HuStepperPrevious` |
 | `HU_CARD_IMPORTS` | `HuCard`, `HuCardActions`, `HuCardFooter` |
 | `HU_SHELL_IMPORTS` | `HuShell`, `HuTopbarStart`, `HuTopbarEnd`, `HuSidebarFooter`, `HuShellLogo` |
 

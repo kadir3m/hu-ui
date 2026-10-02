@@ -1,0 +1,96 @@
+// Popover API ile üst katmanda açılır (desteklenmiyorsa position: fixed + z-index).
+// Konumu JS verir; ok `--hu-confirm-arrow-x` ile tetikleyicinin ortasını gösterir.
+.hu-confirm {
+  --_bg: var(--hu-surface);
+  --_border: var(--hu-border);
+
+  position: fixed;
+  inset: auto;
+  z-index: 1100;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 1rem));
+  margin: 0;
+  padding: var(--hu-space-4);
+  overflow: visible;
+  color: var(--hu-text);
+  background: var(--_bg);
+  border: 1px solid var(--_border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-lg);
+  animation: hu-confirm-in 120ms ease-out;
+
+  &[data-placement='top'] {
+    animation-name: hu-confirm-in-up;
+  }
+}
+
+// Ok: kenarlı kare, 45° döndürülmüş; yarısı popup'ın dışında kalır
+.hu-confirm__arrow {
+  position: absolute;
+  left: var(--hu-confirm-arrow-x, 1.5rem);
+  width: 12px;
+  height: 12px;
+  background: var(--_bg);
+  border: 1px solid var(--_border);
+  transform: translateX(-50%) rotate(45deg);
+
+  [data-placement='bottom'] > & {
+    top: -7px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+
+  [data-placement='top'] > & {
+    bottom: -7px;
+    border-top: 0;
+    border-left: 0;
+  }
+}
+
+.hu-confirm__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hu-space-3);
+}
+
+.hu-confirm__icon {
+  flex-shrink: 0;
+  color: var(--hu-text);
+}
+
+.hu-confirm__text {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.hu-confirm__header {
+  margin: 0 0 2px;
+  font-weight: 600;
+}
+
+.hu-confirm__message {
+  margin: 0;
+  font-size: var(--hu-text-sm);
+  line-height: 1.5;
+}
+
+.hu-confirm__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--hu-space-2);
+  margin-top: var(--hu-space-4);
+}
+
+@keyframes hu-confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes hu-confirm-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}

@@ -6,6 +6,7 @@ import { HuShell, HuShellLogo, HuSidebarFooter, HuTopbarEnd, HuTopbarStart } fro
 import { HuDropdown, HuDropdownHeaderSlot, HuDropdownTrigger } from './dropdown/dropdown.component';
 import { HuCellDef, HuTable } from './table/table.component';
 import { HuTab, HuTabs } from './tabs/tabs.component';
+import { HuStep, HuStepper, HuStepperNext, HuStepperPrevious } from './stepper/stepper.component';
 
 /*
  * Birlikte kullanılan component/directive grupları. Bir parçayı import etmeyi
@@ -20,4 +21,5 @@ export const HU_DIALOG_IMPORTS = [HuDialog, HuDialogFooter] as const;
 export const HU_DROPDOWN_IMPORTS = [HuDropdown, HuDropdownTrigger, HuDropdownHeaderSlot] as const;
 export const HU_TABLE_IMPORTS = [HuTable, HuCellDef] as const;
 export const HU_TABS_IMPORTS = [HuTabs, HuTab] as const;
+export const HU_STEPPER_IMPORTS = [HuStepper, HuStep, HuStepperNext, HuStepperPrevious] as const;
 export const HU_SHELL_IMPORTS = [HuShell, HuTopbarStart, HuTopbarEnd, HuSidebarFooter, HuShellLogo] as const;
