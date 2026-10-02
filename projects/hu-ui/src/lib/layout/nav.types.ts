@@ -14,6 +14,8 @@ export interface HuNavItem {
    * `{ label: 'Componentler', children: [{ label: 'Form', children: [{ label: 'Button', link: '…' }] }] }`
    */
   children?: HuNavItem[];
+  /** Alt menü başlangıçta açık gelsin (kullanıcı sonra kapatabilir). */
+  expanded?: boolean;
 }
 
 export interface HuNavGroup {

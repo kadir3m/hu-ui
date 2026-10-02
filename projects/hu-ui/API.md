@@ -66,6 +66,7 @@ Admin uygulama iskeleti: daraltılabilir sidebar, mobilde çekmece menü, üst �
 | `exact` | `boolean?` | Yalnızca birebir eşleşmede aktif say (ana sayfa `/` için `true` verin) |
 | `badge` | `string \| number?` | Sağdaki rozet: sayı (`12`) dolu, metin (`'Yeni'`) açık renkli etiket olarak görünür |
 | `children` | `HuNavItem[]?` | Alt menü; aktif alt sayfanın grubu otomatik açılır. Bir alt öğenin de `children`'ı varsa o öğe tıklanamaz bir **kategori başlığı** olur (iki seviyeli menü) |
+| `expanded` | `boolean?` | Alt menü başlangıçta açık gelsin; kullanıcı sonra kapatabilir |
 
 İki seviyeli menü örneği (kategori başlıkları "Form", "Veri"):
 

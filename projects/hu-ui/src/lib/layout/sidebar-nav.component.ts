@@ -51,6 +51,16 @@ export class HuSidebarNav {
   protected readonly openItems = signal<ReadonlySet<HuNavItem>>(new Set());
 
   constructor() {
+    // `expanded: true` olan öğeler başlangıçta açık gelsin.
+    effect(() => {
+      const expanded = this.groups()
+        .flatMap((g) => g.items)
+        .filter((item) => item.expanded && item.children?.length);
+      if (expanded.length) {
+        untracked(() => this.openItems.update((set) => new Set([...set, ...expanded])));
+      }
+    });
+
     // Aktif alt sayfanın grubu otomatik açılsın.
     effect(() => {
       const url = this.url();

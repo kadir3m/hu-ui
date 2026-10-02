@@ -569,6 +569,7 @@ export function gettingStartedNavItem(): HuNavItem {
   return {
     label: 'Başlarken',
     icon: 'home',
+    expanded: true,
     children: GUIDES.map((g) => ({ label: g.name, link: `/baslarken/${g.slug}` })),
   };
 }
@@ -590,6 +591,7 @@ export function docsNavItem(): HuNavItem {
   return {
     label: 'Componentler',
     icon: 'layers',
+    expanded: true,
     children: [
       { label: 'Tümü', link: '/componentler', exact: true },
       ...DOC_CATEGORIES.map((category) => ({
@@ -597,7 +599,6 @@ export function docsNavItem(): HuNavItem {
         children: DOCS.filter((d) => d.category === category).map((d) => ({
           label: d.name,
           link: `/componentler/${d.slug}`,
-          badge: d.isNew ? 'Yeni' : undefined,
         })),
       })),
     ],
