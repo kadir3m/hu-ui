@@ -1,0 +1,224 @@
+.hu-org-chart {
+  --_gap-y: 1.5rem;
+  --_gap-x: 0.5rem;
+  --_line: var(--hu-org-chart-line, var(--hu-border-strong));
+  --_node-w: var(--hu-org-chart-node-width, 11rem);
+  display: block;
+  overflow-x: auto;
+  padding-bottom: var(--hu-space-2);
+
+  &[data-compact] {
+    --_gap-y: 1rem;
+    --_gap-x: 0.25rem;
+    --_node-w: var(--hu-org-chart-node-width, 8.5rem);
+  }
+}
+
+.hu-org-chart__canvas {
+  display: flex;
+  justify-content: center;
+  min-width: max-content;
+  padding: var(--hu-space-2);
+}
+
+.hu-org-chart__level {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: var(--_gap-y) 0 0;
+  list-style: none;
+
+  // Kök seviye: üstte çizgi yok
+  .hu-org-chart__canvas > & {
+    padding-top: 0;
+  }
+
+  // Üst düğümden inen dikey çizgi
+  .hu-org-chart__item > &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    height: var(--_gap-y);
+    border-left: 2px solid var(--_line);
+  }
+}
+
+.hu-org-chart__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--_gap-y) var(--_gap-x) 0;
+
+  // Kardeşleri bağlayan yatay çizgi (iki yarım) ve düğüme inen dikey çizgi
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 50%;
+    width: 50%;
+    height: var(--_gap-y);
+    border-top: 2px solid var(--_line);
+  }
+
+  &::after {
+    right: auto;
+    left: 50%;
+    border-left: 2px solid var(--_line);
+  }
+
+  &:first-child::before,
+  &:last-child::after {
+    border: 0 none;
+  }
+
+  &:last-child::before {
+    border-right: 2px solid var(--_line);
+    border-radius: 0 var(--hu-radius-md) 0 0;
+    // Sağ kenar çizgisi sol yarının sonunda: dikey çizgiyle hizalı olsun
+    margin-right: -2px;
+  }
+
+  &:first-child::after {
+    border-radius: var(--hu-radius-md) 0 0 0;
+  }
+
+  &:only-child {
+    padding-top: 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  // Kökler kardeş çizgisiyle bağlanmaz
+  .hu-org-chart__canvas > .hu-org-chart__level > & {
+    padding-top: 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+}
+
+.hu-org-chart__node-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hu-org-chart__node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hu-space-1);
+  width: var(--_node-w);
+  padding: var(--hu-space-3);
+  text-align: center;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-sm);
+  overflow: hidden;
+
+  &[data-color] {
+    border-top: 3px solid var(--_c);
+  }
+
+  &[data-color='primary'] { --_c: var(--hu-primary); }
+  &[data-color='success'] { --_c: var(--hu-success); }
+  &[data-color='warning'] { --_c: var(--hu-warning); }
+  &[data-color='danger'] { --_c: var(--hu-danger); }
+  &[data-color='info'] { --_c: var(--hu-info); }
+  &[data-color='neutral'] { --_c: var(--hu-gray-400); }
+
+  &--selectable {
+    cursor: pointer;
+    transition:
+      border-color 120ms,
+      box-shadow 120ms;
+
+    &:hover {
+      border-color: var(--hu-border-strong);
+      box-shadow: var(--hu-shadow-md);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--hu-ring);
+    }
+  }
+
+  &--selected,
+  &--selected:hover {
+    background: var(--hu-primary-soft);
+    border-color: var(--hu-primary);
+  }
+
+  [data-compact] & {
+    padding: var(--hu-space-2);
+  }
+}
+
+.hu-org-chart__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--hu-primary-soft-fg);
+  background: var(--hu-primary-soft);
+  border-radius: var(--hu-radius-md);
+}
+
+.hu-org-chart__label {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  color: var(--hu-text);
+  overflow-wrap: anywhere;
+}
+
+.hu-org-chart__title {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-muted);
+}
+
+// Katlama düğmesi kartın alt kenarına oturur (alttaki dikey çizginin üstünde)
+.hu-org-chart__toggle {
+  position: absolute;
+  bottom: -0.625rem;
+  left: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 4px;
+  font: inherit;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--hu-text-muted);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: 999px;
+  transform: translateX(-50%);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--hu-primary);
+    border-color: var(--hu-primary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+}

@@ -1,0 +1,78 @@
+@if (filter()) {
+  <div class="hu-tree__search">
+    <hu-icon name="search" [size]="14" />
+    <input
+      type="search"
+      class="hu-input"
+      data-size="sm"
+      autocomplete="off"
+      [attr.aria-label]="filterPlaceholder()"
+      [attr.aria-controls]="id"
+      [placeholder]="filterPlaceholder()"
+      [value]="query()"
+      (input)="onQuery($any($event.target).value)"
+    />
+  </div>
+}
+
+<ul class="hu-tree__list" role="tree" [id]="id" [attr.aria-label]="ariaLabel()" [attr.aria-multiselectable]="selectionMode() === 'multiple' || selectionMode() === 'checkbox' || null" (keydown)="onKeydown($event)">
+  @for (row of rows(); track row.node.key) {
+    @let node = row.node;
+    @let open = isExpanded(row);
+    @let selected = isSelected(node);
+    <li
+      class="hu-tree__row"
+      role="treeitem"
+      [id]="rowId(node.key)"
+      [attr.aria-level]="row.level"
+      [attr.aria-posinset]="row.posinset"
+      [attr.aria-setsize]="row.setsize"
+      [attr.aria-expanded]="row.hasChildren ? open : null"
+      [attr.aria-selected]="selectionMode() !== 'none' && selectionMode() !== 'checkbox' ? selected : null"
+      [attr.aria-checked]="selectionMode() === 'checkbox' ? (isPartial(node) ? 'mixed' : selected) : null"
+      [attr.aria-disabled]="node.disabled || null"
+      [attr.aria-busy]="loading().has(node.key) || null"
+      [tabIndex]="tabStop() === node.key ? 0 : -1"
+      [class.hu-tree__row--selected]="selected && selectionMode() !== 'checkbox'"
+      [class.hu-tree__row--disabled]="node.disabled"
+      [style.--level]="row.level - 1"
+      (click)="onRowClick(row, $event)"
+      (focus)="focusedKey.set(node.key)"
+    >
+      <span class="hu-tree__toggle" [class.hu-tree__toggle--open]="open" aria-hidden="true">
+        @if (loading().has(node.key)) {
+          <span class="hu-tree__spinner"></span>
+        } @else if (row.hasChildren) {
+          <hu-icon name="chevron-right" [size]="14" />
+        }
+      </span>
+      @if (selectionMode() === 'checkbox') {
+        <span class="hu-tree__check" [class.hu-tree__check--on]="selected" [class.hu-tree__check--partial]="isPartial(node)" aria-hidden="true">
+          @if (selected) {
+            <hu-icon name="check" [size]="11" [strokeWidth]="3.5" />
+          } @else if (isPartial(node)) {
+            <hu-icon name="minus" [size]="11" [strokeWidth]="3.5" />
+          }
+        </span>
+      }
+      @if (template(); as tpl) {
+        <ng-container *ngTemplateOutlet="tpl.template; context: { $implicit: node, level: row.level, expanded: open }" />
+      } @else {
+        @if (node.icon) {
+          <hu-icon class="hu-tree__icon" [name]="open && node.expandedIcon ? node.expandedIcon : node.icon" [size]="16" />
+        }
+        <span class="hu-tree__label">
+          @for (p of parts(node.label); track $index) {
+            @if (p.hit) {
+              <mark>{{ p.text }}</mark>
+            } @else {
+              {{ p.text }}
+            }
+          }
+        </span>
+      }
+    </li>
+  } @empty {
+    <li class="hu-tree__empty" role="none">{{ query() ? emptyMessage() : 'Kayıt yok' }}</li>
+  }
+</ul>

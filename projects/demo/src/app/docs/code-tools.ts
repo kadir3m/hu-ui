@@ -182,6 +182,12 @@ const TEMPLATE_IMPORTS: [RegExp, string][] = [
   [/<hu-switch\b/, 'HuSwitch'],
   [/<hu-date-picker\b/, 'HuDatePicker'],
   [/<hu-calendar\b/, 'HuCalendar'],
+  [/<hu-agenda\b/, 'HuAgenda'],
+  [/<hu-password\b/, 'HuPassword'],
+  [/\s\[?huMask\]?=/, 'HuInputMask'],
+  [/<hu-radio-group\b/, 'HU_RADIO_IMPORTS'],
+  [/<hu-rating\b/, 'HuRating'],
+  [/\s\[?huTooltip\]?=/, 'HuTooltip'],
   [/<hu-editor\b/, 'HuEditor'],
   [/<hu-file-upload\b/, 'HuFileUpload'],
   [/<hu-input-number\b/, 'HuInputNumber'],
@@ -194,6 +200,18 @@ const TEMPLATE_IMPORTS: [RegExp, string][] = [
   [/<hu-breadcrumb\b/, 'HuBreadcrumb'],
   [/<hu-theme-toggle\b/, 'HuThemeToggle'],
   [/\shuConfirm\b/, 'HuConfirm'],
+  [/\s\[?huContextMenu\]?=/, 'HuContextMenu'],
+  [/<hu-timeline\b/, 'HU_TIMELINE_IMPORTS'],
+  [/<hu-tree\b/, 'HU_TREE_IMPORTS'],
+  [/<hu-picklist\b/, 'HU_PICKLIST_IMPORTS'],
+  [/<hu-org-chart\b/, 'HU_ORG_CHART_IMPORTS'],
+  [/<hu-accordion\b/, 'HU_ACCORDION_IMPORTS'],
+  [/<hu-divider\b/, 'HuDivider'],
+  [/<hu-fieldset\b/, 'HuFieldset'],
+  [/<hu-carousel\b/, 'HU_CAROUSEL_IMPORTS'],
+  [/<hu-gallery\b/, 'HuGallery'],
+  [/<hu-lightbox\b/, 'HuLightbox'],
+  [/<hu-image\b/, 'HuImage'],
 ];
 const PIPES: Record<string, string> = {
   json: 'JsonPipe',
@@ -461,7 +479,8 @@ export function buildComponent(snippetHtml: string, ts: string): string {
       forms.add('FormGroup');
       if (controls.length) forms.add('FormControl');
       stubs.push(`${ref.name} = new FormGroup({ ${controls.map((c) => `${c}: new FormControl<any>(null)`).join(', ')} });`);
-    } else if (ref.read || ref.written) {
+    } else if (ref.read || (ref.written && !ref.member)) {
+      // api.update(…) gibi: başka alanları da kullanılıyorsa sinyal değil düz nesne
       core.add('signal');
       stubs.push(`${ref.name} = signal<any>(${ref.list ? '[]' : 'undefined'});`);
     } else if (ref.handler) stubs.push(`${ref.name}(...args: any[]): void {}`);

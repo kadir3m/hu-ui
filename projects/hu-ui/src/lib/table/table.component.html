@@ -1,17 +1,156 @@
+@if (showToolbar()) {
+  <div class="hu-table__toolbar">
+    @if (hasSelection() && selected().length && bulkSlot()) {
+      <!-- Seçim varken: toplu işlem çubuğu -->
+      <div class="hu-table__bulk" role="status">
+        <span class="hu-table__bulk-count">{{ selected().length }} seçildi</span>
+        <button hu-button variant="ghost" size="sm" type="button" (click)="clearSelection()">Seçimi kaldır</button>
+        <ng-content select="[huTableBulkActions]" />
+      </div>
+    } @else {
+      <div class="hu-table__toolbar-start">
+        @if (title()) {
+          <h3 class="hu-table__title">{{ title() }}</h3>
+        }
+        @if (searchable()) {
+          <div class="hu-table__search" role="search">
+            <hu-icon name="search" [size]="16" />
+            <input
+              type="search"
+              class="hu-input"
+              data-size="sm"
+              autocomplete="off"
+              [id]="ids.search"
+              [attr.aria-label]="searchPlaceholder()"
+              [placeholder]="searchPlaceholder()"
+              [value]="search()"
+              (input)="onSearch($any($event.target).value)"
+            />
+          </div>
+        }
+      </div>
+    }
+
+    <div class="hu-table__toolbar-end">
+      <ng-content select="[huTableToolbar]" />
+      @if (exportable()) {
+        <button hu-button variant="outline" size="sm" type="button" title="CSV olarak indir" (click)="exportCsv()">
+          <hu-icon name="download" [size]="14" /> Dışa aktar
+        </button>
+      }
+      @if (columnToggle()) {
+        <button
+          #columnsButton
+          hu-button
+          variant="outline"
+          size="sm"
+          type="button"
+          aria-haspopup="dialog"
+          [attr.aria-expanded]="columnsOpen()"
+          [attr.aria-controls]="ids.panel"
+          (click)="toggleColumnsPanel()"
+        >
+          <hu-icon name="settings" [size]="14" /> Sütunlar
+          @if (visibleColumns().length < columns().length) {
+            <span class="hu-table__count">{{ visibleColumns().length }}/{{ columns().length }}</span>
+          }
+        </button>
+      }
+    </div>
+  </div>
+}
+
+@if (columnToggle()) {
+  <div
+    #panel
+    popover="manual"
+    class="hu-table__columns"
+    role="dialog"
+    aria-label="Sütunlar"
+    [id]="ids.panel"
+    [class.hu-table__columns--inline]="!supportsPopover"
+    [attr.hidden]="!supportsPopover && !columnsOpen() ? '' : null"
+    (keydown.escape)="$event.stopPropagation(); closeColumnsPanel(true)"
+  >
+    @if (columnsOpen()) {
+      <div class="hu-table__columns-head">
+        <span>Görünen sütunlar</span>
+        <button hu-button variant="link" size="sm" type="button" (click)="resetColumns()">Varsayılan</button>
+      </div>
+      <ul class="hu-table__columns-list">
+        @for (col of orderedColumns(); track col.key; let first = $first; let last = $last) {
+          <li [attr.data-col]="col.key">
+            <hu-checkbox
+              [checked]="!isHidden(col)"
+              [disabled]="col.hideable === false"
+              (checkedChange)="toggleColumn(col, $event)"
+            >
+              {{ col.header }}
+            </hu-checkbox>
+            <span class="hu-table__move">
+              <button
+                type="button"
+                data-move="-1"
+                [attr.aria-label]="col.header + ' yukarı taşı'"
+                [disabled]="first"
+                (click)="moveColumn(col, -1)"
+              >
+                <hu-icon name="chevron-up" [size]="14" />
+              </button>
+              <button
+                type="button"
+                data-move="1"
+                [attr.aria-label]="col.header + ' aşağı taşı'"
+                [disabled]="last"
+                (click)="moveColumn(col, 1)"
+              >
+                <hu-icon name="chevron-down" [size]="14" />
+              </button>
+            </span>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+}
+
 <div class="hu-table__scroll" [attr.aria-busy]="loading() || null">
-  <table class="hu-table__table">
+  <table class="hu-table__table" [attr.aria-rowcount]="paginator() ? total() : null">
     <thead>
       <tr>
-        @for (col of columns(); track col.key) {
+        @if (detail()) {
+          <th scope="col" class="hu-table__lead">
+            <span class="hu-sr-only">Detay</span>
+          </th>
+        }
+        @if (hasSelection()) {
+          <th scope="col" class="hu-table__lead" [class.hu-table__lead--second]="!!detail()">
+            <hu-checkbox
+              aria-label="Bu sayfadaki tüm satırları seç"
+              [checked]="pageAllSelected()"
+              [indeterminate]="pageSomeSelected()"
+              [disabled]="!rows().length"
+              (checkedChange)="togglePage($event)"
+            />
+          </th>
+        }
+        @for (col of visibleColumns(); track col.key) {
           <th
             scope="col"
             [style.width]="col.width"
             [attr.data-align]="col.align"
             [attr.aria-sort]="ariaSort(col)"
             [class.hu-table__cell--hide-mobile]="col.hideOnMobile"
+            [class.hu-table__sticky-start]="isSticky(col, 'start')"
+            [class.hu-table__sticky-end]="isSticky(col, 'end')"
           >
             @if (col.sortable) {
-              <button type="button" class="hu-table__sort" [class.hu-table__sort--active]="currentSort().key === col.key && currentSort().direction" (click)="toggleSort(col)">
+              <button
+                type="button"
+                class="hu-table__sort"
+                [class.hu-table__sort--active]="currentSort().key === col.key && currentSort().direction"
+                (click)="toggleSort(col)"
+              >
                 {{ col.header }}
                 <hu-icon [name]="sortIcon(col)" [size]="14" />
               </button>
@@ -25,15 +164,54 @@
     <tbody>
       @if (loading() && !rows().length) {
         <tr>
-          <td class="hu-table__state" [attr.colspan]="columns().length">
+          <td class="hu-table__state" [attr.colspan]="colspan()">
             <hu-spinner />
           </td>
         </tr>
       } @else {
         @for (row of rows(); track trackBy()(row); let i = $index) {
-          <tr [class.hu-table__row--clickable]="clickableRows()" (click)="onRowClick(row)">
-            @for (col of columns(); track col.key) {
-              <td [attr.data-align]="col.align" [class.hu-table__cell--hide-mobile]="col.hideOnMobile">
+          @let selected = isSelected(row);
+          @let open = !!detail() && isExpanded(row);
+          <tr
+            class="hu-table__row"
+            [class.hu-table__row--clickable]="clickableRows() || selectionMode() === 'single'"
+            [class.hu-table__row--selected]="selected"
+            [class.hu-table__row--open]="open"
+            [class.hu-table__row--context]="contextKey() === trackBy()(row)"
+            [attr.aria-selected]="selectionMode() !== 'none' ? selected : null"
+            [huContextMenu]="contextMenu() ? rowMenu(row) : null"
+            huContextMenuLabel="Satır işlemleri"
+            (contextMenuOpen)="contextKey.set(trackBy()(row))"
+            (contextMenuClose)="contextKey.set(undefined)"
+            (contextMenuSelect)="onContextSelect($event, row)"
+            (click)="onRowClick(row, $event)"
+          >
+            @if (detail()) {
+              <td class="hu-table__lead">
+                <button
+                  type="button"
+                  class="hu-table__expand"
+                  [attr.aria-expanded]="open"
+                  [attr.aria-label]="open ? 'Detayı gizle' : 'Detayı göster'"
+                  (click)="toggleExpand(row)"
+                >
+                  <hu-icon name="chevron-right" [size]="16" />
+                </button>
+              </td>
+            }
+            @if (hasSelection()) {
+              <td class="hu-table__lead" [class.hu-table__lead--second]="!!detail()">
+                <hu-checkbox aria-label="Satırı seç" [checked]="selected" (checkedChange)="toggleRow(row, $event)" />
+              </td>
+            }
+            @for (col of visibleColumns(); track col.key) {
+              <td
+                [attr.data-align]="col.align"
+                [attr.data-label]="col.header"
+                [class.hu-table__cell--hide-mobile]="col.hideOnMobile"
+                [class.hu-table__sticky-start]="isSticky(col, 'start')"
+                [class.hu-table__sticky-end]="isSticky(col, 'end')"
+              >
                 @if (templates().get(col.key); as tpl) {
                   <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row, index: i }" />
                 } @else {
@@ -42,17 +220,61 @@
               </td>
             }
           </tr>
+          @if (open) {
+            <tr class="hu-table__detail-row">
+              <td [attr.colspan]="colspan()">
+                <div class="hu-table__detail">
+                  <ng-container *ngTemplateOutlet="detail()!.template; context: { $implicit: row, index: i }" />
+                </div>
+              </td>
+            </tr>
+          }
         } @empty {
           <tr>
-            <td class="hu-table__state" [attr.colspan]="columns().length">
-              <ng-content select="[huTableEmpty]">{{ emptyText() }}</ng-content>
+            <td class="hu-table__state" [attr.colspan]="colspan()">
+              @if (search() && !isLazy() && rowsData().length) {
+                <p class="hu-table__state-title">“{{ search() }}” için sonuç yok</p>
+                <button hu-button variant="link" size="sm" type="button" (click)="onSearch('')">Aramayı temizle</button>
+              } @else {
+                <ng-content select="[huTableEmpty]">{{ emptyText() }}</ng-content>
+              }
             </td>
           </tr>
         }
       }
     </tbody>
+    @if (hasFooter() && rows().length) {
+      <tfoot>
+        <tr>
+          @for (_ of leadCells(); track $index) {
+            <td class="hu-table__lead"></td>
+          }
+          @for (col of visibleColumns(); track col.key) {
+            <td
+              [attr.data-align]="col.align"
+              [attr.data-label]="col.header"
+              [class.hu-table__cell--hide-mobile]="col.hideOnMobile"
+              [class.hu-table__sticky-start]="isSticky(col, 'start')"
+              [class.hu-table__sticky-end]="isSticky(col, 'end')"
+            >
+              {{ footerValue(col) }}
+            </td>
+          }
+        </tr>
+      </tfoot>
+    }
   </table>
   @if (loading() && rows().length) {
     <div class="hu-table__overlay"><hu-spinner size="lg" /></div>
   }
 </div>
+
+@if (paginator()) {
+  <hu-paginator
+    class="hu-table__paginator"
+    [length]="total()"
+    [(pageIndex)]="pageIndex"
+    [(pageSize)]="pageSize"
+    [pageSizeOptions]="pageSizeOptions()"
+  />
+}

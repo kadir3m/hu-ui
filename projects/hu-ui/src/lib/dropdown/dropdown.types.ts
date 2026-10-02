@@ -11,6 +11,8 @@ export interface HuDropdownOption<T = string> {
   danger?: boolean;
   /** Verilirse öğe bir router linki olur. */
   link?: string | readonly unknown[];
+  /** Sağda gösterilen kısayol ipucu (örn. `'Ctrl+C'`). Yalnızca görseldir; kısayolu siz bağlarsınız. */
+  shortcut?: string;
 }
 
 /** Öğeler arasına ince çizgi. */

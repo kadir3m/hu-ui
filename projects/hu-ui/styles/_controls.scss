@@ -79,6 +79,85 @@ textarea.hu-input {
   resize: vertical;
 }
 
+// --- huTooltip ---------------------------------------------------------------
+// Direktif balonu body'ye (veya açık dialog'a) ekler; konumu JS verir.
+.hu-tooltip {
+  position: fixed;
+  inset: auto;
+  z-index: 1200;
+  max-width: min(18rem, calc(100vw - 1rem));
+  margin: 0;
+  padding: var(--hu-space-1) var(--hu-space-2);
+  overflow: visible;
+  font-size: var(--hu-text-xs);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--hu-tooltip-fg, #fff);
+  background: var(--hu-tooltip-bg, var(--hu-gray-900));
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  box-shadow: var(--hu-shadow-md);
+  pointer-events: none;
+  animation: hu-tooltip-in 110ms ease-out;
+
+  &[data-side='bottom'] {
+    animation-name: hu-tooltip-in-down;
+  }
+}
+
+[data-theme='dark'] .hu-tooltip {
+  --hu-tooltip-bg: var(--hu-gray-100, #f4f4f5);
+  --hu-tooltip-fg: var(--hu-gray-900, #18181b);
+}
+
+.hu-tooltip__arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: rotate(45deg);
+
+  [data-side='top'] > & {
+    bottom: -4px;
+    left: calc(var(--hu-tooltip-arrow, 50%) - 4px);
+  }
+
+  [data-side='bottom'] > & {
+    top: -4px;
+    left: calc(var(--hu-tooltip-arrow, 50%) - 4px);
+  }
+
+  [data-side='left'] > & {
+    right: -4px;
+    top: calc(var(--hu-tooltip-arrow, 50%) - 4px);
+  }
+
+  [data-side='right'] > & {
+    left: -4px;
+    top: calc(var(--hu-tooltip-arrow, 50%) - 4px);
+  }
+}
+
+@keyframes hu-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@keyframes hu-tooltip-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hu-tooltip {
+    animation: none;
+  }
+}
+
 select.hu-input {
   padding-right: 2.25rem;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a8a93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");

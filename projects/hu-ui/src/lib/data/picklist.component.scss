@@ -1,0 +1,146 @@
+.hu-picklist {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--hu-space-3);
+  align-items: stretch;
+  container-type: inline-size;
+
+  &[data-disabled] {
+    opacity: 0.6;
+  }
+}
+
+.hu-picklist__panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  overflow: hidden;
+}
+
+.hu-picklist__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hu-space-2);
+  padding: var(--hu-space-2) var(--hu-space-3);
+  background: var(--hu-surface-2);
+  border-bottom: 1px solid var(--hu-border);
+}
+
+.hu-picklist__title {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+}
+
+.hu-picklist__count {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hu-picklist__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--hu-space-2);
+  border-bottom: 1px solid var(--hu-border);
+
+  > hu-icon {
+    position: absolute;
+    left: calc(var(--hu-space-2) + var(--hu-space-2));
+    color: var(--hu-text-subtle);
+    pointer-events: none;
+  }
+
+  > .hu-input {
+    padding-left: 1.75rem;
+  }
+}
+
+.hu-picklist__body {
+  display: flex;
+  min-height: 0;
+}
+
+.hu-picklist__list {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: var(--hu-space-1);
+  overflow-y: auto;
+  list-style: none;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: inset var(--hu-ring);
+  }
+}
+
+.hu-picklist__item {
+  padding: var(--hu-space-2) var(--hu-space-3);
+  font-size: var(--hu-text-sm);
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background: var(--hu-surface-2);
+  }
+
+  &--selected,
+  &--selected:hover {
+    color: var(--hu-primary-soft-fg);
+    background: var(--hu-primary-soft);
+  }
+
+  .hu-picklist__list:focus-visible &--active {
+    outline: 2px solid var(--hu-primary);
+    outline-offset: -2px;
+  }
+
+  [data-disabled] & {
+    cursor: not-allowed;
+  }
+}
+
+.hu-picklist__empty {
+  padding: var(--hu-space-6) var(--hu-space-3);
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text-subtle);
+  text-align: center;
+}
+
+.hu-picklist__transfer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-2);
+  justify-content: center;
+}
+
+.hu-picklist__reorder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-1);
+  justify-content: center;
+  padding: var(--hu-space-1);
+  border-left: 1px solid var(--hu-border);
+}
+
+// Dar alanda listeler alt alta, taşıma düğmeleri yatay ve döndürülmüş
+@container (max-width: 519.98px) {
+  .hu-picklist__transfer,
+  .hu-picklist__panel {
+    grid-column: 1 / -1;
+  }
+
+  .hu-picklist__transfer {
+    flex-direction: row;
+
+    hu-icon {
+      transform: rotate(90deg);
+    }
+  }
+}

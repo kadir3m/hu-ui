@@ -15,10 +15,10 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 ## İçindekiler
 
 - **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle) · [Grid](#grid)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-multi-select](#hu-multi-select) · [hu-file-upload](#hu-file-upload)
-- **Tarih:** [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
-- **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
-- **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-multi-select](#hu-multi-select) · [hu-password](#hu-password) · [huMask](#humask-inputmask) · [hu-radio-group](#hu-radio-group--hu-radio) · [hu-rating](#hu-rating) · [hu-file-upload](#hu-file-upload)
+- **Tarih:** [hu-agenda](#hu-agenda) · [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
+- **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [ContextMenu](#contextmenu-hucontextmenu) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
+- **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [huTooltip](#hutooltip) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
 - **Çekirdek:** [hu-icon](#hu-icon) · [HuThemeService](#huthemeservice) · [Form hata mesajları](#form-hata-mesajları) · [Gruplu import'lar](#gruplu-importlar) · [Tasarım token'ları](#tasarım-tokenları)
 
 ---
@@ -473,6 +473,114 @@ departments: HuSelectOption[] = [
 <hu-multi-select [options]="courseOptions" [compareWith]="sameCourse" [selectionLimit]="3" />
 ```
 
+### hu-password
+
+Şifre girişi: göz ikonuyla göster/gizle, güç göstergesi, canlı kural listesi ve Caps Lock uyarısı. Değer `string`.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `toggleMask` | `boolean` | `true` | Göster/gizle butonu |
+| `feedback` | `boolean` | `false` | 4 çubuklu güç göstergesi (Çok zayıf, Zayıf, Orta, İyi, Güçlü) |
+| `showRules` / `rulesAlways` | `boolean` | `false` | Kural listesi / alan boşken de göster |
+| `rules` | `HuPasswordRule[]` | `HU_PASSWORD_RULES` | `{ label, test(value) }`. Varsayılan: 8 karakter, büyük harf, küçük harf, rakam, sembol |
+| `minStrength` | `number` (0–4) | `0` | Bundan zayıf şifrede `huPasswordWeak` hatası ("Daha güçlü bir şifre seçin.") |
+| `autocomplete` | `'current-password' \| 'new-password' \| 'off'` | `'current-password'` | Kayıt / değiştirmede `new-password` verin |
+| `placeholder`, `size`, `disabled`, `ariaLabel`, `id` | | | Diğer form kontrolleriyle aynı |
+
+| Model | Tip | Varsayılan |
+| --- | --- | --- |
+| `value` | `string` | `''` |
+
+Yardımcı: `huPasswordStrength(value): number` (0–4). Uzunluk ve karakter çeşitliliğini puanlar; tekrar eden
+(`aaaa`) ve sıralı (`1234`, `qwer`) karakterler puanı düşürür.
+
+```html
+<hu-form-field label="Yeni şifre" required>
+  <hu-password formControlName="password" feedback showRules [minStrength]="3" autocomplete="new-password" />
+</hu-form-field>
+```
+
+### huMask (InputMask)
+
+`<input>`'a maske ekler. Yazarken biçimlendirir, fazla veya uygun olmayan karakteri yazdırmaz, yapıştırılan metni
+düzeltir, sabit karakterlerin (parantez, boşluk) üzerinden Backspace / Delete ile silmeyi bilir. Eksik girişte
+`huMask` hatası ("Eksik veya hatalı giriş.") verir. `huInput` ile birlikte kullanın.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `huMask` | `string` | **zorunlu** | `9` rakam, `a` harf (Türkçe dahil), `*` harf veya rakam; diğerleri sabit (`\9` ile kaçış) |
+| `unmask` | `boolean` | `false` | Forma yalnızca girilen karakterler gider (`5551234567`); ekranda maskeli kalır |
+| `uppercase` | `boolean` | `true` | Harfleri büyük yaz |
+| `placeholder` | `string` | maskeden | Boşken örnek; verilmezse `(___) ___ __ __` |
+| `slotChar` | `string` | `'_'` | Placeholder'daki boş karakter |
+
+Hazır maskeler (`HU_MASKS`): `phone` `(999) 999 99 99` · `mobile` `0(999) 999 99 99` · `date` `99.99.9999` ·
+`time` `99:99` · `tckn` · `iban` `TR99 9999 …` · `card` · `postalCode`. `exportAs: 'huMask'` ile `complete`
+(tamamı girildi mi) okunabilir.
+
+```html
+<input huInput [huMask]="masks.phone" formControlName="phone" />
+<input huInput [huMask]="masks.mobile" unmask formControlName="mobile" />
+<input huInput huMask="aa-9999999" />
+```
+
+### hu-radio-group / hu-radio
+
+Tek seçim. Native radyo düğmeleri kullanır: Tab ile gruba girilir, ok tuşlarıyla seçilir (pasif seçenekler atlanır).
+`hu-form-field` içinde grup, alanın etiketiyle adlandırılır. `HU_RADIO_IMPORTS` ile import edin.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `options` | `HuRadioOption<T>[]` | `[]` | `{ label, value, description?, disabled? }`. Ya da içeride `hu-radio` yazın |
+| `orientation` | `'vertical' \| 'horizontal'` | `'vertical'` | Yerleşim |
+| `variant` | `'default' \| 'card'` | `'default'` | `card`: çerçeveli, açıklamalı, geniş tıklama alanlı seçenekler |
+| `disabled` / `required` | `boolean` | `false` | |
+| `compareWith` | `(a, b) => boolean` | `Object.is` | Nesne değerlerde eşitlik |
+
+| Model | Tip | Varsayılan |
+| --- | --- | --- |
+| `value` | `T \| null` | `null` |
+
+`hu-radio`: `value` (zorunlu), `description`, `disabled`; içerik etikettir.
+
+```html
+<hu-form-field label="Ödeme yöntemi" required>
+  <hu-radio-group variant="card" formControlName="payment" [options]="payments" />
+</hu-form-field>
+
+<hu-radio-group [(value)]="size" orientation="horizontal" aria-label="Beden">
+  <hu-radio value="s">Küçük</hu-radio>
+  <hu-radio value="m">Orta</hu-radio>
+</hu-radio-group>
+```
+
+### hu-rating
+
+Yıldızla puanlama. Her yıldız görünmez bir radyo düğmesidir: ok tuşlarıyla puan verilir, ekran okuyucu
+"4 / 5, İyi" okur. Üzerine gelince önizleme; seçili yıldıza tekrar tıklamak puanı temizler. `readonly` ile
+ondalık değerler (4,6) kısmi dolu yıldızla gösterilir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `max` | `number` | `5` | Yıldız sayısı |
+| `readonly` | `boolean` | `false` | Gösterim modu |
+| `clearable` | `boolean` | `true` | Seçili yıldıza tekrar tıklayınca 0 |
+| `showLabel` | `boolean` | `false` | Yanında etiket |
+| `labels` | `string[]` | `['Çok kötü', 'Kötü', 'Orta', 'İyi', 'Çok iyi']` | Puan etiketleri; boş dizi → `4 / 5` |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | |
+| `disabled`, `ariaLabel` | | `false`, `'Puan'` | |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `number` | `0` | 0 = puan yok. Zorunlu tutmak için `Validators.min(1)` |
+
+```html
+<hu-form-field label="Memnuniyet" required>
+  <hu-rating formControlName="score" showLabel />
+</hu-form-field>
+<hu-rating [value]="4.6" readonly size="sm" />
+```
+
 ### hu-file-upload
 
 Sürükle-bırak destekli dosya seçme alanı. Değer `File[]`'dir; form kontrolü olarak veya `[(files)]` ile
@@ -533,6 +641,77 @@ upload: HuFileUploader = (file, progress) =>
 
 ## Tarih
 
+### hu-agenda
+
+Ajanda / takvim: **ay**, **hafta**, **gün** ve **liste** görünümleri. Boş bir saate tıklayarak veya sürükleyerek
+aralık seçip kayıt eklenir; kayıtlar sürüklenerek taşınır (hafta/gün: saat ve gün, ay: gün), alt kenarından çekilerek
+süresi değiştirilir, tıklanınca yerleşik formla düzenlenir veya silinir. Çakışan kayıtlar yan yana dizilir; bugünde
+"şu an" çizgisi görünür; türlere (kategori) göre renklendirme ve filtre vardır. Pazartesi ile başlar, Türkçe gün/ay
+adları kullanılır. Dokunmatikte sürükleme sayfa kaydırmasını bozmasın diye kapalıdır, dokunarak ekleme ve düzenleme çalışır.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `views` | `HuAgendaView[]` | `['month', 'week', 'day', 'list']` | Görünüm seçicideki görünümler |
+| `categories` | `HuAgendaCategory[]` | Randevu, Toplantı, Ders, Hatırlatma, Kişisel | Türler: `{ key, label, color }`. Renk ve filtre için |
+| `editable` | `boolean` | `true` | Ekleme, sürükleme, düzenleme. `false` → salt okunur |
+| `editor` | `boolean` | `true` | Yerleşik form. `false` ise `slotSelect` / `eventClick` ile kendi formunuzu açın |
+| `weekends` | `boolean` | `true` | Hafta görünümünde cumartesi-pazar |
+| `slotMinutes` | `number` | `30` | Izgara çizgisi aralığı (dk) |
+| `snapMinutes` | `number` | `15` | Sürükleme ve seçim adımı (dk) |
+| `hourHeight` | `number` | `48` | Bir saatin yüksekliği (px) |
+| `businessHours` | `{ start, end } \| null` | `{ start: 8, end: 18 }` | Hafta/gün görünümünde gösterilen saat aralığı; dışındaki saatler gizlenir. Aralık dışında bir kayıt varsa ızgara onu kapsayacak kadar genişler, kayıt kaybolmaz. `null` → 24 saat |
+| `scrollToHour` | `number` | `8` | Hafta/gün görünümüne geçince kaydırılan saat (ızgara ekrana sığmıyorsa) |
+| `maxPerDay` | `number` | `3` | Ay görünümünde günde en çok kayıt; fazlası "+N daha" (gün görünümüne gider) |
+| `listDays` | `number` | `30` | Liste görünümünün kapsadığı gün sayısı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `events` | `HuAgendaEvent[]` | `[]` | Kayıtlar. Ekleme / taşıma / silmede bileşen listeyi kendisi günceller |
+| `view` | `'month' \| 'week' \| 'day' \| 'list'` | `'week'` | Görünüm |
+| `date` | `Date` | bugün | Gösterilen tarih |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `eventCreate` | `HuAgendaEvent` | Formdan yeni kayıt kaydedilince |
+| `eventUpdate` | `{ event, previous, kind }` | Taşıma (`'move'`), süre değiştirme (`'resize'`) veya formla düzenleme (`'edit'`) |
+| `eventDelete` | `HuAgendaEvent` | Formdan silinince |
+| `eventClick` | `HuAgendaEvent` | Kayda tıklanınca (salt okunurda da) |
+| `slotSelect` | `{ start, end, allDay }` | Boş alana tıklanınca / sürükleyerek seçilince |
+| `rangeChange` | `{ start, end }` | Görünen aralık değişince (veriyi sunucudan aralığa göre getirmek için) |
+
+Metotlar (template referansıyla): `today()`, `previous()`, `next()`.
+
+**`HuAgendaEvent<T>`**
+
+| Alan | Tip | Açıklama |
+| --- | --- | --- |
+| `id` | `string \| number` | Kimlik |
+| `title` | `string` | Başlık |
+| `start` / `end` | `Date` | Başlangıç / bitiş (bitiş hariç). Tüm gün kayıtta bitiş son günün ertesi 00:00 (veya aynı gün) |
+| `allDay` | `boolean?` | Tüm gün; hafta/gün görünümünde üst satırda |
+| `category` | `string?` | `categories` anahtarı: renk ve filtre |
+| `color` | `HuAgendaColor?` | `primary`, `info`, `success`, `warning`, `danger`, `neutral`, `purple`, `pink` (kategoriyi ezer) |
+| `location` / `description` | `string?` | Konum, açıklama |
+| `readonly` | `boolean?` | Bu kayıt taşınamaz / düzenlenemez |
+| `data` | `T?` | Kendi verileriniz |
+
+```html
+<hu-agenda
+  [(events)]="events"
+  view="week"
+  (eventCreate)="api.create($event)"
+  (eventUpdate)="api.update($event.event)"
+  (eventDelete)="api.delete($event.id)"
+  (rangeChange)="load($event.start, $event.end)"
+/>
+
+<!-- Hafta içi, 15 dk, 09–17 mesai -->
+<hu-agenda [(events)]="events" [weekends]="false" [slotMinutes]="15" [businessHours]="{ start: 9, end: 17 }" />
+
+<!-- Kendi formunuz -->
+<hu-agenda [(events)]="events" [editor]="false" (slotSelect)="openMyForm($event)" (eventClick)="openMyForm($event)" />
+```
+
 ### hu-calendar
 
 Satır içi takvim. Pazartesi ile başlar, Türkçedir.
@@ -587,28 +766,83 @@ Paketten import edilen fonksiyonlar. Hepsi yerel saatle ve gün hassasiyetinde �
 
 ### hu-table
 
-Veri tablosu: sıralama, özel hücre şablonları, yükleniyor ve boş durumları.
+Veri tablosu. Arama, sütun seçici (göster/gizle, sırala), sıralama, tekli/çoklu seçim ve toplu işlem, açılır
+satır detayı, dahili sayfalama, CSV dışa aktarma, alt toplam satırı, sabit sütunlar ve mobilde kart görünümü
+destekler. `HU_TABLE_IMPORTS` ile import edin (`HuTable`, `HuCellDef`, `HuRowDetail`, `HuTableToolbar`,
+`HuTableBulkActions`).
+
+**Veri**
 
 | Input | Tip | Varsayılan | Açıklama |
 | --- | --- | --- | --- |
 | `columns` | `HuColumn<T>[]` | **zorunlu** | Sütun tanımları |
-| `data` | `T[]` | `[]` | Satırlar |
-| `loading` | `boolean` | `false` | Spinner gösterir (veri varsa üstünde, yoksa yerinde) |
-| `emptyText` | `string` | `'Kayıt bulunamadı.'` | Veri yokken görünen metin |
-| `sortMode` | `'client' \| 'server'` | `'client'` | `client`: tablo kendisi sıralar. `server`: yalnızca `sort` değişir, veriyi siz getirirsiniz |
-| `trackBy` | `(row: T) => unknown` | satırın kendisi | Satır kimliği (örn. `u => u.id`) |
-| `striped` | `boolean` | `false` | Satırları dönüşümlü renklendirir |
-| `dense` | `boolean` | `false` | Sıkışık satırlar |
-| `stickyHeader` | `boolean` | `false` | Kaydırırken başlık sabit kalır (yükseklik: `--hu-table-max-height`) |
-| `clickableRows` | `boolean` | `false` | Satırlar tıklanabilir olur, `rowClick` tetiklenir |
+| `data` | `T[]` | `[]` | Satırlar (`null` / `undefined` boş sayılır) |
+| `trackBy` | `(row: T) => unknown` | satırın kendisi | Satır kimliği (örn. `u => u.id`). Seçim ve detay için verin |
+| `loading` | `boolean` | `false` | Spinner (veri varsa üstünde, yoksa yerinde) |
+| `emptyText` | `string` | `'Kayıt bulunamadı.'` | Veri yokken metin |
+| `lazy` | `boolean` | `false` | Sunucu tarafı: arama, sıralama, sayfalama tabloda yapılmaz; yalnızca modeller değişir |
+| `totalRecords` | `number` | `null` | `lazy` iken toplam kayıt (sayfalama için) |
+| `sortMode` | `'client' \| 'server'` | `'client'` | Eski seçenek; `lazy` kullanın |
 
-| Model | Tip | Açıklama |
-| --- | --- | --- |
-| `sort` | `HuSort` | `{ key: string; direction: 'asc' \| 'desc' \| '' }`. Başlığa her tıklama: artan → azalan → sırasız |
+**Görünüm**
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `variant` | `'default' \| 'bordered' \| 'card' \| 'minimal'` | `'default'` | `bordered`: hücre ızgarası · `card`: araç çubuğuyla birlikte çerçeveli kutu · `minimal`: arka plansız, büyük harfli başlıklar |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Satır yüksekliği (`dense` = `sm`) |
+| `striped` | `boolean` | `false` | Dönüşümlü satır rengi |
+| `hoverable` | `boolean` | `true` | Üzerine gelince satır vurgusu |
+| `nowrap` | `boolean` | `false` | Hücreler satır kırmaz; geniş tablo yatay kayar |
+| `stickyHeader` | `boolean` | `false` | Kaydırırken başlık sabit (yükseklik: `--hu-table-max-height`) |
+| `responsive` | `'scroll' \| 'stack'` | `'scroll'` | `stack`: tablo 640 px'ten darsa her satır etiketli bir kart olur (tablonun genişliğine göre) |
+| `clickableRows` | `boolean` | `false` | Satır tıklaması `rowClick` yayınlar. Satırdaki buton, link ve input tıklamaları sayılmaz |
+| `contextMenu` | `HuDropdownEntry[] \| (row, rows) => HuDropdownEntry[]` | `null` | Satıra sağ tıklayınca açılan menü (klavye: menü tuşu / Shift+F10, dokunmatik: uzun basma). Fonksiyon verilirse menü satıra göre değişir. `null` → tarayıcının menüsü. Ayrıntı: [ContextMenu](#contextmenu-hucontextmenu) |
+
+**Araç çubuğu.** `title`, `searchable`, `columnToggle`, `exportable` veya `huTableToolbar` içeriği varsa tablonun
+üstünde görünür.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `title` | `string` | — | Solda başlık |
+| `searchable` | `boolean` | `false` | Genel arama: tüm sütunlarda (gizliler dahil, `searchable: false` hariç); Türkçe karakterleri yok sayar |
+| `searchPlaceholder` | `string` | `'Tabloda ara…'` | |
+| `columnToggle` | `boolean` | `false` | "Sütunlar" paneli: göster/gizle ve yukarı/aşağı taşı, "Varsayılan" ile sıfırla |
+| `exportable` | `boolean` | `false` | "Dışa aktar": filtrelenmiş tüm satırları görünen sütunlarla CSV indirir (Excel için `;` ve UTF-8 BOM) |
+| `exportFileName` | `string` | `'tablo'` | |
+| `stateKey` | `string` | — | Gizli sütunlar, sütun sırası ve sayfa boyutu tarayıcıda (`localStorage`) bu adla saklanır |
+
+**Seçim, detay, sayfalama**
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `selectionMode` | `'none' \| 'single' \| 'multiple'` | `'none'` | `multiple`: onay kutusu sütunu (başlıktaki kutu sayfayı seçer). `single`: satıra tıklayınca seçilir |
+| `multiExpand` | `boolean` | `true` | Birden çok satır detayı aynı anda açık olabilir |
+| `paginator` | `boolean` | `false` | Altta sayfalama (`hu-paginator`) |
+| `pageSizeOptions` | `number[]` | `[10, 25, 50]` | |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `sort` | `HuSort` | `{ key: '', direction: '' }` | Başlığa her tıklama: artan → azalan → sırasız |
+| `search` | `string` | `''` | Arama metni (değişince ilk sayfaya dönülür) |
+| `selection` | `T[]` | `[]` | Seçilen satırlar |
+| `pageIndex` / `pageSize` | `number` | `0` / `10` | Sayfalama |
+| `hiddenColumns` | `string[] \| null` | `column.hidden`'dan | Gizli sütun anahtarları |
+| `columnOrder` | `string[] \| null` | `columns` sırası | Sütun sırası |
 
 | Output | Değer | Ne zaman |
 | --- | --- | --- |
-| `rowClick` | `T` | Bir satıra tıklanınca (`clickableRows` açıkken) |
+| `rowClick` | `T` | Satıra tıklanınca (`clickableRows` açıkken) |
+| `contextMenuSelect` | `HuTableContextEvent<T>` | Sağ tık menüsünden seçim: `{ option, row, rows }`. `rows`: seçili satırlardan birine sağ tıklandıysa tüm seçim, değilse yalnızca `row` |
+
+Metotlar (template referansıyla): `exportCsv()`, `clearSelection()`, `resetColumns()`.
+
+| Slot | Nereye yerleşir |
+| --- | --- |
+| `ng-template[huCell]` | Özel hücre: `huCell="sütunAnahtarı" let-row let-i="index"`; `[huCellOf]="data"` ile tip güvenli |
+| `ng-template[huRowDetail]` | Açılır satır detayı (`let-row`); verilince her satırın başında ok çıkar. `[huRowDetailOf]="data"` |
+| `[huTableToolbar]` | Araç çubuğunun sağına butonlar (Yeni, filtre…) |
+| `[huTableBulkActions]` | Satır seçiliyken araç çubuğunda görünen toplu işlem butonları |
+| `[huTableEmpty]` | Boş durum içeriği |
 
 **`HuColumn<T>`**
 
@@ -619,19 +853,41 @@ Veri tablosu: sıralama, özel hücre şablonları, yükleniyor ve boş durumlar
 | `sortable` | `boolean?` | Başlık tıklanınca sıralansın |
 | `align` | `'start' \| 'center' \| 'end'?` | Hizalama |
 | `width` | `string?` | Örn. `'120px'`, `'20%'` |
-| `value` | `(row: T) => unknown?` | Görünen / sıralanan değeri özel hesaplar |
-| `hideOnMobile` | `boolean?` | 768 px'in altında gizlenir |
-
-**Özel hücre:** `<ng-template huCell="sütunAnahtarı" let-row let-i="index">`. `[huCellOf]="data"` verirseniz
-`row` değişkeni tip güvenli olur. **Boş durum:** içine `huTableEmpty` özniteliği olan bir element koyun.
+| `value` | `(row: T) => unknown?` | Görünen / sıralanan / aranan / dışa aktarılan değeri özel hesaplar |
+| `hideOnMobile` | `boolean?` | Tablo 768 px'ten darsa gizlenir |
+| `hideable` | `boolean?` | Sütun seçicide kapatılabilir mi (varsayılan `true`) |
+| `hidden` | `boolean?` | Başlangıçta gizli; sütun seçiciden açılır |
+| `sticky` | `'start' \| 'end'?` | Yatay kaydırmada sabit: `start` soldaki ilk veri sütunu, `end` sağdaki son sütun (işlemler) |
+| `footer` | `string \| (rows) => unknown` | Alt toplam satırı; fonksiyon filtrelenmiş tüm satırları alır |
+| `searchable` | `boolean?` | Genel aramaya dahil mi (varsayılan `true`) |
+| `exportable` | `boolean?` | CSV'ye dahil mi (varsayılan `true`; işlem sütununda `false` verin) |
 
 ```html
-<hu-table [data]="users()" [columns]="columns" [(sort)]="sort" [trackBy]="byId">
-  <ng-template huCell="status" [huCellOf]="users()" let-user>
-    <hu-badge [variant]="user.active ? 'success' : 'neutral'" dot>{{ user.active ? 'Aktif' : 'Pasif' }}</hu-badge>
+<hu-table
+  variant="card" title="Personel"
+  [data]="people()" [columns]="columns" [trackBy]="byId"
+  searchable columnToggle exportable paginator [pageSize]="10"
+  selectionMode="multiple" [(selection)]="selected"
+  stateKey="personel-tablosu"
+>
+  <button huTableToolbar hu-button size="sm">Yeni</button>
+  <button huTableBulkActions hu-button size="sm" color="danger" (click)="remove(selected())">Sil</button>
+
+  <ng-template huCell="status" [huCellOf]="people()" let-p>
+    <hu-badge [variant]="p.active ? 'success' : 'neutral'" dot>{{ p.active ? 'Aktif' : 'Pasif' }}</hu-badge>
   </ng-template>
+  <ng-template huRowDetail [huRowDetailOf]="people()" let-p>…</ng-template>
   <div huTableEmpty>Arama kriterlerine uyan kullanıcı yok.</div>
 </hu-table>
+```
+
+**Sunucu tarafı:** `lazy` verin; `sortChange`, `searchChange`, `pageIndexChange`, `pageSizeChange` olaylarında veriyi
+getirin ve `totalRecords` ile toplam kaydı bildirin.
+
+```html
+<hu-table lazy searchable paginator [data]="rows()" [totalRecords]="total()" [loading]="loading()" [columns]="columns"
+  [(sort)]="sort" (sortChange)="load()" [(search)]="q" (searchChange)="load()"
+  [(pageIndex)]="page" (pageIndexChange)="load()" />
 ```
 
 ### hu-paginator
@@ -648,6 +904,57 @@ Veri tablosu: sıralama, özel hücre şablonları, yükleniyor ve boş durumlar
 
 ```html
 <hu-paginator [length]="total()" [(pageIndex)]="page" [(pageSize)]="size" />
+```
+
+### ContextMenu (huContextMenu)
+
+Sağ tık menüsü. Herhangi bir elemente direktifle eklenir; sayfaya ayrıca bir şey yerleştirmek gerekmez.
+Fareyle sağ tık, klavyede **menü tuşu** veya **Shift+F10**, dokunmatik ekranda **uzun basma** (550 ms) ile açılır.
+Menüde ↑/↓, Home/End, harfle atlama, Enter ve Esc çalışır. İmlecin yanında açılır; ekrana sığmazsa sola/yukarı
+döner. Kaydırma, pencere değişimi veya dışarı tıklama menüyü kapatır. Aynı anda tek menü açık olur. Tabloda
+satır menüsü için `hu-table [contextMenu]` kullanın.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `huContextMenu` | `HuDropdownEntry[] \| null` | — | Menü öğeleri ([hu-dropdown](#hu-dropdown) ile aynı tipler). Boş veya `null` → tarayıcının menüsü |
+| `huContextMenuDisabled` | `boolean` | `false` | Geçici olarak kapatır |
+| `huContextMenuLabel` | `string` | `'İşlemler'` | Menünün ekran okuyucu adı |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `contextMenuSelect` | `HuDropdownOption` | Öğe seçilince (`value` yoksa `label` döner) |
+| `contextMenuOpen` / `contextMenuClose` | `void` | Menü açılınca / kapanınca |
+
+Öğelerde `shortcut` alanı (`'Ctrl+C'`) sağda kısayol ipucu olarak görünür; kısayolu kendiniz bağlarsınız.
+
+**Servis (`HuContextMenuService`):** `open({ entries, x, y, returnFocus?, ariaLabel? }): Promise<HuDropdownOption | null>`
+menüyü verilen ekran koordinatında açar; seçim yapılmadan kapanırsa `null` döner. `close()` açık menüyü kapatır.
+
+```html
+<li tabindex="0" [huContextMenu]="fileActions" (contextMenuSelect)="run($event.value, file)">{{ file.name }}</li>
+
+<hu-table [data]="files()" [columns]="columns" selectionMode="multiple" [(selection)]="selected"
+          [contextMenu]="fileMenu" (contextMenuSelect)="onAction($event)" />
+```
+
+```ts
+fileActions: HuDropdownEntry[] = [
+  { label: 'Aç', value: 'open', icon: 'eye', shortcut: 'Enter' },
+  { label: 'Yeniden adlandır', value: 'rename', icon: 'edit', shortcut: 'F2' },
+  { divider: true },
+  { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+];
+
+// Tabloda satıra göre menü; rows: işlemin uygulanacağı satırlar
+fileMenu = (file: FileItem, rows: readonly FileItem[]): HuDropdownEntry[] => [
+  { header: rows.length > 1 ? `${rows.length} öğe seçili` : file.name },
+  { label: 'Aç', value: 'open', disabled: rows.length > 1 },
+  { label: 'Sil', value: 'delete', danger: true },
+];
+
+onAction({ option, rows }: HuTableContextEvent<FileItem>) {
+  if (option.value === 'delete') this.remove(rows);
+}
 ```
 
 ### hu-stepper / hu-step
@@ -726,25 +1033,115 @@ Sekme içeriği yalnızca aktifken çizilir. Klavye: ←/→, Home/End.
 </hu-tabs>
 ```
 
-### hu-card
+### hu-timeline
+
+Zaman çizelgesi: süreç adımları, geçmiş, sipariş durumu. Dikey (sağ, sol, dönüşümlü) veya yatay.
+`HU_TIMELINE_IMPORTS` ile gelir.
 
 | Input | Tip | Varsayılan | Açıklama |
 | --- | --- | --- | --- |
-| `title` | `string` | — | Başlık |
-| `subtitle` | `string` | — | Başlığın altındaki küçük metin |
-| `padding` | `'none' \| 'sm' \| 'md'` | `'md'` | İçerik boşluğu (`none`: tablo gibi kenara dayanan içerik için) |
+| `events` | `T[]` (varsayılan `HuTimelineEvent[]`) | `[]` | `{ title, description?, date?, icon?, color?, status? }` |
+| `layout` | `'vertical' \| 'horizontal'` | `'vertical'` | Yön |
+| `align` | `'right' \| 'left' \| 'alternate'` | `'right'` | Dikeyde içeriğin yeri; `alternate` dar alanda tek sütuna iner |
+| `opposite` | `boolean \| null` | `null` | Tarihi karşı tarafta göster (`null`: dikeyde ve tarih varsa) |
 
-| Slot | Nereye yerleşir |
-| --- | --- |
-| `huCardActions` | Başlığın sağı |
-| `huCardFooter` | Kartın altı |
+`status`: `'done'` dolu, `'current'` halkalı, `'todo'` boş işaret. `color`: `'primary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'`.
+
+| Şablon | Context | Açıklama |
+| --- | --- | --- |
+| `ng-template huTimelineContent` | `let-e`, `let-index` | Olay içeriği |
+| `ng-template huTimelineOpposite` | `let-e`, `let-index` | Karşı taraf |
+| `ng-template huTimelineMarker` | `let-e`, `let-index` | İşaret (avatar vb.) |
 
 ```html
-<hu-card title="Son başvurular" subtitle="Son 7 gün" padding="none">
-  <a huCardActions hu-button variant="ghost" size="sm" routerLink="/basvurular">Tümü</a>
-  <hu-table … />
-  <div huCardFooter>…</div>
-</hu-card>
+<hu-timeline [events]="steps" align="alternate" />
+
+<hu-timeline [events]="activity" [opposite]="false">
+  <ng-template huTimelineMarker [huTimelineMarkerOf]="activity" let-a><hu-avatar [name]="a.user" size="sm" /></ng-template>
+  <ng-template huTimelineContent [huTimelineContentOf]="activity" let-a>{{ a.user }} — {{ a.action }}</ng-template>
+</hu-timeline>
+```
+
+### hu-tree
+
+Ağaç. Tekli / çoklu / onay kutulu seçim (kısmi seçim üst düğüme yansır), arama (eşleşenlerin üstleri açılır),
+tembel yükleme, WAI-ARIA tree klavye desteği (↑/↓, ←/→, Home/End, Enter/Boşluk, harfle atlama).
+`HU_TREE_IMPORTS` ile gelir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `nodes` | `HuTreeNode<T>[]` | `[]` | `{ key, label, icon?, expandedIcon?, children?, leaf?, disabled?, selectable?, data? }` |
+| `selectionMode` | `'none' \| 'single' \| 'multiple' \| 'checkbox'` | `'none'` | |
+| `propagate` | `boolean` | `true` | Onay kutusunda seçim alt / üst düğümlere yayılır |
+| `filter`, `filterPlaceholder` | `boolean`, `string` | `false`, `'Ara…'` | Arama kutusu |
+| `loadChildren` | `(node) => Promise<HuTreeNode[]>` | `null` | `leaf: false` düğüm açılınca çağrılır |
+| `ariaLabel`, `emptyMessage` | `string` | `'Ağaç'`, `'Sonuç bulunamadı'` | |
+
+| Model | Tip | Açıklama |
+| --- | --- | --- |
+| `selection` | `HuTreeKey[]` | Seçili anahtarlar |
+| `expanded` | `HuTreeKey[]` | Açık düğümler |
+
+Output: `nodeSelect`, `nodeUnselect`, `nodeExpand`, `nodeCollapse` (`HuTreeNode`).
+Metotlar: `expandAll()`, `collapseAll()`, `expand(node)`, `collapse(node)`, `toggle(node)`.
+Şablon: `<ng-template huTreeNode let-node let-level="level" let-expanded="expanded">`.
+
+```html
+<hu-tree [nodes]="units" selectionMode="checkbox" [(selection)]="granted" filter />
+<hu-tree [nodes]="roots" [loadChildren]="load" />
+```
+
+### hu-picklist
+
+İki liste arasında öğe taşıma. Tık seç/bırak, Ctrl ile ekle, Shift ile aralık, çift tık taşı;
+klavye: ↑/↓, Boşluk, Enter (taşı), Ctrl+A. Dar alanda listeler alt alta dizilir. `HU_PICKLIST_IMPORTS` ile gelir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `sourceHeader`, `targetHeader` | `string` | `'Seçilebilir'`, `'Seçilen'` | |
+| `optionLabel` | `string \| (item) => string` | `null` | Nesnelerde etiket |
+| `dataKey` | `string` | `null` | Takip anahtarı alanı |
+| `filter`, `filterPlaceholder` | `boolean`, `string` | `false`, `'Ara…'` | Liste başına arama |
+| `reorder` | `boolean` | `false` | Hedef listede sıralama düğmeleri |
+| `listHeight` | `string` | `'16rem'` | |
+| `disabled`, `emptyMessage` | | `false`, `'Öğe yok'` | |
+
+| Model | Tip | Açıklama |
+| --- | --- | --- |
+| `source` | `T[]` | Sol liste |
+| `target` | `T[]` | Sağ liste |
+
+Output: `moved` → `{ items, from, to }`. Metotlar: `moveSelected(from)`, `moveAll(from)`.
+Şablon: `<ng-template huPickListItem [huPickListItemOf]="list" let-item let-selected="selected">`.
+
+```html
+<hu-picklist [(source)]="available" [(target)]="selected" optionLabel="name" dataKey="code" filter reorder />
+```
+
+### hu-org-chart
+
+Organizasyon şeması: kartlar ve bağlantı çizgileri, katlanabilir alt dallar, isteğe bağlı seçim.
+Geniş şema yatay kaydırılır ve kök ortada açılır. `HU_ORG_CHART_IMPORTS` ile gelir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `HuOrgChartNode \| HuOrgChartNode[]` | `null` | `{ key, label, title?, image?, avatar?, icon?, color?, children?, selectable?, data? }` |
+| `selectionMode` | `'none' \| 'single' \| 'multiple'` | `'none'` | |
+| `collapsible` | `boolean` | `true` | Katlama düğmesi (kapalıyken alt sayısını gösterir) |
+| `compact` | `boolean` | `false` | Dar kart ve aralıklar |
+| `ariaLabel` | `string` | `'Organizasyon şeması'` | |
+
+| Model | Tip | Açıklama |
+| --- | --- | --- |
+| `selection` | `HuOrgChartKey[]` | Seçili kartlar |
+| `collapsed` | `HuOrgChartKey[]` | Katlanmış düğümler |
+
+Output: `nodeSelect`, `nodeUnselect`. Metotlar: `toggle(node)`, `expandAll()`, `collapseFrom(level = 2)`.
+Şablon: `<ng-template huOrgChartNode let-node let-selected="selected" let-collapsed="collapsed">`.
+CSS: `--hu-org-chart-node-width` (11rem), `--hu-org-chart-line`.
+
+```html
+<hu-org-chart [value]="company" selectionMode="single" [(selection)]="picked" />
 ```
 
 ### hu-dropdown
@@ -809,6 +1206,150 @@ actions: HuDropdownEntry[] = [
 ```
 
 ---
+
+## Panel
+
+### hu-accordion / hu-accordion-panel
+
+Açılır paneller. Varsayılan olarak tek panel açık; `multiple` ile birden çok. Başlıklar arasında ↑/↓, Home/End.
+Kapalı panelin içeriği DOM'da kalır (`inert`). `HU_ACCORDION_IMPORTS` ile gelir.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `multiple` (accordion) | `boolean` | `false` | |
+| `variant` (accordion) | `'default' \| 'separated' \| 'flush'` | `'default'` | |
+| `header` (panel) | `string` | zorunlu | |
+| `subtitle`, `icon` (panel) | `string` | — | |
+| `value` (panel) | `string \| number` | sırası | Takip anahtarı |
+| `disabled` (panel) | `boolean` | `false` | |
+
+Model: `value` (accordion) → açık panellerin anahtarları. Metotlar: `toggle(key)`, `expandAll()`, `collapseAll()`.
+Slot: `[huAccordionHeaderEnd]` başlığın sağı.
+
+```html
+<hu-accordion [(value)]="open" multiple variant="separated">
+  <hu-accordion-panel header="Profil" icon="user" value="profil">…</hu-accordion-panel>
+  <hu-accordion-panel header="Bildirimler" value="bildirim">
+    <hu-badge huAccordionHeaderEnd>3</hu-badge>…
+  </hu-accordion-panel>
+</hu-accordion>
+```
+
+### hu-card
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `title` | `string` | — | Başlık |
+| `subtitle` | `string` | — | Başlığın altındaki küçük metin |
+| `padding` | `'none' \| 'sm' \| 'md'` | `'md'` | İçerik boşluğu (`none`: tablo gibi kenara dayanan içerik için) |
+| `variant` | `'outlined' \| 'elevated' \| 'flat' \| 'soft'` | `'outlined'` | Görünüm |
+| `hoverable` | `boolean` | `false` | Üzerine gelince öne çıkar |
+
+| Slot | Nereye yerleşir |
+| --- | --- |
+| `huCardMedia` | Üstte, kenarlara dayalı görsel |
+| `huCardActions` | Başlığın sağı |
+| `huCardFooter` | Kartın altı |
+
+```html
+<hu-card title="Son başvurular" subtitle="Son 7 gün" padding="none">
+  <a huCardActions hu-button variant="ghost" size="sm" routerLink="/basvurular">Tümü</a>
+  <hu-table … />
+  <div huCardFooter>…</div>
+</hu-card>
+<hu-card title="Etkinlik" hoverable><img huCardMedia src="/kapak.jpg" alt="" />…</hu-card>
+```
+
+### hu-divider
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `layout` | `'horizontal' \| 'vertical'` | `'horizontal'` | |
+| `align` | `'start' \| 'center' \| 'end'` | `'center'` | İçerik verilirse metnin konumu |
+| `type` | `'solid' \| 'dashed' \| 'dotted'` | `'solid'` | |
+
+```html
+<hu-divider>veya</hu-divider>
+<a href="/profil">Profil</a><hu-divider layout="vertical" /><a href="/ayarlar">Ayarlar</a>
+```
+
+### hu-fieldset
+
+Native `<fieldset>`. `disabled` içindeki tüm kontrolleri birden kapatır.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `legend` | `string` | zorunlu | |
+| `icon` | `string` | — | |
+| `toggleable` | `boolean` | `false` | Başlığa tıklayınca açılır / kapanır |
+| `disabled` | `boolean` | `false` | |
+
+Model: `collapsed` (`boolean`, içerik DOM'da kalır).
+
+```html
+<hu-fieldset legend="Gelişmiş ayarlar" toggleable [(collapsed)]="closed">…</hu-fieldset>
+```
+
+## Medya
+
+`HuMediaImage`: `{ src, thumbnail?, alt, caption?, description? }`.
+
+### hu-carousel
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `items` | `T[]` | `[]` | |
+| `numVisible` | `number` | `1` | Aynı anda görünen |
+| `numScroll` | `number \| null` | `numVisible` | Bir adımda kayan |
+| `breakpoints` | `{ minWidth, numVisible, numScroll? }[]` | `[]` | Carousel'in **kendi** genişliğine göre |
+| `circular` | `boolean` | `true` | |
+| `autoplay` | `number` (ms) | `0` | Üzerine gelince / odakta durur; durdur düğmesi |
+| `showIndicators`, `showNavigators` | `boolean` | `true` | |
+| `ariaLabel` | `string` | `'Carousel'` | |
+
+Model: `page`. Metotlar: `next()`, `prev()`. Klavye ←/→, kaydırma hareketi.
+`HU_CAROUSEL_IMPORTS` ile gelir.
+
+```html
+<hu-carousel [items]="news" [numVisible]="3" [breakpoints]="[{ minWidth: 0, numVisible: 1 }, { minWidth: 640, numVisible: 3 }]">
+  <ng-template huCarouselItem [huCarouselItemOf]="news" let-n>…</ng-template>
+</hu-carousel>
+```
+
+### hu-gallery / hu-lightbox
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `images` | `HuMediaImage[]` | `[]` | |
+| `mode` | `'inline' \| 'grid'` | `'inline'` | Ana görsel + şerit veya ızgara |
+| `showThumbnails` | `boolean` | `true` | |
+| `fullscreen` | `boolean` | `true` | Lightbox düğmesi |
+| `minColumnWidth` | `string` | `'10rem'` | Izgara döşeme genişliği |
+
+Model: `activeIndex`. `hu-lightbox` tek başına: `[images]`, `[(open)]`, `[(index)]`, `loop`, `rotatable`.
+Lightbox: yakınlaştırma (düğme, +/−, tekerlek), yakınken sürükleme, döndürme, ←/→, Esc.
+
+```html
+<hu-gallery [images]="photos" [(activeIndex)]="i" />
+<hu-lightbox [images]="photos" [(open)]="show" [(index)]="i" />
+```
+
+### hu-image
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `src` | `string` | zorunlu | |
+| `alt` | `string` | `''` | |
+| `preview`, `previewSrc` | `boolean`, `string` | `false`, `src` | Tıklayınca lightbox |
+| `caption` | `string` | — | Altta ve önizlemede |
+| `width`, `height` | `number \| string` | — | Yer ayırır (sayfa kayması olmaz) |
+| `fit` | `'cover' \| 'contain'` | `'cover'` | |
+| `rounded`, `lazy` | `boolean` | `true` | |
+| `fallback` | `string` | — | Yüklenemezse |
+
+```html
+<hu-image src="/foto.jpg" previewSrc="/foto-buyuk.jpg" alt="Toplantı salonu" [width]="320" [height]="200" preview />
+```
 
 ## Geri bildirim
 
@@ -885,6 +1426,30 @@ const ok = await inject(HuConfirmPopupService).confirm({
   acceptLabel: 'Sil',
   acceptColor: 'danger',
 });
+```
+
+### huTooltip
+
+Kısa açıklama balonu. Üzerine gelince (gecikmeyle) veya klavyeyle odaklanınca açılır; Esc ve ayrılma kapatır.
+Tercih edilen tarafa sığmazsa ters tarafa geçer, ok tetikleyicinin ortasını gösterir. Üst katmanda açıldığı için
+kart / tablo / dialog içinde kesilmez. Açıkken tetikleyiciye `aria-describedby` bağlanır. Bir ipucundan
+komşusuna geçerken beklemeden açılır; aynı anda tek ipucu görünür. Tıklamada kapanmaz, böylece "Kopyalandı!" gibi
+geri bildirimler için metni değiştirebilirsiniz.
+
+Yalnızca ikonlu butonlarda ipucu `aria-label`'ın yerine geçmez; ikisini birlikte verin.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `huTooltip` | `string` | — | Metin (boşsa açılmaz; açıkken değişirse güncellenir) |
+| `huTooltipPosition` | `'top' \| 'bottom' \| 'left' \| 'right'` | `'top'` | Tercih edilen taraf |
+| `huTooltipDelay` | `number` | `350` | Açılma gecikmesi (ms) |
+| `huTooltipDisabled` | `boolean` | `false` | Kapat |
+
+Metotlar: `show()`, `hide()`. Renkler: `--hu-tooltip-bg`, `--hu-tooltip-fg` (koyu temada açık balon).
+
+```html
+<button hu-button iconOnly aria-label="Sil" huTooltip="Kaydı kalıcı olarak siler"><hu-icon name="trash" /></button>
+<span tabindex="0" huTooltip="Avrupa Kredi Transfer Sistemi" huTooltipPosition="right">AKTS</span>
 ```
 
 ### HuToastService + hu-toaster
@@ -1035,12 +1600,19 @@ Birlikte kullanılan parçalar. Birini import etmeyi unutmak Angular'da sessizce
 | Sabit | İçerik |
 | --- | --- |
 | `HU_FORM_FIELD_IMPORTS` | `HuFormField`, `HuInput`, `HuPrefix`, `HuSuffix` |
-| `HU_TABLE_IMPORTS` | `HuTable`, `HuCellDef` |
+| `HU_TABLE_IMPORTS` | `HuTable`, `HuCellDef`, `HuRowDetail`, `HuTableToolbar`, `HuTableBulkActions` |
 | `HU_DIALOG_IMPORTS` | `HuDialog`, `HuDialogFooter` |
 | `HU_DROPDOWN_IMPORTS` | `HuDropdown`, `HuDropdownTrigger`, `HuDropdownHeaderSlot` |
 | `HU_TABS_IMPORTS` | `HuTabs`, `HuTab` |
+| `HU_RADIO_IMPORTS` | `HuRadioGroup`, `HuRadio` |
 | `HU_STEPPER_IMPORTS` | `HuStepper`, `HuStep`, `HuStepperNext`, `HuStepperPrevious` |
-| `HU_CARD_IMPORTS` | `HuCard`, `HuCardActions`, `HuCardFooter` |
+| `HU_CARD_IMPORTS` | `HuCard`, `HuCardActions`, `HuCardFooter`, `HuCardMedia` |
+| `HU_ACCORDION_IMPORTS` | `HuAccordion`, `HuAccordionPanel` |
+| `HU_TIMELINE_IMPORTS` | `HuTimeline`, `HuTimelineContent`, `HuTimelineOpposite`, `HuTimelineMarker` |
+| `HU_TREE_IMPORTS` | `HuTree`, `HuTreeNodeDef` |
+| `HU_PICKLIST_IMPORTS` | `HuPickList`, `HuPickListItem` |
+| `HU_ORG_CHART_IMPORTS` | `HuOrgChart`, `HuOrgChartNodeDef` |
+| `HU_CAROUSEL_IMPORTS` | `HuCarousel`, `HuCarouselItem` |
 | `HU_SHELL_IMPORTS` | `HuShell`, `HuTopbarStart`, `HuTopbarEnd`, `HuSidebarFooter`, `HuShellLogo` |
 
 ```ts

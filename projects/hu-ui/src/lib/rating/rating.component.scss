@@ -1,0 +1,88 @@
+.hu-rating {
+  --_on: #f59e0b;
+  --_off: var(--hu-border-strong);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hu-space-3);
+}
+
+.hu-rating__stars {
+  display: inline-flex;
+  gap: 2px;
+  border-radius: var(--hu-radius-sm);
+}
+
+.hu-rating__star {
+  position: relative;
+  display: inline-flex;
+  color: var(--_off);
+  cursor: pointer;
+  transition:
+    color var(--hu-transition),
+    transform var(--hu-transition);
+
+  // Yıldızın içi dolu
+  .hu-icon svg {
+    fill: currentColor;
+  }
+
+  &--on {
+    color: var(--_on);
+  }
+
+  &:hover:not(.hu-rating__star--disabled) {
+    transform: scale(1.12);
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:has(.hu-rating__input:focus-visible) {
+    border-radius: var(--hu-radius-sm);
+    box-shadow: var(--hu-ring);
+  }
+}
+
+.hu-rating__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hu-rating__label {
+  font-size: var(--hu-text-sm);
+  font-weight: 500;
+  color: var(--hu-text-muted);
+}
+
+.hu-rating--invalid .hu-rating__star:not(.hu-rating__star--on) {
+  color: color-mix(in srgb, var(--hu-danger) 45%, var(--_off));
+}
+
+// Salt okunur: kısmi dolu yıldız (dolu katman soldan --fill kadar)
+.hu-rating--readonly {
+  .hu-rating__star {
+    cursor: default;
+
+    &:hover {
+      transform: none;
+    }
+  }
+
+  .hu-rating__base {
+    color: var(--_off);
+  }
+
+  .hu-rating__fill {
+    position: absolute;
+    inset: 0;
+    color: var(--_on);
+    clip-path: inset(0 calc(100% - var(--fill)) 0 0);
+  }
+}

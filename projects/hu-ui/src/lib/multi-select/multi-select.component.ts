@@ -21,6 +21,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, ValidationErrors } from '@angular/forms';
 import { HuIcon } from '../icon/icon.component';
+import { huFold as fold } from '../core/text';
 import { huUniqueId } from '../core/unique-id';
 import { HU_FORM_FIELD, HuFormFieldControl } from '../form-field/form-field.tokens';
 import { HuInputSize } from '../form-field/input.directive';
@@ -425,13 +426,4 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
     }
     return this.ngControl;
   }
-}
-
-/** Arama için: küçük harf, Türkçe karakterler ve aksanlar yok sayılır ("Öğrenci" → "ogrenci"). */
-function fold(text: string): string {
-  return text
-    .toLocaleLowerCase('tr-TR')
-    .replace(/ı/g, 'i')
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '');
 }

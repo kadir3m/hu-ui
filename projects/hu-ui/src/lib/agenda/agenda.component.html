@@ -1,0 +1,281 @@
+<!-- Araç çubuğu -->
+<div class="hu-agenda__toolbar">
+  <div class="hu-agenda__nav">
+    <button hu-button variant="outline" size="sm" type="button" (click)="today()">Bugün</button>
+    <span class="hu-agenda__arrows">
+      <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="Önceki" (click)="previous()">
+        <hu-icon name="chevron-left" [size]="18" />
+      </button>
+      <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="Sonraki" (click)="next()">
+        <hu-icon name="chevron-right" [size]="18" />
+      </button>
+    </span>
+    <h2 class="hu-agenda__title" aria-live="polite">{{ title() }}</h2>
+  </div>
+  <div class="hu-agenda__actions">
+    @if (editable()) {
+      <button hu-button size="sm" type="button" (click)="newAtNextHour()"><hu-icon name="plus" [size]="16" /> Yeni</button>
+    }
+    @if (views().length > 1) {
+      <hu-button-group aria-label="Görünüm">
+        @for (v of views(); track v) {
+          <button hu-button variant="outline" size="sm" type="button" [attr.aria-pressed]="view() === v" (click)="view.set(v)">
+            {{ viewLabels[v] }}
+          </button>
+        }
+      </hu-button-group>
+    }
+  </div>
+</div>
+
+@if (categories().length) {
+  <div class="hu-agenda__legend" role="group" aria-label="Türlere göre filtrele">
+    @for (c of categories(); track c.key) {
+      <button
+        type="button"
+        class="hu-agenda__chip"
+        [attr.data-color]="c.color"
+        [attr.aria-pressed]="!hidden().has(c.key)"
+        (click)="toggleCategory(c.key)"
+      >
+        <span class="hu-agenda__dot"></span>{{ c.label }}
+      </button>
+    }
+  </div>
+}
+
+<!-- Etkinlik kutusunun içeriği (her görünümde) -->
+<ng-template #chip let-e>
+  @if (!isAllDayLike(e)) {
+    <span class="hu-agenda__chip-time">{{ startLabel(e) }}</span>
+  }
+  <span class="hu-agenda__chip-title">{{ e.title }}</span>
+</ng-template>
+
+@switch (view()) {
+  <!-- ================= AY ================= -->
+  @case ('month') {
+    <div
+      class="hu-agenda__month"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerCancel()"
+    >
+      <div class="hu-agenda__weekdays" aria-hidden="true">
+        @for (name of weekdayNames(); track $index) {
+          <span>{{ name }}</span>
+        }
+      </div>
+      @for (week of weeks(); track $index) {
+        <div class="hu-agenda__week-row">
+          @for (cell of week; track cell.key) {
+            <div
+              class="hu-agenda__cell"
+              [attr.data-day]="cell.key"
+              [class.hu-agenda__cell--outside]="cell.outside"
+              [class.hu-agenda__cell--today]="isToday(cell.day)"
+              (click)="onDayClick(cell.day, false, $event)"
+            >
+              <button
+                type="button"
+                class="hu-agenda__daynum"
+                [attr.aria-label]="cell.day.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }) + ' günü göster'"
+                (click)="goToDay(cell.day)"
+              >
+                {{ cell.day.getDate() }}
+              </button>
+              @for (e of cell.events.slice(0, maxPerDay()); track e.id) {
+                <button
+                  type="button"
+                  class="hu-agenda__event hu-agenda__event--chip"
+                  [class.hu-agenda__event--block]="isAllDayLike(e)"
+                  [class.hu-agenda__event--past]="isPast(e)"
+                  [class.hu-agenda__event--dragging]="isDragged(e)"
+                  [attr.data-color]="colorOf(e)"
+                  [attr.data-event-id]="e.id"
+                  [attr.aria-label]="ariaLabel(e)"
+                  (click)="openEvent(e)"
+                >
+                  <ng-container *ngTemplateOutlet="chip; context: { $implicit: e }" />
+                </button>
+              }
+              @if (cell.events.length > maxPerDay()) {
+                <button type="button" class="hu-agenda__more" (click)="goToDay(cell.day)">
+                  +{{ cell.events.length - maxPerDay() }} daha
+                </button>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ================= LİSTE ================= -->
+  @case ('list') {
+    <div class="hu-agenda__list">
+      @for (g of groups(); track g.day.getTime()) {
+        <section class="hu-agenda__list-day" [class.hu-agenda__list-day--today]="isToday(g.day)">
+          <h3 class="hu-agenda__list-date">
+            <span class="hu-agenda__list-num">{{ g.day.getDate() }}</span>
+            <span>
+              {{ g.day.toLocaleDateString('tr-TR', { weekday: 'long' }) }}
+              <span class="hu-agenda__list-month">{{ g.day.toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' }) }}</span>
+            </span>
+          </h3>
+          <ul>
+            @for (e of g.events; track e.id) {
+              <li>
+                <button
+                  type="button"
+                  class="hu-agenda__list-item"
+                  [class.hu-agenda__event--past]="isPast(e)"
+                  [attr.data-color]="colorOf(e)"
+                  [attr.aria-label]="ariaLabel(e)"
+                  (click)="openEvent(e)"
+                >
+                  <span class="hu-agenda__list-time">{{ timeLabel(e) }}</span>
+                  <span class="hu-agenda__dot"></span>
+                  <span class="hu-agenda__list-text">
+                    <strong>{{ e.title }}</strong>
+                    @if (e.location || categoryLabel(e)) {
+                      <span class="hu-agenda__list-meta">
+                        {{ categoryLabel(e) }}{{ e.location && categoryLabel(e) ? ' · ' : '' }}{{ e.location }}
+                      </span>
+                    }
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      } @empty {
+        <div class="hu-agenda__empty">
+          <hu-icon name="calendar" [size]="28" />
+          <p>Bu aralıkta kayıt yok.</p>
+          @if (editable()) {
+            <button hu-button size="sm" variant="outline" type="button" (click)="newAtNextHour()">Kayıt ekle</button>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ================= HAFTA / GÜN ================= -->
+  @default {
+    <div
+      class="hu-agenda__time"
+      [style.--days]="days().length"
+      (pointerdown)="onPointerDown($event)"
+      (pointermove)="onPointerMove($event)"
+      (pointerup)="onPointerUp($event)"
+      (pointercancel)="onPointerCancel()"
+    >
+      <div class="hu-agenda__head">
+        <span class="hu-agenda__corner"></span>
+        @for (col of columns(); track col.key) {
+          <button
+            type="button"
+            class="hu-agenda__dayhead"
+            [class.hu-agenda__dayhead--today]="isToday(col.day)"
+            [disabled]="view() === 'day'"
+            (click)="goToDay(col.day)"
+          >
+            <span class="hu-agenda__dayhead-name">{{ col.day.toLocaleDateString('tr-TR', { weekday: 'short' }) }}</span>
+            <span class="hu-agenda__dayhead-num">{{ col.day.getDate() }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="hu-agenda__allday">
+        <span class="hu-agenda__corner hu-agenda__allday-label">Tüm gün</span>
+        @for (col of columns(); track col.key) {
+          <div class="hu-agenda__allday-cell" [attr.data-day]="col.key" (click)="onDayClick(col.day, true, $event)">
+            @for (e of col.allDay; track e.id) {
+              <button
+                type="button"
+                class="hu-agenda__event hu-agenda__event--chip hu-agenda__event--block"
+                [class.hu-agenda__event--dragging]="isDragged(e)"
+                [attr.data-color]="colorOf(e)"
+                [attr.data-event-id]="e.id"
+                [attr.aria-label]="ariaLabel(e)"
+                (click)="openEvent(e)"
+              >
+                <span class="hu-agenda__chip-title">{{ e.title }}</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div #scroller class="hu-agenda__scroller">
+        <div class="hu-agenda__body" [style.--hours]="hours().length">
+          <div class="hu-agenda__gutter" aria-hidden="true">
+            @for (h of hours(); track h) {
+              <span [style.top.px]="y(h * 60)">{{ h !== hourRange().start ? hourLabel(h) : '' }}</span>
+            }
+          </div>
+          <div
+            #grid
+            class="hu-agenda__grid"
+            [style.--slot]="px(slotMinutes()) + 'px'"
+            [style.--biz-start]="bizStart() + 'px'"
+            [style.--biz-end]="bizEnd() + 'px'"
+            (click)="onGridClick($event)"
+          >
+            @for (col of columns(); track col.key; let ci = $index) {
+              <div class="hu-agenda__col" [class.hu-agenda__col--today]="isToday(col.day)" [class.hu-agenda__col--weekend]="col.day.getDay() === 0 || col.day.getDay() === 6">
+                @if (selectionBox(ci); as box) {
+                  <div class="hu-agenda__selection" [style.top.px]="box.top" [style.height.px]="box.height">
+                    {{ selectionLabel() }}
+                  </div>
+                }
+                @for (l of col.timed; track l.event.id) {
+                  <button
+                    type="button"
+                    class="hu-agenda__event hu-agenda__event--timed"
+                    [class.hu-agenda__event--short]="l.height < 40"
+                    [class.hu-agenda__event--past]="isPast(l.event)"
+                    [class.hu-agenda__event--dragging]="isDragged(l.event)"
+                    [attr.data-color]="colorOf(l.event)"
+                    [attr.data-event-id]="l.event.id"
+                    [attr.aria-label]="ariaLabel(l.event)"
+                    [style.top.px]="y(l.top)"
+                    [style.height.px]="px(l.height) - 2"
+                    [style.left]="'calc(' + (l.column / l.columns) * 100 + '% + 2px)'"
+                    [style.width]="'calc(' + 100 / l.columns + '% - 4px)'"
+                    (click)="openEvent(l.event)"
+                  >
+                    <span class="hu-agenda__event-title">{{ l.event.title }}</span>
+                    <span class="hu-agenda__event-time">{{ timeLabel(l.event) }}</span>
+                    @if (l.event.location && l.height >= 70) {
+                      <span class="hu-agenda__event-meta">{{ l.event.location }}</span>
+                    }
+                    @if (canEdit(l.event)) {
+                      <span class="hu-agenda__resize" data-resize aria-hidden="true"></span>
+                    }
+                  </button>
+                }
+                @if (isToday(col.day) && nowVisible()) {
+                  <div class="hu-agenda__now" [style.top.px]="nowTop()" aria-hidden="true"></div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (editor()) {
+  <hu-agenda-editor
+    [(open)]="editorOpen"
+    [event]="editorEvent()"
+    [isNew]="editorIsNew()"
+    [categories]="categories()"
+    (save)="onSave($event)"
+    (delete)="onDelete($event)"
+  />
+}
