@@ -1,0 +1,167 @@
+<div
+  #trigger
+  class="hu-multi-select__trigger"
+  role="combobox"
+  aria-haspopup="listbox"
+  [id]="id()"
+  [attr.tabindex]="isDisabled() ? -1 : 0"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="listId"
+  [attr.aria-disabled]="isDisabled() || null"
+  [attr.aria-invalid]="isInvalid() || null"
+  [attr.aria-describedby]="field?.describedBy() ?? null"
+  [attr.aria-label]="ariaLabel() || null"
+  [class.hu-multi-select__trigger--invalid]="isInvalid()"
+  (click)="toggle()"
+  (keydown)="onTriggerKeydown($event)"
+>
+  <div class="hu-multi-select__values">
+    @if (!selectedOptions().length) {
+      <span class="hu-multi-select__placeholder">{{ placeholder() }}</span>
+    } @else if (showChips()) {
+      @for (o of selectedOptions(); track o.value) {
+        <span class="hu-multi-select__chip">
+          {{ o.label }}
+          @if (!isDisabled()) {
+            <button
+              type="button"
+              class="hu-multi-select__chip-remove"
+              tabindex="-1"
+              [attr.aria-label]="o.label + ' kaldır'"
+              (click)="remove(o, $event)"
+            >
+              <hu-icon name="x" [size]="12" />
+            </button>
+          }
+        </span>
+      }
+    } @else {
+      <span class="hu-multi-select__text">{{ summary() }}</span>
+    }
+  </div>
+  @if (showClear() && selectedOptions().length && !isDisabled()) {
+    <button type="button" class="hu-multi-select__icon-btn" tabindex="-1" aria-label="Seçimi temizle" (click)="clearAll($event)">
+      <hu-icon name="x" [size]="14" />
+    </button>
+  }
+  <hu-icon class="hu-multi-select__caret" name="chevron-down" [size]="16" />
+</div>
+
+<div
+  #panel
+  popover="manual"
+  class="hu-multi-select__panel"
+  [class.hu-multi-select__panel--inline]="!supportsPopover"
+  [attr.hidden]="!supportsPopover && !open() ? '' : null"
+  (keydown)="onPanelKeydown($event)"
+>
+  @if (open()) {
+    @if (filter() || showSelectAll()) {
+      <div class="hu-multi-select__header">
+        @if (showSelectAll() && selectionLimit() == null) {
+          <button
+            type="button"
+            class="hu-multi-select__all"
+            tabindex="-1"
+            [attr.aria-label]="allSelected() ? 'Seçimi kaldır' : 'Tümünü seç'"
+            [disabled]="!selectable().length"
+            (click)="toggleAll()"
+          >
+            <span
+              class="hu-multi-select__box"
+              [class.hu-multi-select__box--checked]="allSelected()"
+              [class.hu-multi-select__box--partial]="someSelected()"
+              aria-hidden="true"
+            >
+              @if (allSelected()) {
+                <hu-icon name="check" [size]="12" />
+              } @else if (someSelected()) {
+                <hu-icon name="minus" [size]="12" />
+              }
+            </span>
+          </button>
+        }
+        @if (filter()) {
+          <div class="hu-multi-select__search">
+            <hu-icon name="search" [size]="14" />
+            <input
+              #search
+              type="text"
+              class="hu-input"
+              data-size="sm"
+              role="searchbox"
+              autocomplete="off"
+              [attr.aria-label]="filterPlaceholder()"
+              [attr.aria-controls]="listId"
+              [attr.aria-activedescendant]="activeIndex() >= 0 ? optionId(activeIndex()) : null"
+              [placeholder]="filterPlaceholder()"
+              [value]="query()"
+              (input)="onQuery($any($event.target).value)"
+            />
+          </div>
+        } @else if (showSelectAll() && selectionLimit() == null) {
+          <span class="hu-multi-select__all-label" (click)="toggleAll()">Tümünü seç</span>
+        }
+      </div>
+    }
+
+    <ul
+      #listbox
+      class="hu-multi-select__list"
+      role="listbox"
+      aria-multiselectable="true"
+      [id]="listId"
+      [attr.tabindex]="filter() ? -1 : 0"
+      [attr.aria-label]="ariaLabel() || placeholder()"
+      [attr.aria-activedescendant]="!filter() && activeIndex() >= 0 ? optionId(activeIndex()) : null"
+    >
+      @for (row of rows(); track $index) {
+        @if (row.kind === 'group') {
+          <li class="hu-multi-select__group" role="presentation">{{ row.label }}</li>
+        } @else {
+          @let o = row.option;
+          @let selected = isSelected(o);
+          @let blocked = !selected && limitReached();
+          <li
+            class="hu-multi-select__option"
+            role="option"
+            [id]="optionId(row.index)"
+            [attr.aria-selected]="selected"
+            [attr.aria-disabled]="o.disabled || blocked || null"
+            [class.hu-multi-select__option--active]="row.index === activeIndex()"
+            [class.hu-multi-select__option--disabled]="o.disabled || blocked"
+            (mousedown)="$event.preventDefault()"
+            (mousemove)="!o.disabled && activeIndex() !== row.index && activeIndex.set(row.index)"
+            (click)="toggleOption(o)"
+          >
+            <span class="hu-multi-select__box" [class.hu-multi-select__box--checked]="selected" aria-hidden="true">
+              @if (selected) {
+                <hu-icon name="check" [size]="12" />
+              }
+            </span>
+            @if (o.icon) {
+              <hu-icon class="hu-multi-select__option-icon" [name]="o.icon" [size]="16" />
+            }
+            <span class="hu-multi-select__option-text">
+              <span>{{ o.label }}</span>
+              @if (o.description) {
+                <span class="hu-multi-select__option-desc">{{ o.description }}</span>
+              }
+            </span>
+          </li>
+        }
+      } @empty {
+        <li class="hu-multi-select__empty" role="presentation">{{ emptyMessage() }}</li>
+      }
+    </ul>
+
+    @if (selectionLimit() != null || value().length) {
+      <div class="hu-multi-select__footer" aria-live="polite">
+        {{ value().length }}{{ selectionLimit() != null ? ' / ' + selectionLimit() : '' }} seçildi
+        @if (limitReached()) {
+          · sınıra ulaşıldı
+        }
+      </div>
+    }
+  }
+</div>

@@ -29,7 +29,7 @@ export class BreadcrumbDoc {
     { label: 'Akademik', link: '/akademik/bolumler' },
     { label: 'Bölümler', link: '/akademik/bolumler' },
     { label: 'Bilgisayar Mühendisliği', link: '/akademik/bolumler' },
-    { label: 'BBM 203 — Veri Yapıları' },
+    { label: 'BİL 203 — Veri Yapıları' },
   ];
 
   protected readonly basicCode = `

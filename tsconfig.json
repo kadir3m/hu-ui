@@ -4,6 +4,8 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    // Demo kütüphaneyi kaynak koddan (paths) import ettiği için kök, çalışma alanının kendisi
+    "rootDir": ".",
     "strict": true,
     "paths": {
       "@ucme-ui/angular": [
@@ -28,5 +30,14 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  // Kök dosya yalnızca ortak ayarları taşır; dosyaları alt projeler derler.
+  // (Aksi halde editör tüm projects/ klasörünü tek proje sanar.)
+  "files": [],
+  "references": [
+    { "path": "./projects/hu-ui/tsconfig.lib.json" },
+    { "path": "./projects/hu-ui/tsconfig.spec.json" },
+    { "path": "./projects/demo/tsconfig.app.json" },
+    { "path": "./projects/demo/tsconfig.spec.json" }
+  ]
 }

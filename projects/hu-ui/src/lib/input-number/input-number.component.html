@@ -1,0 +1,99 @@
+@if (buttons() === 'horizontal') {
+  <button
+    type="button"
+    class="hu-input-number__btn hu-input-number__btn--minus"
+    tabindex="-1"
+    aria-label="Azalt"
+    [disabled]="!canDecrement()"
+    (pointerdown)="startRepeat(-1, $event)"
+    (pointerup)="stopRepeat()"
+    (pointerleave)="stopRepeat()"
+    (pointercancel)="stopRepeat()"
+  >
+    <hu-icon name="minus" [size]="16" />
+  </button>
+}
+
+<div class="hu-input-number__control">
+  @if (prefixText()) {
+    <span class="hu-input-number__affix hu-input-number__affix--prefix" aria-hidden="true">{{ prefixText() }}</span>
+  }
+  <input
+    #input
+    type="text"
+    class="hu-input hu-input-number__input"
+    role="spinbutton"
+    autocomplete="off"
+    [attr.inputmode]="fraction().max > 0 ? 'decimal' : 'numeric'"
+    [id]="id()"
+    [attr.data-size]="size()"
+    [class.hu-input--invalid]="isInvalid()"
+    [class.hu-input-number__input--prefix]="!!prefixText()"
+    [class.hu-input-number__input--suffix]="!!suffix()"
+    [attr.aria-invalid]="isInvalid() || null"
+    [attr.aria-describedby]="field?.describedBy() ?? null"
+    [attr.aria-label]="ariaLabel() || null"
+    [attr.aria-valuenow]="value()"
+    [attr.aria-valuemin]="min()"
+    [attr.aria-valuemax]="max()"
+    [attr.aria-valuetext]="text() ? (prefixText() ?? '') + text() + (suffix() ? ' ' + suffix() : '') : null"
+    [attr.placeholder]="placeholder() ?? null"
+    [value]="text()"
+    [disabled]="isDisabled()"
+    [readOnly]="readonly()"
+    (focus)="onFocus()"
+    (blur)="onBlur()"
+    (keydown)="onKeydown($event)"
+    (input)="onInput($event)"
+  />
+  @if (suffix()) {
+    <span class="hu-input-number__affix hu-input-number__affix--suffix" aria-hidden="true">{{ suffix() }}</span>
+  }
+
+  @if (buttons() === 'stacked') {
+    <span class="hu-input-number__stack">
+      <button
+        type="button"
+        class="hu-input-number__btn"
+        tabindex="-1"
+        aria-label="Artır"
+        [disabled]="!canIncrement()"
+        (pointerdown)="startRepeat(1, $event)"
+        (pointerup)="stopRepeat()"
+        (pointerleave)="stopRepeat()"
+        (pointercancel)="stopRepeat()"
+      >
+        <hu-icon name="chevron-up" [size]="14" />
+      </button>
+      <button
+        type="button"
+        class="hu-input-number__btn"
+        tabindex="-1"
+        aria-label="Azalt"
+        [disabled]="!canDecrement()"
+        (pointerdown)="startRepeat(-1, $event)"
+        (pointerup)="stopRepeat()"
+        (pointerleave)="stopRepeat()"
+        (pointercancel)="stopRepeat()"
+      >
+        <hu-icon name="chevron-down" [size]="14" />
+      </button>
+    </span>
+  }
+</div>
+
+@if (buttons() === 'horizontal') {
+  <button
+    type="button"
+    class="hu-input-number__btn hu-input-number__btn--plus"
+    tabindex="-1"
+    aria-label="Artır"
+    [disabled]="!canIncrement()"
+    (pointerdown)="startRepeat(1, $event)"
+    (pointerup)="stopRepeat()"
+    (pointerleave)="stopRepeat()"
+    (pointercancel)="stopRepeat()"
+  >
+    <hu-icon name="plus" [size]="16" />
+  </button>
+}

@@ -15,7 +15,7 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 ## İçindekiler
 
 - **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle) · [Grid](#grid)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-file-upload](#hu-file-upload)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-multi-select](#hu-multi-select) · [hu-file-upload](#hu-file-upload)
 - **Tarih:** [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
 - **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
 - **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
@@ -393,6 +393,84 @@ safeHtml = huSanitizeHtml(announcement.body);
 </hu-form-field>
 
 <hu-editor [(value)]="html" [toolbar]="['bold', 'italic', '|', 'bulletList', 'link']" ariaLabel="Yorum" />
+```
+
+### hu-input-number
+
+Sayı girişi. Türkçe biçimde gösterir (`1.234,56`) ve yazarken basamakları gruplar. Değer `number | null`'dır.
+↑/↓ ile `step` kadar artırır (Shift ile 10 katı), Home/End ile `min`/`max`'a gider. Nokta tuşu da ondalık
+virgülü yazar. `min`/`max` dışındaki değer odaktan çıkınca sınıra çekilir; formda yazarken `min`/`max` hatası
+verir (`HU_DEFAULT_ERROR_MESSAGES` ile Türkçe mesaj).
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `min` / `max` | `number` | `null` | Sınırlar |
+| `step` | `number` | `1` | Adım; ondalık olabilir (`0.05`), kayan nokta hatası düzeltilir |
+| `mode` | `'decimal' \| 'currency'` | `'decimal'` | `currency`: para simgesi ve 2 ondalık |
+| `currency` | `string` | `'TRY'` | ISO kodu: `TRY` → ₺, `USD` → $, `EUR` → € |
+| `minFractionDigits` / `maxFractionDigits` | `number` | decimal `0` · currency `2` | Ondalık basamak sayısı |
+| `useGrouping` | `boolean` | `true` | Binlik ayracı |
+| `prefix` / `suffix` | `string` | — | Kutudaki sabit metin: `'%'`, `'kg'`, `'adet'` |
+| `buttons` | `'none' \| 'stacked' \| 'horizontal'` | `'none'` | Artır/azalt butonları. Basılı tutunca hızlanarak tekrar eder; sınırda pasifleşir |
+| `placeholder`, `size`, `disabled`, `readonly`, `ariaLabel`, `id` | | | Diğer form kontrolleriyle aynı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `number \| null` | `null` | Boş alan `null` olur |
+
+```html
+<hu-form-field label="Kontenjan" required>
+  <hu-input-number formControlName="quota" [min]="1" [max]="500" buttons="horizontal" />
+</hu-form-field>
+
+<hu-input-number [(value)]="fee" mode="currency" currency="TRY" />
+<hu-input-number [(value)]="gpa" [min]="0" [max]="4" [step]="0.05" [minFractionDigits]="2" [maxFractionDigits]="2" buttons="stacked" />
+<hu-input-number [(value)]="discount" suffix="%" [min]="0" [max]="100" />
+```
+
+### hu-multi-select
+
+Çoklu seçim kutusu. Değer seçilen `value`'ların dizisidir (`T[]`, seçenek sırasıyla). Arama Türkçe karakterleri
+ve büyük/küçük harfi yok sayar ("ogr" → "Öğrenci", "İNSAN" → "İnsan"). Panel üst katmanda açılır.
+Klavye: ↑/↓, Enter (aramasızken Boşluk) ile seç, Esc ile kapat. Kapalıyken Backspace son seçimi kaldırır.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `options` | `HuSelectOption<T>[]` | `[]` | `{ label, value, description?, icon?, disabled?, group? }` |
+| `placeholder` | `string` | `'Seçin'` | Seçim yokken |
+| `filter` | `boolean` | `true` | Panelde arama kutusu |
+| `filterPlaceholder` | `string` | `'Ara…'` | |
+| `showSelectAll` | `boolean` | `true` | Tümünü seç (aramaya uyan, devre dışı olmayan seçenekler). `selectionLimit` varken gizlenir |
+| `showClear` | `boolean` | `true` | Seçimi temizleyen ✕ |
+| `display` | `'chips' \| 'text'` | `'chips'` | Seçilenlerin gösterimi |
+| `maxSelectedLabels` | `number` | `3` | Bundan fazlasında "5 seçildi" yazılır |
+| `selectionLimit` | `number` | `null` | En fazla seçim; sınırda diğer seçenekler pasifleşir |
+| `compareWith` | `(a: T, b: T) => boolean` | `Object.is` | Nesne değerlerde eşitlik |
+| `emptyMessage` | `string` | `'Sonuç bulunamadı'` | |
+| `size`, `disabled`, `ariaLabel`, `id` | | | Diğer form kontrolleriyle aynı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `T[]` | `[]` | Seçilen değerler |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `closed` | `void` | Panel kapanınca |
+
+```ts
+departments: HuSelectOption[] = [
+  { label: 'Bilgisayar Mühendisliği', value: 'bm', group: 'Mühendislik' },
+  { label: 'Matematik', value: 'mat', group: 'Fen', description: 'Lisans' },
+];
+```
+
+```html
+<hu-form-field label="Bölümler" required>
+  <hu-multi-select formControlName="departments" [options]="departments" placeholder="Bölüm seçin" />
+</hu-form-field>
+
+<!-- Nesne değerler -->
+<hu-multi-select [options]="courseOptions" [compareWith]="sameCourse" [selectionLimit]="3" />
 ```
 
 ### hu-file-upload

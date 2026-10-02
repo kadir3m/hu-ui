@@ -29,7 +29,7 @@ import { DocPage } from '../doc-page.component';
       </app-doc-example>
     </app-doc-page>
 
-    <hu-dialog [(open)]="basic" title="Ders kaydını onayla" description="BBM 203 — Veri Yapıları">
+    <hu-dialog [(open)]="basic" title="Ders kaydını onayla" description="BİL 203 — Veri Yapıları">
       <p>Bu derse kaydolmak istediğinize emin misiniz?</p>
       <div huDialogFooter>
         <button hu-button variant="outline" (click)="basic.set(false)">Vazgeç</button>
@@ -51,7 +51,7 @@ import { DocPage } from '../doc-page.component';
 
     <hu-dialog [(open)]="formOpen" title="Yeni ders" size="lg">
       <form id="course-form" class="form-grid" (submit)="$event.preventDefault(); formOpen.set(false); toast.success('Ders eklendi.')">
-        <hu-form-field label="Ders kodu" required><input huInput placeholder="BBM 203" /></hu-form-field>
+        <hu-form-field label="Ders kodu" required><input huInput placeholder="BİL 203" /></hu-form-field>
         <hu-form-field label="Ders adı" required><input huInput placeholder="Veri Yapıları" /></hu-form-field>
       </form>
       <div huDialogFooter>
@@ -74,7 +74,7 @@ export class DialogDoc {
   protected readonly basicCode = `
 <button hu-button (click)="open.set(true)">Dialog aç</button>
 
-<hu-dialog [(open)]="open" title="Ders kaydını onayla" description="BBM 203 — Veri Yapıları">
+<hu-dialog [(open)]="open" title="Ders kaydını onayla" description="BİL 203 — Veri Yapıları">
   <p>Bu derse kaydolmak istediğinize emin misiniz?</p>
   <div huDialogFooter>
     <button hu-button variant="outline" (click)="open.set(false)">Vazgeç</button>

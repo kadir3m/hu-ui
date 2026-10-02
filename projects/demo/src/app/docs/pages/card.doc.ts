@@ -20,7 +20,7 @@ interface Row {
       </app-doc-example>
 
       <app-doc-example title="Aksiyon ve alt bilgi" [code]="slotsCode">
-        <hu-card title="Başvuru" subtitle="BBM 203 — Veri Yapıları" class="demo-card">
+        <hu-card title="Başvuru" subtitle="BİL 203 — Veri Yapıları" class="demo-card">
           <hu-badge huCardActions variant="warning" dot>Beklemede</hu-badge>
           Danışman onayı bekleniyor.
           <div huCardFooter>
@@ -43,7 +43,7 @@ interface Row {
 })
 export class CardDoc {
   protected readonly rows: Row[] = [
-    { kod: 'BBM 101', ad: 'Programlamaya Giriş' },
+    { kod: 'BİL 101', ad: 'Programlamaya Giriş' },
     { kod: 'MAT 123', ad: 'Analiz I' },
   ];
   protected readonly columns: HuColumn<Row>[] = [
@@ -57,7 +57,7 @@ export class CardDoc {
 </hu-card>`;
 
   protected readonly slotsCode = `
-<hu-card title="Başvuru" subtitle="BBM 203 — Veri Yapıları">
+<hu-card title="Başvuru" subtitle="BİL 203 — Veri Yapıları">
   <hu-badge huCardActions variant="warning" dot>Beklemede</hu-badge>
   Danışman onayı bekleniyor.
   <div huCardFooter>

@@ -66,8 +66,8 @@ interface Course {
 export class TableDoc {
   protected readonly toast = inject(HuToastService);
   protected readonly courses: Course[] = [
-    { code: 'BBM 101', name: 'Programlamaya Giriş I', credit: 4, quota: 120, open: true },
-    { code: 'BBM 203', name: 'Veri Yapıları', credit: 3, quota: 90, open: true },
+    { code: 'BİL 101', name: 'Programlamaya Giriş I', credit: 4, quota: 120, open: true },
+    { code: 'BİL 203', name: 'Veri Yapıları', credit: 3, quota: 90, open: true },
     { code: 'MAT 123', name: 'Analiz I', credit: 4, quota: 150, open: false },
     { code: 'İST 292', name: 'Olasılık ve İstatistik', credit: 3, quota: 80, open: true },
   ];
