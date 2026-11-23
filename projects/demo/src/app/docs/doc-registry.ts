@@ -1063,6 +1063,12 @@ export const DOCS: DocEntry[] = [
         ['brandSubtitle', 'string', '—', 'Adın altındaki satır'],
         ['brandLink', 'string', `'/'`, 'Marka alanının linki'],
         ['sidebarTheme', `'default' | 'dark'`, `'default'`, 'dark: açık temada da koyu sidebar'],
+        [
+          'layout',
+          `'classic' | 'header' | 'floating'`,
+          `'classic'`,
+          'header: tam genişlikte marka bandı, logo ve proje adı solda (bu demo) · floating: kenarlardan ayrık, yuvarlak köşeli kartlar',
+        ],
       ],
       models: [['collapsed', 'boolean', 'son tercih', 'Masaüstünde sidebar daraltılmış mı (saklanır)']],
       slots: [
