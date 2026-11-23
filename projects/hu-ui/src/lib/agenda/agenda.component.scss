@@ -1,0 +1,736 @@
+.hu-agenda {
+  --_gutter: 3.5rem;
+  --_line: var(--hu-border);
+  --_off: color-mix(in srgb, var(--hu-surface-3) 55%, transparent);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--hu-space-3);
+  min-width: 0;
+  container-type: inline-size;
+
+  // Renkler: kayıt, lejant, form
+  [data-color='primary'] { --_c: var(--hu-primary); }
+  [data-color='info'] { --_c: var(--hu-info); }
+  [data-color='success'] { --_c: var(--hu-success); }
+  [data-color='warning'] { --_c: var(--hu-warning); }
+  [data-color='danger'] { --_c: var(--hu-danger); }
+  [data-color='neutral'] { --_c: var(--hu-gray-500); }
+  [data-color='purple'] { --_c: #8b5cf6; }
+  [data-color='pink'] { --_c: #ec4899; }
+
+  &--dragging,
+  &--dragging * {
+    cursor: grabbing !important;
+    user-select: none;
+  }
+}
+
+// --- Araç çubuğu -------------------------------------------------------------------------
+.hu-agenda__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hu-space-3);
+}
+
+.hu-agenda__nav,
+.hu-agenda__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hu-space-2);
+}
+
+.hu-agenda__arrows {
+  display: inline-flex;
+}
+
+.hu-agenda__title {
+  margin: 0 0 0 var(--hu-space-1);
+  font-size: var(--hu-text-lg);
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.hu-agenda__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hu-space-2);
+}
+
+.hu-agenda__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  height: 1.75rem;
+  padding: 0 var(--hu-space-3);
+  font: inherit;
+  font-size: var(--hu-text-xs);
+  font-weight: 500;
+  color: var(--hu-text);
+  background: color-mix(in srgb, var(--_c) 10%, var(--hu-surface));
+  border: 1px solid color-mix(in srgb, var(--_c) 35%, var(--hu-border));
+  border-radius: var(--hu-radius-full);
+  cursor: pointer;
+
+  &[aria-pressed='false'] {
+    color: var(--hu-text-subtle);
+    background: var(--hu-surface);
+    border-color: var(--hu-border);
+    text-decoration: line-through;
+
+    .hu-agenda__dot {
+      background: var(--hu-border-strong);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+}
+
+.hu-agenda__dot {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--_c);
+  border-radius: 50%;
+}
+
+// --- Kayıt kutuları (ortak) ----------------------------------------------------------------
+.hu-agenda__event {
+  display: flex;
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  font-size: var(--hu-text-xs);
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--_c) 35%, var(--hu-text));
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+    z-index: 4;
+  }
+
+  // Geçmiş: hafif soluk, metin yine okunur
+  &--past {
+    filter: saturate(0.55);
+    opacity: 0.85;
+  }
+
+  &--dragging {
+    z-index: 5;
+    opacity: 0.9;
+    box-shadow: var(--hu-shadow-lg);
+  }
+}
+
+// Ay ve tüm gün satırındaki tek satırlık kayıt
+.hu-agenda__event--chip {
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 1px 6px;
+  white-space: nowrap;
+
+  &::before {
+    content: '';
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    background: var(--_c);
+    border-radius: 50%;
+  }
+
+  &:hover {
+    background: var(--hu-surface-3);
+  }
+}
+
+// Tüm gün / çok günlü: dolu renkli şerit
+.hu-agenda__event--block {
+  color: #fff;
+  background: var(--_c);
+
+  &::before {
+    content: none;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--_c) 85%, #000);
+  }
+}
+
+.hu-agenda__chip-time {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.hu-agenda__chip-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+// --- Hafta / gün ---------------------------------------------------------------------
+.hu-agenda__time {
+  overflow: hidden;
+  background: var(--hu-surface);
+  border: 1px solid var(--_line);
+  border-radius: var(--hu-radius-lg);
+}
+
+.hu-agenda__head,
+.hu-agenda__allday,
+.hu-agenda__body {
+  display: grid;
+  grid-template-columns: var(--_gutter) repeat(var(--days), minmax(0, 1fr));
+}
+
+// Kaydırma çubuğu genişliği başlıkta da ayrılsın ki sütunlar hizalı kalsın
+.hu-agenda__head,
+.hu-agenda__allday,
+.hu-agenda__scroller {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.hu-agenda__head,
+.hu-agenda__allday {
+  overflow-y: hidden;
+}
+
+.hu-agenda__head {
+  border-bottom: 1px solid var(--_line);
+}
+
+.hu-agenda__dayhead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--hu-space-2) 0;
+  font: inherit;
+  color: var(--hu-text-muted);
+  background: none;
+  border: 0;
+  border-left: 1px solid var(--_line);
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) .hu-agenda__dayhead-num {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset var(--hu-ring);
+  }
+}
+
+.hu-agenda__dayhead-name {
+  font-size: var(--hu-text-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.hu-agenda__dayhead-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  font-size: var(--hu-text-lg);
+  font-weight: 600;
+  color: var(--hu-text);
+  border-radius: var(--hu-radius-full);
+
+  .hu-agenda__dayhead--today & {
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary) !important;
+  }
+}
+
+.hu-agenda__allday {
+  min-height: 2rem;
+  border-bottom: 1px solid var(--_line);
+}
+
+.hu-agenda__allday-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--hu-space-2);
+  font-size: 0.6875rem;
+  color: var(--hu-text-subtle);
+}
+
+.hu-agenda__allday-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 3px;
+  border-left: 1px solid var(--_line);
+  cursor: pointer;
+}
+
+.hu-agenda__scroller {
+  max-height: var(--hu-agenda-height, 36rem);
+}
+
+.hu-agenda__body {
+  position: relative;
+  height: calc(var(--hu-agenda-hour) * var(--hours, 24));
+}
+
+.hu-agenda__gutter {
+  position: relative;
+
+  span {
+    position: absolute;
+    right: var(--hu-space-2);
+    font-size: 0.6875rem;
+    color: var(--hu-text-subtle);
+    font-variant-numeric: tabular-nums;
+    transform: translateY(-50%);
+  }
+}
+
+.hu-agenda__grid {
+  position: relative;
+  display: grid;
+  grid-column: 2 / -1;
+  grid-template-columns: repeat(var(--days), minmax(0, 1fr));
+  // Saat çizgileri (koyu) ve ara çizgiler (açık)
+  background-image:
+    repeating-linear-gradient(to bottom, var(--_line) 0 1px, transparent 1px var(--hu-agenda-hour)),
+    repeating-linear-gradient(to bottom, color-mix(in srgb, var(--_line) 45%, transparent) 0 1px, transparent 1px var(--slot));
+  cursor: cell;
+}
+
+.hu-agenda__col {
+  position: relative;
+  border-left: 1px solid var(--_line);
+  // Mesai dışı soluk
+  background: linear-gradient(
+    to bottom,
+    var(--_off) 0 var(--biz-start),
+    transparent var(--biz-start) var(--biz-end),
+    var(--_off) var(--biz-end)
+  );
+
+  &--weekend {
+    background: var(--_off);
+  }
+
+  &--today {
+    background-color: color-mix(in srgb, var(--hu-primary) 4%, transparent);
+  }
+}
+
+.hu-agenda__event--timed {
+  position: absolute;
+  z-index: 1;
+  flex-direction: column;
+  gap: 1px;
+  padding: 3px 6px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--_c) 16%, var(--hu-surface));
+  border-left: 3px solid var(--_c);
+  box-shadow: 0 0 0 1px var(--hu-surface);
+  cursor: grab;
+
+  &:hover {
+    z-index: 2;
+    background: color-mix(in srgb, var(--_c) 24%, var(--hu-surface));
+  }
+}
+
+.hu-agenda__event--short {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--hu-space-1);
+  padding-top: 0;
+  padding-bottom: 0;
+
+  // Yer yetmezse önce saat kısalsın, başlık okunsun
+  .hu-agenda__event-title {
+    flex: 0 1 auto;
+    min-width: 3ch;
+  }
+
+  .hu-agenda__event-time {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+.hu-agenda__event-title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hu-agenda__event-time,
+.hu-agenda__event-meta {
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+.hu-agenda__resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  cursor: ns-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    width: 1.25rem;
+    height: 2px;
+    background: color-mix(in srgb, var(--_c) 50%, transparent);
+    border-radius: 1px;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+
+  .hu-agenda__event:hover &::after {
+    opacity: 1;
+  }
+}
+
+.hu-agenda__selection {
+  position: absolute;
+  right: 2px;
+  left: 2px;
+  z-index: 3;
+  padding: 2px 6px;
+  font-size: var(--hu-text-xs);
+  font-weight: 500;
+  color: var(--hu-primary-soft-fg);
+  background: color-mix(in srgb, var(--hu-primary) 14%, transparent);
+  border: 1px dashed var(--hu-primary);
+  border-radius: var(--hu-radius-sm);
+  pointer-events: none;
+}
+
+.hu-agenda__now {
+  position: absolute;
+  right: 0;
+  left: 0;
+  z-index: 3;
+  height: 2px;
+  background: var(--hu-danger);
+  pointer-events: none;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    background: var(--hu-danger);
+    border-radius: 50%;
+  }
+}
+
+// --- Ay ------------------------------------------------------------------------------
+.hu-agenda__month {
+  overflow: hidden;
+  background: var(--hu-surface);
+  border: 1px solid var(--_line);
+  border-radius: var(--hu-radius-lg);
+}
+
+.hu-agenda__weekdays,
+.hu-agenda__week-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.hu-agenda__weekdays span {
+  padding: var(--hu-space-2);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-muted);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--_line);
+}
+
+.hu-agenda__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  min-height: var(--hu-agenda-cell, 7rem);
+  padding: 4px;
+  border-right: 1px solid var(--_line);
+  border-bottom: 1px solid var(--_line);
+  cursor: pointer;
+
+  &:nth-child(7n) {
+    border-right: 0;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--hu-surface-2) 60%, transparent);
+  }
+
+  &--outside {
+    background: var(--hu-surface-2);
+
+    .hu-agenda__daynum {
+      color: var(--hu-text-subtle);
+    }
+  }
+}
+
+.hu-agenda__week-row:last-child .hu-agenda__cell {
+  border-bottom: 0;
+}
+
+.hu-agenda__daynum {
+  align-self: flex-start;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: 2px;
+  padding: 0 4px;
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  font-weight: 500;
+  color: var(--hu-text);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-full);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+
+  .hu-agenda__cell--today & {
+    font-weight: 700;
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary);
+  }
+}
+
+.hu-agenda__more {
+  align-self: flex-start;
+  padding: 1px 6px;
+  font: inherit;
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--hu-text);
+    background: var(--hu-surface-3);
+  }
+}
+
+// --- Liste ---------------------------------------------------------------------------
+.hu-agenda__list {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--hu-surface);
+  border: 1px solid var(--_line);
+  border-radius: var(--hu-radius-lg);
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.hu-agenda__list-day {
+  display: grid;
+  grid-template-columns: 11rem 1fr;
+  border-bottom: 1px solid var(--_line);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.hu-agenda__list-date {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--hu-space-3);
+  margin: 0;
+  padding: var(--hu-space-3) var(--hu-space-4);
+  font-size: var(--hu-text-sm);
+  font-weight: 500;
+  text-transform: capitalize;
+  background: var(--hu-surface-2);
+}
+
+.hu-agenda__list-num {
+  min-width: 1.75rem;
+  font-size: var(--hu-text-2xl);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+
+  .hu-agenda__list-day--today & {
+    color: var(--hu-primary);
+  }
+}
+
+.hu-agenda__list-month {
+  display: block;
+  font-size: var(--hu-text-xs);
+  font-weight: 400;
+  color: var(--hu-text-muted);
+}
+
+.hu-agenda__list-item {
+  display: grid;
+  grid-template-columns: 7.5rem auto 1fr;
+  align-items: center;
+  gap: var(--hu-space-3);
+  width: 100%;
+  padding: var(--hu-space-3) var(--hu-space-4);
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--_line) 60%, transparent);
+  cursor: pointer;
+
+  li:last-child & {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background: var(--hu-surface-2);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset var(--hu-ring);
+  }
+}
+
+.hu-agenda__list-time {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.hu-agenda__list-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-weight: 500;
+  }
+}
+
+.hu-agenda__list-meta {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+}
+
+.hu-agenda__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hu-space-2);
+  padding: var(--hu-space-10) var(--hu-space-4);
+  color: var(--hu-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// --- Dar alan ----------------------------------------------------------------------------
+@container (max-width: 639.98px) {
+  .hu-agenda {
+    --_gutter: 2.75rem;
+  }
+
+  .hu-agenda__title {
+    width: 100%;
+    order: 1;
+    margin: 0;
+    font-size: var(--hu-text-md);
+  }
+
+  .hu-agenda__dayhead-num {
+    min-width: 1.75rem;
+    height: 1.75rem;
+    font-size: var(--hu-text-sm);
+  }
+
+  .hu-agenda__event--timed {
+    padding: 2px 3px;
+  }
+
+  .hu-agenda__event-time {
+    display: none;
+  }
+
+  .hu-agenda__cell {
+    min-height: 4.5rem;
+    padding: 2px;
+  }
+
+  // Ay görünümünde dar alanda yalnızca renkli noktalar
+  .hu-agenda__month .hu-agenda__event--chip {
+    padding: 0 2px;
+
+    .hu-agenda__chip-time {
+      display: none;
+    }
+  }
+
+  .hu-agenda__list-day {
+    grid-template-columns: 1fr;
+  }
+
+  .hu-agenda__list-item {
+    grid-template-columns: 5.5rem auto 1fr;
+  }
+}

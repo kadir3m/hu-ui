@@ -1,7 +1,8 @@
 # HU UI
 
 Angular uygulamaları için component kütüphanesi ve admin layout.
-Dışa bağımlılık yok: Angular 19 (standalone + signals), SCSS ve CSS değişkenleri.
+Dışa bağımlılık yok: Angular 22 (standalone + signals), SCSS ve CSS değişkenleri.
+Paket Angular 20, 21 ve 22 projelerinde çalışır. Geliştirme için **Node 22.22+ veya 24+** gerekir.
 
 ```
 projects/
@@ -71,11 +72,12 @@ imports: [HuButton, HU_FORM_FIELD_IMPORTS, HU_TABLE_IMPORTS]
 | Form | `hu-button` (5 görünüm × 6 renk, 5 boyut), `hu-button-group`, `huInput` (input/textarea/select), `hu-form-field` (+`huPrefix`/`huSuffix`), `hu-checkbox`, `hu-switch`, `hu-date-picker` (tek tarih / aralık) |
 | Tarih | `hu-calendar` (tek/aralık seçimi, min/max, `dateFilter`, etkinlik işaretleri, ay/yıl görünümü), tarih yardımcıları (`parseDate`, `formatDate`, `addDays` …) |
 | Geri bildirim | `hu-alert`, `hu-badge`, `hu-avatar`, `hu-spinner`, `hu-dialog`, `HuToastService` + `hu-toaster` |
-| Veri | `hu-card`, `hu-table` (+`huCell`), `hu-paginator`, `hu-tabs`/`hu-tab`, `hu-breadcrumb`, `hu-menu` |
+| Veri | `hu-card`, `hu-table` (+`huCell`), `hu-paginator`, `hu-tabs`/`hu-tab`, `hu-breadcrumb`, `hu-dropdown` |
 | Layout | `hu-shell`, `hu-sidebar-nav`, `hu-theme-toggle`, `HuThemeService` |
 | Çekirdek | `hu-icon` (+`provideHuIcons`), `provideHuErrorMessages`, `huMediaQuery` |
 
-Kullanım örnekleri her component dosyasının JSDoc'unda ve `demo/src/app/pages` altında.
+Her component'in input, output ve seçenekleri: **[projects/hu-ui/API.md](projects/hu-ui/API.md)**.
+Canlı örnekler `demo/src/app/pages` altında.
 
 ## Tasarım kuralları
 

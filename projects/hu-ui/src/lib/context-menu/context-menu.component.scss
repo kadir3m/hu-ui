@@ -1,0 +1,118 @@
+// Popover API ile üst katmanda açılır; konum imlece göre JS ile verilir.
+.hu-context-menu {
+  position: fixed;
+  inset: auto;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  min-width: 13rem;
+  max-width: min(20rem, calc(100vw - 1rem));
+  max-height: calc(100dvh - 1rem);
+  margin: 0;
+  padding: var(--hu-space-1);
+  overflow-y: auto;
+  color: var(--hu-text);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-lg);
+  animation: hu-context-menu-in 90ms ease-out;
+  user-select: none;
+
+  &[popover]:not(:popover-open) {
+    display: none;
+  }
+}
+
+.hu-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  width: 100%;
+  min-height: 2rem;
+  padding: var(--hu-space-1) var(--hu-space-2);
+  font: inherit;
+  font-size: var(--hu-text-sm);
+  line-height: 1.35;
+  color: var(--hu-text);
+  text-align: left;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  &:hover:not(:disabled),
+  &:focus-visible,
+  &:focus {
+    outline: none;
+    background: var(--hu-surface-3);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  &--danger {
+    color: var(--hu-danger);
+
+    .hu-context-menu__icon {
+      color: var(--hu-danger);
+    }
+
+    &:hover:not(:disabled),
+    &:focus {
+      background: var(--hu-danger-soft);
+    }
+  }
+}
+
+// İkonsuz öğeler de hizalı kalsın diye ikon alanı hep ayrılır
+.hu-context-menu__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  width: 1rem;
+  color: var(--hu-text-subtle);
+}
+
+.hu-context-menu__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hu-context-menu__description {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+}
+
+.hu-context-menu__shortcut {
+  margin-left: var(--hu-space-4);
+  font-family: inherit;
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+  letter-spacing: 0.02em;
+}
+
+.hu-context-menu__divider {
+  height: 1px;
+  margin: var(--hu-space-1) calc(var(--hu-space-1) * -1);
+  background: var(--hu-border);
+}
+
+.hu-context-menu__header {
+  padding: var(--hu-space-2) var(--hu-space-2) var(--hu-space-1) calc(var(--hu-space-2) * 2 + 1rem);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-subtle);
+}
+
+@keyframes hu-context-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}

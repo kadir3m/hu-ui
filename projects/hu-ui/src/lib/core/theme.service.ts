@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { DOCUMENT, Injectable, computed, effect, inject, signal } from '@angular/core';
 
 export type HuThemeMode = 'light' | 'dark' | 'system';
 export type HuResolvedTheme = 'light' | 'dark';

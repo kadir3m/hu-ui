@@ -1,15 +1,15 @@
 # @ucme-ui/angular
 
-Admin panelleri için Angular 19 component kütüphanesi. Hazır bir admin layout, form, tablo,
+Admin panelleri için Angular 20–22 component kütüphanesi. Hazır bir admin layout, form, tablo,
 takvim ve geri bildirim componentleri içerir.
 
 - **Bağımlılıksız:** Angular dışında hiçbir paket gerektirmez; stiller düz SCSS ve CSS değişkenleri.
-- **Modern Angular:** standalone componentler, signals (`input()`, `model()`), `OnPush`.
+- **Modern Angular:** standalone componentler, signals (`input()`, `model()`), `OnPush`; zone.js'li ve zoneless uygulamalarda çalışır.
 - **Tema:** tüm renk ve ölçüler `--hu-*` token'larıdır. Açık/koyu tema hazır, marka rengi tek satırla değişir.
 - **Erişilebilir:** native `<button>`, `<input>`, `<dialog>` üzerine kurulu. Tam klavye desteği ve ARIA.
 - **Türkçe:** metinler, tarih biçimi (`gg.aa.yyyy`), sıralama ve baş harf kuralları `tr-TR`.
 
-> *English:* Angular 19 UI kit & admin layout. Standalone, signal-based, zero dependencies,
+> *English:* Angular 20–22 UI kit & admin layout. Standalone, signal-based, zero dependencies,
 > themeable via CSS custom properties. UI texts default to Turkish.
 
 ## Kurulum
@@ -18,7 +18,7 @@ takvim ve geri bildirim componentleri içerir.
 npm install @ucme-ui/angular
 ```
 
-Gereksinim: Angular `^19.2` (`@angular/common`, `core`, `forms`, `router`).
+Gereksinim: Angular **20, 21 veya 22** (`@angular/common`, `core`, `forms`, `router`).
 
 **1. Stiller** (`src/styles.scss`)
 
@@ -69,17 +69,21 @@ Toast'ların görünmesi için kök componente bir kez `<hu-toaster />` ekleyin.
 
 ## Componentler
 
+> Her component'in bütün input, output ve seçenekleri:
+> **[API referansı](https://github.com/kadir3m/hu-ui/blob/main/projects/hu-ui/API.md)**.
+> Aynı dosya pakette de `node_modules/@ucme-ui/angular/API.md` olarak bulunur.
+
 | Grup | |
 | --- | --- |
 | **Layout** | `hu-shell` (daraltılabilir sidebar, mobil çekmece, topbar), `hu-sidebar-nav`, `hu-breadcrumb`, `hu-theme-toggle` |
-| **Form** | `hu-button`, `hu-button-group`, `huInput`, `hu-form-field`, `hu-checkbox`, `hu-switch`, `hu-date-picker` |
+| **Form** | `hu-button`, `hu-button-group`, `huInput`, `hu-form-field`, `hu-checkbox`, `hu-switch`, `hu-date-picker`, `hu-editor` (zengin metin) |
 | **Tarih** | `hu-calendar`: tek gün/aralık seçimi, min/max, `dateFilter`, etkinlik işaretleri |
-| **Veri** | `hu-table` (sıralama, özel hücreler), `hu-paginator`, `hu-tabs`, `hu-card`, `hu-menu` |
+| **Veri** | `hu-table` (sıralama, özel hücreler), `hu-paginator`, `hu-tabs`, `hu-card`, `hu-dropdown` |
 | **Geri bildirim** | `hu-alert`, `hu-dialog`, `HuToastService`, `hu-badge`, `hu-avatar`, `hu-spinner` |
 | **Çekirdek** | `hu-icon` (+`provideHuIcons`), `HuThemeService`, `provideHuErrorMessages`, tarih yardımcıları |
 
 Birlikte kullanılan parçalar için gruplu import'lar var: `HU_FORM_FIELD_IMPORTS`, `HU_TABLE_IMPORTS`,
-`HU_DIALOG_IMPORTS`, `HU_MENU_IMPORTS`, `HU_TABS_IMPORTS`, `HU_CARD_IMPORTS`, `HU_SHELL_IMPORTS`.
+`HU_DIALOG_IMPORTS`, `HU_DROPDOWN_IMPORTS`, `HU_TABS_IMPORTS`, `HU_CARD_IMPORTS`, `HU_SHELL_IMPORTS`.
 
 ### Butonlar
 
@@ -94,6 +98,47 @@ Görünüm ve renk birbirinden bağımsızdır:
 
 `variant`: `solid` `soft` `outline` `ghost` `link`. `color`: `primary` `neutral` `success` `warning` `danger` `info`.
 `size`: `xs` … `xl`.
+
+### Dropdown
+
+Öğeleri bir dizi olarak verin; seçilen öğe `(selected)` ile döner:
+
+```html
+<hu-dropdown label="İşlemler" [options]="actions" (selected)="run($event.value)" />
+
+<!-- Yalnızca ikonlu tetikleyici -->
+<hu-dropdown icon="more-vertical" variant="ghost" ariaLabel="Satır işlemleri" [options]="actions" />
+```
+
+```ts
+actions: HuDropdownEntry[] = [
+  { header: 'Kayıt' },                                     // grup başlığı
+  { label: 'Düzenle', value: 'edit', icon: 'edit' },
+  { label: 'Dışa aktar', value: 'export', description: 'Excel dosyası' },
+  { label: 'Ayarlar', icon: 'settings', link: '/ayarlar' }, // router linki
+  { label: 'Arşivle', value: 'archive', disabled: true },
+  { divider: true },                                       // ayraç
+  { label: 'Sil', value: 'delete', icon: 'trash', danger: true },
+];
+```
+
+| Input | Açıklama |
+| --- | --- |
+| `options` | Öğeler: seçenek, `{ divider: true }` veya `{ header: '…' }` |
+| `label`, `icon`, `variant`, `color`, `size` | Hazır tetikleyici buton (`variant` varsayılanı `outline`) |
+| `ariaLabel` | Yalnızca ikonlu tetikleyicide ekran okuyucu etiketi |
+| `align` | Panelin hizası: `start` veya `end` |
+| `caret`, `disabled` | Aşağı ok gösterimi; tetikleyiciyi devre dışı bırakma |
+| `[(open)]` | Açık/kapalı durumu (iki yönlü) |
+
+| Output | Açıklama |
+| --- | --- |
+| `(selected)` | Seçilen `HuDropdownOption`; `value` verilmemişse `label` döner |
+| `(openChange)` | Panel açıldığında veya kapandığında |
+
+Kendi tetikleyicinizi kullanmak için (avatar vb.) içine `huDropdownTrigger` özniteliği olan bir element koyun.
+Panelin üstüne serbest içerik eklemek için `huDropdownHeader` kullanın. Klavye desteği hazır gelir: oklar, Home/End,
+harfle atlama, Enter ve Esc.
 
 ### Admin layout
 

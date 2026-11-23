@@ -1,0 +1,87 @@
+// 12 kolonlu responsive grid.
+//
+//   <div class="hu-grid">
+//     <div class="hu-col-12 hu-col-md-6 hu-col-lg-4">…</div>
+//   </div>
+//
+// Kırılımlar ekranın değil grid'in kendi genişliğine göre çalışır (container
+// query): aynı grid sayfada, kart içinde veya dialog'da doğru davranır.
+@use 'sass:map';
+
+$columns: 12;
+$breakpoints: (
+  sm: 480px,
+  md: 720px,
+  lg: 960px,
+  xl: 1200px,
+);
+
+.hu-grid {
+  display: grid;
+  grid-template-columns: repeat($columns, minmax(0, 1fr));
+  gap: var(--hu-grid-gap, var(--hu-space-4));
+  container-type: inline-size;
+}
+
+// Kolon sınıfı verilmeyen öğe tam satır kaplar (mobil öncelikli).
+:where(.hu-grid) > * {
+  grid-column-end: span $columns;
+  min-width: 0;
+}
+
+// Otomatik: kolon sayısı genişliğe göre kendiliğinden belirlenir (kart listeleri).
+.hu-grid--auto {
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--hu-grid-min, 16rem), 100%), 1fr));
+}
+
+:where(.hu-grid--auto) > * {
+  grid-column-end: auto;
+}
+
+.hu-grid--gap-none {
+  --hu-grid-gap: 0;
+}
+
+.hu-grid--gap-sm {
+  --hu-grid-gap: var(--hu-space-2);
+}
+
+.hu-grid--gap-lg {
+  --hu-grid-gap: var(--hu-space-6);
+}
+
+.hu-grid--gap-xl {
+  --hu-grid-gap: var(--hu-space-8);
+}
+
+@mixin col-classes($infix) {
+  @for $i from 1 through $columns {
+    .hu-col#{$infix}-#{$i} {
+      grid-column-end: span $i;
+    }
+
+    .hu-col#{$infix}-start-#{$i} {
+      grid-column-start: $i;
+    }
+  }
+
+  // !important: öğenin kendi display değeri (örn. hu-card) gizlemeyi ezmesin
+  .hu-col#{$infix}-hidden {
+    display: none !important;
+  }
+}
+
+@include col-classes('');
+
+@each $name, $width in $breakpoints {
+  @container (min-width: #{$width}) {
+    @include col-classes('-#{$name}');
+  }
+
+  // hu-col-md-visible: yalnızca md ve üstünde görünür
+  @container (max-width: #{$width - 0.02px}) {
+    .hu-col-#{$name}-visible {
+      display: none !important;
+    }
+  }
+}

@@ -37,7 +37,7 @@ export class HuSuffix {}
   providers: [{ provide: HU_FORM_FIELD, useExisting: HuFormField }],
   template: `
     @if (label()) {
-      <label class="hu-field__label" [attr.for]="control()?.id()">
+      <label class="hu-field__label" [attr.for]="control()?.id()" [attr.id]="control() ? control()!.id() + '-label' : null">
         {{ label() }}
         @if (required()) {
           <span class="hu-field__required" aria-hidden="true">*</span>

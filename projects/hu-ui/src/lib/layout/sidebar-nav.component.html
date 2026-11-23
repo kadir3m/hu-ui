@@ -25,21 +25,15 @@
             @if (open) {
               <ul class="hu-nav__sublist">
                 @for (child of item.children; track child.label) {
-                  <li>
-                    <a
-                      class="hu-nav__link hu-nav__link--sub"
-                      [routerLink]="child.link"
-                      routerLinkActive="hu-nav__link--active"
-                      [routerLinkActiveOptions]="{ exact: child.exact ?? false }"
-                      ariaCurrentWhenActive="page"
-                      (click)="navigate.emit()"
-                    >
-                      <span class="hu-nav__label">{{ child.label }}</span>
-                      @if (child.badge != null) {
-                        <span class="hu-nav__badge">{{ child.badge }}</span>
-                      }
-                    </a>
-                  </li>
+                  @if (child.children?.length) {
+                    <!-- Kategori başlığı + altındaki linkler -->
+                    <li class="hu-nav__subheader" role="presentation">{{ child.label }}</li>
+                    @for (leaf of child.children; track leaf.label) {
+                      <li><ng-container *ngTemplateOutlet="subLink; context: { $implicit: leaf }" /></li>
+                    }
+                  } @else {
+                    <li><ng-container *ngTemplateOutlet="subLink; context: { $implicit: child }" /></li>
+                  }
                 }
               </ul>
             }
@@ -58,7 +52,7 @@
               }
               <span class="hu-nav__label">{{ item.label }}</span>
               @if (item.badge != null) {
-                <span class="hu-nav__badge">{{ item.badge }}</span>
+                <span class="hu-nav__badge" [class.hu-nav__badge--text]="isTextBadge(item.badge)">{{ item.badge }}</span>
               }
             </a>
           }
@@ -67,3 +61,19 @@
     </ul>
   </div>
 }
+
+<ng-template #subLink let-child>
+  <a
+    class="hu-nav__link hu-nav__link--sub"
+    [routerLink]="child.link"
+    routerLinkActive="hu-nav__link--active"
+    [routerLinkActiveOptions]="{ exact: child.exact ?? false }"
+    ariaCurrentWhenActive="page"
+    (click)="navigate.emit()"
+  >
+    <span class="hu-nav__label">{{ child.label }}</span>
+    @if (child.badge != null) {
+      <span class="hu-nav__badge" [class.hu-nav__badge--text]="isTextBadge(child.badge)">{{ child.badge }}</span>
+    }
+  </a>
+</ng-template>

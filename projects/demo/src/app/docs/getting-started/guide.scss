@@ -1,0 +1,114 @@
+// Başlarken sayfalarının ortak yazı düzeni
+:host {
+  display: block;
+  max-width: 52rem;
+}
+
+.guide-header {
+  margin-bottom: var(--hu-space-8);
+
+  h1 {
+    font-size: var(--hu-text-3xl);
+  }
+
+  p {
+    margin-top: var(--hu-space-3);
+    font-size: var(--hu-text-md);
+    color: var(--hu-text-muted);
+  }
+}
+
+.guide-eyebrow {
+  margin-bottom: var(--hu-space-1);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hu-primary);
+}
+
+section {
+  margin-bottom: var(--hu-space-10);
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--hu-space-3);
+    margin-bottom: var(--hu-space-3);
+    font-size: var(--hu-text-xl);
+  }
+
+  > p,
+  li {
+    line-height: 1.65;
+    color: var(--hu-text-muted);
+  }
+
+  > p + app-doc-code,
+  app-doc-code + p,
+  app-doc-code + app-doc-code,
+  > p + p {
+    display: block;
+    margin-top: var(--hu-space-3);
+  }
+
+  code:not(pre code) {
+    padding: 1px 6px;
+    font-family: var(--hu-font-mono);
+    font-size: 0.8125rem;
+    color: var(--hu-text);
+    background: var(--hu-surface-3);
+    border-radius: var(--hu-radius-sm);
+  }
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-size: var(--hu-text-sm);
+  font-weight: 700;
+  color: var(--hu-primary-fg);
+  background: var(--hu-primary);
+  border-radius: 50%;
+}
+
+.guide-table {
+  overflow-x: auto;
+  margin-top: var(--hu-space-3);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: var(--hu-space-2) var(--hu-space-4);
+    text-align: left;
+    border-bottom: 1px solid var(--hu-border);
+  }
+
+  th {
+    font-size: var(--hu-text-xs);
+    font-weight: 600;
+    color: var(--hu-text-muted);
+    background: var(--hu-surface-2);
+  }
+
+  tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hu-space-3);
+}

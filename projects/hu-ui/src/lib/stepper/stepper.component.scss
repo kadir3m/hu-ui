@@ -1,0 +1,197 @@
+.hu-stepper {
+  --_marker: 2rem;
+  --_line: var(--hu-border-strong);
+
+  display: block;
+  container-type: inline-size;
+}
+
+.hu-stepper__list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hu-stepper__header {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-3);
+  min-width: 0;
+  padding: var(--hu-space-1);
+  font: inherit;
+  color: var(--hu-text-muted);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+
+  &:hover:not(:disabled, .hu-stepper__header--locked) .hu-stepper__title {
+    color: var(--hu-text);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--locked {
+    cursor: not-allowed;
+  }
+}
+
+.hu-stepper__marker {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--_marker);
+  height: var(--_marker);
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  color: var(--hu-text-muted);
+  background: var(--hu-surface);
+  border: 2px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-full);
+  transition:
+    background-color var(--hu-transition),
+    border-color var(--hu-transition),
+    color var(--hu-transition);
+
+  [data-state='active'] > & {
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary);
+    border-color: var(--hu-primary);
+    box-shadow: 0 0 0 4px var(--hu-primary-soft);
+  }
+
+  [data-state='done'] > & {
+    color: var(--hu-primary);
+    background: var(--hu-primary-soft);
+    border-color: var(--hu-primary);
+  }
+
+  [data-state='error'] > & {
+    color: var(--hu-danger-contrast);
+    background: var(--hu-danger);
+    border-color: var(--hu-danger);
+  }
+}
+
+.hu-stepper__label {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hu-stepper__title {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: color var(--hu-transition);
+
+  [data-state='active'] & {
+    color: var(--hu-text);
+  }
+
+  [data-state='error'] & {
+    color: var(--hu-danger);
+  }
+}
+
+.hu-stepper__description {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hu-stepper__panel {
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+// --- Yatay ------------------------------------------------------------------------
+.hu-stepper[data-orientation='horizontal'] {
+  .hu-stepper__list {
+    align-items: center;
+    gap: var(--hu-space-2);
+  }
+
+  .hu-stepper__item {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: var(--hu-space-2);
+    min-width: 0;
+
+    &:last-child {
+      flex: 0 0 auto;
+    }
+
+    // Adımlar arası çizgi; tamamlanan adımdan sonra renkli
+    &:not(:last-child)::after {
+      content: '';
+      flex: 1 1 1.5rem;
+      min-width: 1rem;
+      height: 2px;
+      background: var(--_line);
+      border-radius: 1px;
+    }
+
+    &[data-state='done']:not(:last-child)::after {
+      background: var(--hu-primary);
+    }
+  }
+
+  .hu-stepper__panel {
+    padding-top: var(--hu-space-6);
+  }
+
+  // Dar alanda yalnızca aktif adımın etiketi görünsün
+  @container (max-width: 640px) {
+    .hu-stepper__item:not([data-state='active']) .hu-stepper__label {
+      display: none;
+    }
+  }
+}
+
+// --- Dikey ------------------------------------------------------------------------
+.hu-stepper[data-orientation='vertical'] {
+  .hu-stepper__list {
+    flex-direction: column;
+  }
+
+  .hu-stepper__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Marker'ın altından bir sonraki adıma uzanan çizgi
+  .hu-stepper__vbody {
+    min-height: var(--hu-space-6);
+    margin-left: calc(var(--hu-space-1) + var(--_marker) / 2 - 1px);
+    padding: var(--hu-space-2) 0 var(--hu-space-4) calc(var(--_marker) / 2 + var(--hu-space-3) - 1px);
+    border-left: 2px solid var(--_line);
+  }
+
+  .hu-stepper__item[data-state='done'] .hu-stepper__vbody {
+    border-left-color: var(--hu-primary);
+  }
+
+  .hu-stepper__item:last-child .hu-stepper__vbody {
+    border-left-color: transparent;
+  }
+}

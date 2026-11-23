@@ -1,8 +1,198 @@
 .hu-table {
+  --_pad-y: var(--hu-space-3);
+  --_pad-x: var(--hu-space-4);
+  --_head-bg: var(--hu-surface-2);
+  --_line: var(--hu-border);
+  --_lead-w: 2.75rem;
+
   display: block;
+  min-width: 0;
+  container-type: inline-size;
+
+  &[data-size='sm'] {
+    --_pad-y: var(--hu-space-2);
+    --_pad-x: var(--hu-space-3);
+  }
+
+  &[data-size='lg'] {
+    --_pad-y: var(--hu-space-4);
+    --_pad-x: var(--hu-space-5);
+  }
+}
+
+// --- Araç çubuğu -----------------------------------------------------------------------
+.hu-table__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hu-space-3);
+  padding-bottom: var(--hu-space-3);
+}
+
+.hu-table__toolbar-start,
+.hu-table__toolbar-end,
+.hu-table__bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hu-space-2);
   min-width: 0;
 }
 
+.hu-table__toolbar-start {
+  flex: 1 1 16rem;
+  gap: var(--hu-space-3);
+}
+
+.hu-table__toolbar-end {
+  margin-left: auto;
+}
+
+.hu-table__title {
+  margin: 0;
+  font-size: var(--hu-text-md);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hu-table__search {
+  position: relative;
+  display: flex;
+  flex: 0 1 18rem;
+  align-items: center;
+  min-width: 10rem;
+
+  > hu-icon {
+    position: absolute;
+    left: var(--hu-space-2);
+    color: var(--hu-text-subtle);
+    pointer-events: none;
+  }
+
+  > .hu-input {
+    padding-left: 1.875rem;
+  }
+}
+
+.hu-table__count {
+  padding: 0 6px;
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-primary-soft-fg);
+  background: var(--hu-primary-soft);
+  border-radius: var(--hu-radius-full);
+}
+
+.hu-table__bulk {
+  flex: 1 1 auto;
+  padding: 2px 2px 2px var(--hu-space-3);
+  background: var(--hu-primary-soft);
+  border-radius: var(--hu-radius-md);
+  animation: hu-table-fade 120ms ease-out;
+}
+
+.hu-table__bulk-count {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  color: var(--hu-primary-soft-fg);
+}
+
+// --- Sütun seçici paneli -------------------------------------------------------------------
+.hu-table__columns {
+  position: fixed;
+  inset: auto;
+  width: 17rem;
+  max-height: min(24rem, calc(100dvh - 2rem));
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  color: var(--hu-text);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-lg);
+
+  &:popover-open {
+    animation: hu-table-fade 120ms ease-out;
+  }
+
+  &--inline {
+    position: absolute;
+    right: 0;
+    z-index: 1000;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+
+.hu-table__columns-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--hu-space-2) var(--hu-space-3);
+  font-size: var(--hu-text-xs);
+  font-weight: 600;
+  color: var(--hu-text-muted);
+  border-bottom: 1px solid var(--hu-border);
+}
+
+.hu-table__columns-list {
+  margin: 0;
+  padding: var(--hu-space-1);
+  list-style: none;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--hu-space-2);
+    padding: 2px var(--hu-space-1) 2px var(--hu-space-2);
+    border-radius: var(--hu-radius-sm);
+
+    &:hover {
+      background: var(--hu-surface-2);
+    }
+  }
+}
+
+.hu-table__move {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    color: var(--hu-text-subtle);
+    background: none;
+    border: 0;
+    border-radius: var(--hu-radius-sm);
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      color: var(--hu-text);
+      background: var(--hu-surface-3);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: var(--hu-ring);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+  }
+}
+
+// --- Tablo ---------------------------------------------------------------------------------
 .hu-table__scroll {
   position: relative;
   overflow-x: auto;
@@ -21,10 +211,10 @@
 
   th,
   td {
-    padding: var(--hu-space-3) var(--hu-space-4);
+    padding: var(--_pad-y) var(--_pad-x);
     text-align: left;
     vertical-align: middle;
-    border-bottom: 1px solid var(--hu-border);
+    border-bottom: 1px solid var(--_line);
 
     &[data-align='center'] {
       text-align: center;
@@ -43,43 +233,159 @@
     letter-spacing: 0.02em;
     color: var(--hu-text-muted);
     white-space: nowrap;
-    background: var(--hu-surface-2);
+    background: var(--_head-bg);
   }
 
-  tbody tr {
+  // Satır arka planı değişkenle verilir: sabit (sticky) hücreler de aynı rengi alır
+  tbody .hu-table__row {
+    --_row-bg: var(--hu-surface);
+
+    background: var(--_row-bg);
     transition: background-color var(--hu-transition);
+  }
 
-    &:hover {
-      background: var(--hu-surface-2);
-    }
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
 
-    &:last-child td {
-      border-bottom: 0;
-    }
+  tfoot td {
+    font-weight: 600;
+    background: var(--_head-bg);
+    border-top: 1px solid var(--_line);
+    border-bottom: 0;
   }
 }
 
-.hu-table--sticky thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+.hu-table--nowrap .hu-table__table td {
+  white-space: nowrap;
 }
 
-.hu-table--striped tbody tr:nth-child(even) {
-  background: color-mix(in srgb, var(--hu-surface-3) 45%, transparent);
+.hu-table--striped tbody .hu-table__row:nth-child(even of .hu-table__row) {
+  --_row-bg: color-mix(in srgb, var(--hu-surface-3) 45%, var(--hu-surface));
 }
 
-.hu-table--dense .hu-table__table {
-  td {
-    padding-top: var(--hu-space-2);
-    padding-bottom: var(--hu-space-2);
-  }
+.hu-table--hoverable tbody .hu-table__row:hover {
+  --_row-bg: var(--hu-surface-2);
 }
 
 .hu-table__row--clickable {
   cursor: pointer;
 }
 
+// Sağ tık menüsü açıkken hangi satır için açıldığı belli olsun
+tbody .hu-table__row.hu-table__row--context {
+  --_row-bg: var(--hu-surface-3);
+
+  outline: 2px solid var(--hu-primary);
+  outline-offset: -2px;
+}
+
+tbody .hu-table__row.hu-table__row--selected,
+tbody .hu-table__row.hu-table__row--selected:hover {
+  --_row-bg: color-mix(in srgb, var(--hu-primary-soft) 70%, var(--hu-surface));
+}
+
+.hu-table--sticky thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+// --- Seçim / detay sütunları ve sabit sütunlar -----------------------------------------
+.hu-table__lead {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  width: var(--_lead-w);
+  min-width: var(--_lead-w);
+  padding-right: 0 !important;
+  background: var(--_row-bg, var(--_head-bg));
+
+  &--second {
+    left: var(--_lead-w);
+  }
+
+  th & {
+    background: var(--_head-bg);
+  }
+}
+
+thead .hu-table__lead {
+  background: var(--_head-bg);
+}
+
+.hu-table__sticky-start,
+.hu-table__sticky-end {
+  position: sticky;
+  z-index: 1;
+  background: var(--_row-bg, var(--_head-bg));
+}
+
+thead .hu-table__sticky-start,
+thead .hu-table__sticky-end,
+tfoot .hu-table__sticky-start,
+tfoot .hu-table__sticky-end,
+tfoot .hu-table__lead {
+  background: var(--_head-bg);
+}
+
+.hu-table__sticky-start {
+  left: calc(var(--_lead-w) * var(--hu-table-leads, 0));
+  box-shadow: inset -1px 0 0 var(--_line);
+}
+
+.hu-table__sticky-end {
+  right: 0;
+  box-shadow: inset 1px 0 0 var(--_line);
+}
+
+.hu-table__expand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  color: var(--hu-text-muted);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  hu-icon {
+    transition: transform var(--hu-transition);
+  }
+
+  &[aria-expanded='true'] hu-icon {
+    transform: rotate(90deg);
+  }
+
+  &:hover {
+    color: var(--hu-text);
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
+  }
+}
+
+.hu-table__row--open td {
+  border-bottom-color: transparent;
+}
+
+.hu-table__detail-row > td {
+  padding: 0 !important;
+  background: var(--hu-surface-2);
+}
+
+.hu-table__detail {
+  padding: var(--hu-space-4) var(--_pad-x) var(--hu-space-4) calc(var(--_lead-w) * var(--hu-table-leads, 1) + var(--_pad-x));
+  animation: hu-table-fade 150ms ease-out;
+}
+
+// --- Sıralama, durumlar ------------------------------------------------------------------
 .hu-table__sort {
   display: inline-flex;
   align-items: center;
@@ -89,6 +395,7 @@
   font: inherit;
   color: inherit;
   letter-spacing: inherit;
+  text-transform: inherit;
   background: none;
   border: 0;
   border-radius: var(--hu-radius-sm);
@@ -100,6 +407,11 @@
 
   &:hover {
     color: var(--hu-text);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--hu-ring);
   }
 
   &--active {
@@ -122,17 +434,211 @@
   }
 }
 
+.hu-table__state-title {
+  margin: 0 0 var(--hu-space-1);
+  font-weight: 500;
+  color: var(--hu-text);
+}
+
 .hu-table__overlay {
   position: absolute;
   inset: 0;
+  z-index: 3;
   display: flex;
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--hu-surface) 60%, transparent);
 }
 
-@media (max-width: 767.98px) {
+.hu-table__paginator {
+  border-top: 1px solid var(--_line);
+}
+
+// --- Görünümler ------------------------------------------------------------------------------
+// bordered: dış çerçeve + hücre ızgarası
+.hu-table[data-variant='bordered'] {
+  .hu-table__scroll {
+    border: 1px solid var(--_line);
+    border-radius: var(--hu-radius-md);
+  }
+
+  .hu-table__table {
+    th,
+    td {
+      border-right: 1px solid var(--_line);
+
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+
+  .hu-table__lead {
+    border-right: 0 !important;
+  }
+
+  .hu-table__paginator {
+    border-top: 0;
+  }
+}
+
+// card: tablo ve araç çubuğu tek bir kutuda
+.hu-table[data-variant='card'] {
+  overflow: hidden;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-sm);
+
+  .hu-table__toolbar {
+    padding: var(--hu-space-3) var(--hu-space-4);
+    border-bottom: 1px solid var(--_line);
+  }
+
+  .hu-table__table th {
+    border-top: 0;
+  }
+}
+
+// minimal: başlık arka plansız, büyük harfli küçük etiketler, ince çizgiler
+.hu-table[data-variant='minimal'] {
+  --_head-bg: transparent;
+  --_line: color-mix(in srgb, var(--hu-border) 70%, transparent);
+
+  .hu-table__table {
+    th {
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--hu-text-subtle);
+      border-bottom-color: var(--hu-border-strong);
+    }
+  }
+
+  tbody .hu-table__row {
+    --_row-bg: transparent;
+  }
+
+  &.hu-table--hoverable tbody .hu-table__row:hover {
+    --_row-bg: var(--hu-surface-2);
+  }
+
+  .hu-table__lead,
+  .hu-table__sticky-start,
+  .hu-table__sticky-end {
+    background: var(--_row-bg, var(--hu-surface));
+  }
+
+  thead .hu-table__lead,
+  thead .hu-table__sticky-start,
+  thead .hu-table__sticky-end {
+    background: var(--hu-surface);
+  }
+}
+
+// --- Dar alan ------------------------------------------------------------------------------
+@container (max-width: 767.98px) {
   .hu-table__cell--hide-mobile {
     display: none;
+  }
+}
+
+// stack: her satır etiketli bir kart olur
+@container (max-width: 639.98px) {
+  .hu-table[data-responsive='stack'] {
+    .hu-table__table,
+    .hu-table__table tbody,
+    .hu-table__table tfoot {
+      display: block;
+    }
+
+    .hu-table__table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    tbody .hu-table__row,
+    tfoot tr {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      margin-bottom: var(--hu-space-3);
+      padding: var(--hu-space-2) 0;
+      border: 1px solid var(--hu-border);
+      border-radius: var(--hu-radius-md);
+    }
+
+    .hu-table__table td {
+      display: flex;
+      grid-column: 1 / -1;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--hu-space-3);
+      padding: var(--hu-space-1) var(--hu-space-3);
+      text-align: right;
+      border: 0 !important;
+      box-shadow: none;
+
+      &::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        font-size: var(--hu-text-xs);
+        font-weight: 600;
+        color: var(--hu-text-muted);
+        text-align: left;
+      }
+
+      &:not([data-label])::before {
+        content: none;
+      }
+    }
+
+    .hu-table__lead {
+      position: static;
+      grid-column: auto;
+      width: auto;
+      min-width: 0;
+    }
+
+    .hu-table__sticky-start,
+    .hu-table__sticky-end {
+      position: static;
+    }
+
+    .hu-table__detail-row {
+      display: block;
+      margin: calc(var(--hu-space-3) * -1) 0 var(--hu-space-3);
+      border: 1px solid var(--hu-border);
+      border-top: 0;
+      border-radius: 0 0 var(--hu-radius-md) var(--hu-radius-md);
+
+      td {
+        display: block;
+      }
+    }
+
+    .hu-table__detail {
+      padding-left: var(--hu-space-3);
+    }
+
+    .hu-table__state {
+      display: block !important;
+      height: auto;
+      padding: var(--hu-space-8) var(--hu-space-3) !important;
+      text-align: center !important;
+
+      &::before {
+        content: none !important;
+      }
+    }
+  }
+}
+
+@keyframes hu-table-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
   }
 }

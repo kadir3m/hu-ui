@@ -40,6 +40,8 @@ export const HU_DEFAULT_ERROR_MESSAGES: HuErrorMessages = {
   huDateMin: (e: { min: string }) => `Tarih ${e.min} veya sonrası olmalıdır.`,
   huDateMax: (e: { max: string }) => `Tarih ${e.max} veya öncesi olmalıdır.`,
   huDateUnavailable: 'Bu tarih seçilemez.',
+  huMask: 'Eksik veya hatalı giriş.',
+  huPasswordWeak: 'Daha güçlü bir şifre seçin.',
 };
 
 export const HU_ERROR_MESSAGES = new InjectionToken<HuErrorMessages>('HU_ERROR_MESSAGES', {

@@ -1,17 +1,16 @@
 <a class="hu-shell__skip" href="#hu-main">İçeriğe geç</a>
 
-<aside
-  class="hu-shell__sidebar"
-  [class.hu-shell__sidebar--dark]="sidebarTheme() === 'dark'"
-  [attr.aria-hidden]="isMobile() && !mobileOpen() ? 'true' : null"
-  [attr.inert]="isMobile() && !mobileOpen() ? '' : null"
->
+<!-- Projeksiyon slotları bir kez tanımlanır, yerleşime göre yerleştirilir -->
+<ng-template #logoTpl>
+  <ng-content select="[huShellLogo]">
+    <span class="hu-shell__logo hu-shell__logo--default">
+      <hu-icon name="graduation-cap" [size]="20" />
+    </span>
+  </ng-content>
+</ng-template>
+<ng-template #brandTpl>
   <a class="hu-shell__brand" [routerLink]="brandLink()">
-    <ng-content select="[huShellLogo]">
-      <span class="hu-shell__logo hu-shell__logo--default">
-        <hu-icon name="graduation-cap" [size]="20" />
-      </span>
-    </ng-content>
+    <ng-container *ngTemplateOutlet="logoTpl" />
     <span class="hu-shell__brand-text">
       <span class="hu-shell__brand-name">{{ brand() }}</span>
       @if (brandSubtitle()) {
@@ -19,6 +18,50 @@
       }
     </span>
   </a>
+</ng-template>
+<ng-template #menuToggleTpl>
+  @if (isMobile()) {
+    <button
+      hu-button
+      variant="ghost"
+      iconOnly
+      class="hu-shell__menu-toggle"
+      aria-label="Menüyü aç"
+      [attr.aria-expanded]="mobileOpen()"
+      (click)="toggleSidebar()"
+    >
+      <hu-icon name="menu" [size]="20" />
+    </button>
+  }
+</ng-template>
+<ng-template #topbarTpl>
+  <ng-content select="[huTopbarStart]" />
+  <span class="hu-shell__spacer"></span>
+  <ng-content select="[huTopbarEnd]" />
+</ng-template>
+
+@if (layout() === 'header') {
+  <!-- Kurumsal üst bant: marka + topbar içeriği tam genişlikte -->
+  <header class="hu-shell__header">
+    <div class="hu-shell__header-brand">
+      <ng-container *ngTemplateOutlet="menuToggleTpl" />
+      <ng-container *ngTemplateOutlet="brandTpl" />
+    </div>
+    <div class="hu-shell__header-bar">
+      <ng-container *ngTemplateOutlet="topbarTpl" />
+    </div>
+  </header>
+}
+
+<aside
+  class="hu-shell__sidebar"
+  [class.hu-shell__sidebar--dark]="sidebarTheme() === 'dark'"
+  [attr.aria-hidden]="isMobile() && !mobileOpen() ? 'true' : null"
+  [attr.inert]="isMobile() && !mobileOpen() ? '' : null"
+>
+  @if (layout() !== 'header') {
+    <ng-container *ngTemplateOutlet="brandTpl" />
+  }
 
   <nav class="hu-shell__nav" aria-label="Ana menü">
     <hu-sidebar-nav
@@ -50,24 +93,12 @@
 }
 
 <div class="hu-shell__main">
-  <header class="hu-shell__topbar">
-    @if (isMobile()) {
-      <button
-        hu-button
-        variant="ghost"
-        iconOnly
-        class="hu-shell__menu-toggle"
-        aria-label="Menüyü aç"
-        [attr.aria-expanded]="mobileOpen()"
-        (click)="toggleSidebar()"
-      >
-        <hu-icon name="menu" [size]="20" />
-      </button>
-    }
-    <ng-content select="[huTopbarStart]" />
-    <span class="hu-shell__spacer"></span>
-    <ng-content select="[huTopbarEnd]" />
-  </header>
+  @if (layout() !== 'header') {
+    <header class="hu-shell__topbar">
+      <ng-container *ngTemplateOutlet="menuToggleTpl" />
+      <ng-container *ngTemplateOutlet="topbarTpl" />
+    </header>
+  }
 
   <main class="hu-shell__content" id="hu-main" tabindex="-1">
     <ng-content />

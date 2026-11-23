@@ -1,0 +1,90 @@
+<ng-template #header let-step="step" let-i="i">
+  @let s = state(i);
+  <button
+    type="button"
+    class="hu-stepper__header"
+    [id]="baseId + '-step-' + i"
+    [attr.data-state]="s"
+    [attr.aria-current]="i === current() ? 'step' : null"
+    [attr.aria-controls]="i === current() ? baseId + '-panel' : null"
+    [disabled]="step.disabled()"
+    [class.hu-stepper__header--locked]="!canSelect(i)"
+    (click)="select(i)"
+  >
+    <span class="hu-stepper__marker" aria-hidden="true">
+      @switch (s) {
+        @case ('done') {
+          <hu-icon name="check" [size]="16" />
+        }
+        @case ('error') {
+          <hu-icon name="alert-circle" [size]="16" />
+        }
+        @default {
+          @if (step.icon()) {
+            <hu-icon [name]="step.icon()!" [size]="16" />
+          } @else {
+            {{ i + 1 }}
+          }
+        }
+      }
+    </span>
+    <span class="hu-stepper__label">
+      <span class="hu-stepper__title">{{ step.label() }}</span>
+      @if (step.description() || step.optional()) {
+        <span class="hu-stepper__description">{{ step.description() || 'İsteğe bağlı' }}</span>
+      }
+    </span>
+    <span class="hu-sr-only">
+      @switch (s) {
+        @case ('done') {
+          (tamamlandı)
+        }
+        @case ('error') {
+          (hatalı)
+        }
+      }
+    </span>
+  </button>
+</ng-template>
+
+@if (orientation() === 'horizontal') {
+  <ol class="hu-stepper__list">
+    @for (step of steps(); track step; let i = $index) {
+      <li class="hu-stepper__item" [attr.data-state]="state(i)">
+        <ng-container *ngTemplateOutlet="header; context: { step, i }" />
+      </li>
+    }
+  </ol>
+  @if (steps()[current()]; as step) {
+    <div
+      class="hu-stepper__panel"
+      role="region"
+      tabindex="-1"
+      [id]="baseId + '-panel'"
+      [attr.aria-labelledby]="baseId + '-step-' + current()"
+    >
+      <ng-container [ngTemplateOutlet]="step.content()" />
+    </div>
+  }
+} @else {
+  <ol class="hu-stepper__list">
+    @for (step of steps(); track step; let i = $index) {
+      <li class="hu-stepper__item" [attr.data-state]="state(i)">
+        <ng-container *ngTemplateOutlet="header; context: { step, i }" />
+        <div class="hu-stepper__vbody">
+          @if (i === current()) {
+            <div
+              class="hu-stepper__panel"
+              role="region"
+              tabindex="-1"
+              [id]="baseId + '-panel'"
+              [attr.aria-labelledby]="baseId + '-step-' + i"
+            >
+              <ng-container [ngTemplateOutlet]="step.content()" />
+            </div>
+          }
+        </div>
+      </li>
+    }
+  </ol>
+}

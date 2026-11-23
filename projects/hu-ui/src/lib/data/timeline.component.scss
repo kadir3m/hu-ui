@@ -1,0 +1,204 @@
+.hu-timeline {
+  display: block;
+
+  [data-color='primary'] { --_c: var(--hu-primary); }
+  [data-color='success'] { --_c: var(--hu-success); }
+  [data-color='warning'] { --_c: var(--hu-warning); }
+  [data-color='danger'] { --_c: var(--hu-danger); }
+  [data-color='info'] { --_c: var(--hu-info); }
+  [data-color='neutral'] { --_c: var(--hu-gray-400); }
+}
+
+.hu-timeline__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hu-timeline__event {
+  display: flex;
+  gap: var(--hu-space-4);
+  min-height: 4.5rem;
+}
+
+.hu-timeline__opposite,
+.hu-timeline__content {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-bottom: var(--hu-space-5);
+}
+
+.hu-timeline__opposite {
+  padding-top: 2px;
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text-muted);
+  text-align: right;
+}
+
+.hu-timeline__separator {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hu-timeline__marker {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #fff;
+  background: var(--_c);
+  border: 2px solid var(--_c);
+  border-radius: 50%;
+
+  [data-status='current'] & {
+    color: var(--_c);
+    background: var(--hu-surface);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--_c) 22%, transparent);
+  }
+
+  [data-status='todo'] & {
+    color: var(--hu-text-subtle);
+    background: var(--hu-surface);
+    border-color: var(--hu-border-strong);
+  }
+}
+
+.hu-timeline__line {
+  flex: 1;
+  width: 2px;
+  margin: 4px 0;
+  background: var(--_c);
+  border-radius: 1px;
+
+  // Henüz gelinmemiş adıma giden çizgi soluk
+  [data-status='current'] &,
+  [data-status='todo'] & {
+    background: var(--hu-border);
+  }
+
+  .hu-timeline__event--last & {
+    visibility: hidden;
+  }
+}
+
+.hu-timeline__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+
+.hu-timeline__date {
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+}
+
+.hu-timeline__title {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  color: var(--hu-text);
+
+  [data-status='todo'] & {
+    color: var(--hu-text-muted);
+    font-weight: 500;
+  }
+}
+
+.hu-timeline__description {
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text-muted);
+}
+
+// --- Dikey: içerik solda ----------------------------------------------------------------
+.hu-timeline[data-layout='vertical'][data-align='left'] {
+  .hu-timeline__event {
+    flex-direction: row-reverse;
+  }
+
+  .hu-timeline__content {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .hu-timeline__opposite {
+    text-align: left;
+  }
+}
+
+// Karşı taraf yoksa içerik tüm genişliği alsın
+.hu-timeline[data-layout='vertical'] .hu-timeline__event:not(:has(.hu-timeline__opposite)) .hu-timeline__content {
+  flex: 1 1 auto;
+}
+
+// --- Dikey: dönüşümlü ------------------------------------------------------------------
+.hu-timeline[data-layout='vertical'][data-align='alternate'] {
+  .hu-timeline__event:nth-child(even) {
+    flex-direction: row-reverse;
+
+    .hu-timeline__content {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .hu-timeline__opposite {
+      text-align: left;
+    }
+  }
+}
+
+// --- Yatay -------------------------------------------------------------------------------
+.hu-timeline[data-layout='horizontal'] {
+  overflow-x: auto;
+
+  .hu-timeline__list {
+    flex-direction: row;
+  }
+
+  .hu-timeline__event {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: var(--hu-space-2);
+    min-width: 8rem;
+    min-height: 0;
+  }
+
+  .hu-timeline__opposite {
+    order: 0;
+    padding: 0;
+    text-align: left;
+  }
+
+  .hu-timeline__separator {
+    flex-direction: row;
+    order: 1;
+    width: 100%;
+  }
+
+  .hu-timeline__line {
+    width: auto;
+    height: 2px;
+    margin: 0 4px;
+  }
+
+  .hu-timeline__content {
+    order: 2;
+    padding: 0 var(--hu-space-3) 0 0;
+  }
+}
+
+@container (max-width: 479.98px) {
+  .hu-timeline[data-layout='vertical'][data-align='alternate'] .hu-timeline__event:nth-child(even) {
+    flex-direction: row;
+
+    .hu-timeline__content {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+}

@@ -55,7 +55,7 @@ export class DashboardComponent {
 
   protected readonly activities = [
     { icon: 'user', text: 'Elif Şahin, Hukuk Fakültesi\'ne akademisyen olarak eklendi.', time: '10 dk önce' },
-    { icon: 'edit', text: 'BBM 101 dersinin kontenjanı 120 olarak güncellendi.', time: '42 dk önce' },
+    { icon: 'edit', text: 'BİL 101 dersinin kontenjanı 120 olarak güncellendi.', time: '42 dk önce' },
     { icon: 'calendar', text: 'Bahar dönemi akademik takvimi yayınlandı.', time: '2 saat önce' },
     { icon: 'lock', text: '3 hesap başarısız giriş denemesi nedeniyle kilitlendi.', time: 'Dün' },
   ];

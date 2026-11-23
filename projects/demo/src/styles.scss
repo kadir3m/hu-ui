@@ -2,6 +2,11 @@
 // Paket olarak kullanırken: @use '@ucme-ui/angular/styles';
 @use '../../hu-ui/styles/hu-ui';
 
+// --- Demo kabuğu: soğuk tonlu zemin ------------------------------------------
+:root:not([data-theme='dark']) {
+  --hu-bg: #f5f6f9;
+}
+
 // --- Demo uygulamasına özel yardımcı sınıflar --------------------------------
 .page-header {
   display: flex;

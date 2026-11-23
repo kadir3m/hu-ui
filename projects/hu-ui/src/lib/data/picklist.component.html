@@ -1,0 +1,99 @@
+@for (side of sides; track side) {
+  @let list = visible()[side];
+  @if (side === 'target') {
+    <div class="hu-picklist__transfer" role="group" aria-label="Taşı">
+      <button hu-button variant="outline" size="sm" iconOnly type="button" aria-label="Seçilenleri taşı" title="Seçilenleri taşı" [disabled]="disabled() || !selectedCount('source')" (click)="moveSelected('source')">
+        <hu-icon name="chevron-right" />
+      </button>
+      <button hu-button variant="outline" size="sm" iconOnly type="button" aria-label="Tümünü taşı" title="Tümünü taşı" [disabled]="disabled() || !visible().source.length" (click)="moveAll('source')">
+        <hu-icon name="chevrons-right" />
+      </button>
+      <button hu-button variant="outline" size="sm" iconOnly type="button" aria-label="Seçilenleri geri al" title="Seçilenleri geri al" [disabled]="disabled() || !selectedCount('target')" (click)="moveSelected('target')">
+        <hu-icon name="chevron-left" />
+      </button>
+      <button hu-button variant="outline" size="sm" iconOnly type="button" aria-label="Tümünü geri al" title="Tümünü geri al" [disabled]="disabled() || !visible().target.length" (click)="moveAll('target')">
+        <hu-icon name="chevrons-left" />
+      </button>
+    </div>
+  }
+  <section class="hu-picklist__panel" [attr.aria-labelledby]="id + '-' + side + '-title'">
+    <header class="hu-picklist__header">
+      <span class="hu-picklist__title" [id]="id + '-' + side + '-title'">{{ side === 'source' ? sourceHeader() : targetHeader() }}</span>
+      <span class="hu-picklist__count">
+        @if (selectedCount(side)) {
+          {{ selectedCount(side) }} / {{ listOf(side).length }}
+        } @else {
+          {{ listOf(side).length }}
+        }
+      </span>
+    </header>
+    @if (filter()) {
+      <div class="hu-picklist__search">
+        <hu-icon name="search" [size]="14" />
+        <input
+          type="search"
+          class="hu-input"
+          data-size="sm"
+          autocomplete="off"
+          [attr.aria-label]="(side === 'source' ? sourceHeader() : targetHeader()) + ' içinde ara'"
+          [placeholder]="filterPlaceholder()"
+          [value]="query()[side]"
+          [disabled]="disabled()"
+          (input)="onQuery(side, $any($event.target).value)"
+        />
+      </div>
+    }
+    <div class="hu-picklist__body">
+      <ul
+        class="hu-picklist__list"
+        role="listbox"
+        aria-multiselectable="true"
+        [attr.aria-labelledby]="id + '-' + side + '-title'"
+        [attr.aria-activedescendant]="list.length ? optionId(side, activeIndex(side)) : null"
+        [attr.aria-disabled]="disabled() || null"
+        [tabIndex]="disabled() ? -1 : 0"
+        [style.height]="listHeight()"
+        (keydown)="onListKeydown(side, $event)"
+      >
+        @for (item of list; track keyOf(item); let i = $index) {
+          @let sel = isSelected(side, item);
+          <li
+            class="hu-picklist__item"
+            role="option"
+            [id]="optionId(side, i)"
+            [attr.aria-selected]="sel"
+            [class.hu-picklist__item--selected]="sel"
+            [class.hu-picklist__item--active]="activeIndex(side) === i"
+            (click)="onItemClick(side, item, $event)"
+            (dblclick)="onItemDblClick(side, item)"
+            (mousedown)="$event.shiftKey && $event.preventDefault()"
+          >
+            @if (template(); as tpl) {
+              <ng-container *ngTemplateOutlet="tpl.template; context: { $implicit: item, side, selected: sel }" />
+            } @else {
+              {{ labelOf(item) }}
+            }
+          </li>
+        } @empty {
+          <li class="hu-picklist__empty" role="presentation">{{ query()[side] ? 'Sonuç bulunamadı' : emptyMessage() }}</li>
+        }
+      </ul>
+      @if (side === 'target' && reorder()) {
+        <div class="hu-picklist__reorder" role="group" aria-label="Sırala">
+          <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="En üste" title="En üste" [disabled]="disabled() || !canReorder('up')" (click)="move('top')">
+            <hu-icon name="chevrons-up" />
+          </button>
+          <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="Yukarı" title="Yukarı" [disabled]="disabled() || !canReorder('up')" (click)="move('up')">
+            <hu-icon name="chevron-up" />
+          </button>
+          <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="Aşağı" title="Aşağı" [disabled]="disabled() || !canReorder('down')" (click)="move('down')">
+            <hu-icon name="chevron-down" />
+          </button>
+          <button hu-button variant="ghost" size="sm" iconOnly type="button" aria-label="En alta" title="En alta" [disabled]="disabled() || !canReorder('down')" (click)="move('bottom')">
+            <hu-icon name="chevrons-down" />
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+}

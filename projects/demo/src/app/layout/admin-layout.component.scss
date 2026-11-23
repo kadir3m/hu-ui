@@ -1,3 +1,6 @@
+// Bu öğeler kırmızı üst bandın (hu-shell layout="header") içinde durur:
+// yarı saydam beyaz yüzeyler + beyaz yazı.
+
 .topbar-search {
   position: relative;
   display: flex;
@@ -7,29 +10,67 @@
 
   hu-icon {
     position: absolute;
-    left: 0.625rem;
-    color: var(--hu-text-subtle);
+    left: 0.75rem;
+    color: rgb(255 255 255 / 0.8);
     pointer-events: none;
+    transition: color var(--hu-transition);
   }
 
   input {
-    padding-left: 2rem;
-    padding-right: 3.5rem;
-    background: var(--hu-surface-2);
+    padding-left: 2.25rem;
+    padding-right: 3.75rem;
+    color: #fff;
+    background: rgb(255 255 255 / 0.12);
+    border-color: rgb(255 255 255 / 0.2);
+    border-radius: var(--hu-radius-full);
     box-shadow: none;
+    transition:
+      background-color var(--hu-transition),
+      border-color var(--hu-transition),
+      box-shadow var(--hu-transition);
+
+    &::placeholder {
+      color: rgb(255 255 255 / 0.72);
+    }
+
+    &:hover {
+      background: rgb(255 255 255 / 0.18);
+      border-color: rgb(255 255 255 / 0.32);
+    }
+
+    &:focus {
+      color: var(--hu-gray-900);
+      background: #fff;
+      border-color: #fff;
+      box-shadow: 0 0 0 3px rgb(255 255 255 / 0.3);
+
+      &::placeholder {
+        color: var(--hu-gray-500);
+      }
+    }
+  }
+
+  &:focus-within hu-icon {
+    color: var(--hu-gray-500);
   }
 
   kbd {
     position: absolute;
     right: 0.5rem;
-    padding: 1px 6px;
+    padding: 1px 7px;
     font-family: var(--hu-font-sans);
     font-size: 0.6875rem;
-    color: var(--hu-text-subtle);
-    background: var(--hu-surface);
-    border: 1px solid var(--hu-border);
-    border-radius: var(--hu-radius-sm);
+    color: rgb(255 255 255 / 0.85);
+    background: rgb(255 255 255 / 0.1);
+    border: 1px solid rgb(255 255 255 / 0.25);
+    border-radius: var(--hu-radius-full);
     pointer-events: none;
+  }
+
+  &:focus-within kbd {
+    color: var(--hu-gray-500);
+    background: var(--hu-gray-100);
+    border-color: var(--hu-gray-200);
   }
 
   @media (max-width: 1199.98px) {
@@ -53,37 +94,19 @@
   right: 9px;
   width: 8px;
   height: 8px;
-  background: var(--hu-primary);
-  border: 2px solid var(--hu-surface);
+  background: #fbbf24;
+  border: 2px solid #621230;
   border-radius: 50%;
 }
 
-.notif-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--hu-space-3);
-  min-width: 20rem;
-  padding: var(--hu-space-2) var(--hu-space-3);
+.notifications {
+  --hu-dropdown-min-width: 20rem;
 }
 
-.notif-item {
-  align-items: flex-start;
-
-  hu-icon {
-    margin-top: 2px;
-  }
-}
-
-.notif-text {
-  display: block;
-  white-space: normal;
-}
-
-.notif-time {
-  display: block;
-  font-size: var(--hu-text-xs);
-  color: var(--hu-text-subtle);
+// Topbar ikon butonları: yuvarlak
+hu-theme-toggle ::ng-deep button,
+.notif-trigger {
+  border-radius: var(--hu-radius-full);
 }
 
 .user-trigger {
@@ -91,17 +114,31 @@
   align-items: center;
   gap: var(--hu-space-2);
   height: 2.5rem;
-  margin-left: var(--hu-space-1);
-  padding: 0 var(--hu-space-2) 0 var(--hu-space-1);
+  margin-left: var(--hu-space-2);
+  padding: 0 var(--hu-space-3) 0 0.3125rem;
   font: inherit;
-  color: var(--hu-text-muted);
-  background: none;
-  border: 0;
-  border-radius: var(--hu-radius-md);
+  color: rgb(255 255 255 / 0.85);
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.2);
+  border-radius: var(--hu-radius-full);
   cursor: pointer;
+  transition:
+    background-color var(--hu-transition),
+    border-color var(--hu-transition);
 
   &:hover {
-    background: var(--hu-surface-3);
+    background: rgb(255 255 255 / 0.18);
+    border-color: rgb(255 255 255 / 0.32);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+  }
+
+  hu-avatar {
+    box-shadow: 0 0 0 2px rgb(255 255 255 / 0.85);
+    border-radius: 50%;
   }
 }
 
@@ -114,15 +151,27 @@
 
 .user-trigger__name {
   font-weight: 600;
-  color: var(--hu-text);
+  color: #fff;
 }
 
 .user-trigger__role {
   font-size: var(--hu-text-xs);
+  color: rgb(255 255 255 / 0.72);
 }
 
 @media (max-width: 767.98px) {
   .user-trigger__text {
     display: none;
+  }
+}
+
+@media (max-width: 479.98px) {
+  .user-trigger {
+    margin-left: 0;
+    padding: 0 0.25rem;
+
+    > hu-icon {
+      display: none;
+    }
   }
 }
