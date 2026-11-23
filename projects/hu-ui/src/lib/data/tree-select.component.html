@@ -1,0 +1,75 @@
+<div
+  #trigger
+  class="hu-tree-select__trigger"
+  role="combobox"
+  aria-haspopup="tree"
+  [id]="id()"
+  [attr.tabindex]="isDisabled() ? -1 : 0"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="panelId"
+  [attr.aria-disabled]="isDisabled() || null"
+  [attr.aria-invalid]="isInvalid() || null"
+  [attr.aria-describedby]="field?.describedBy() ?? null"
+  [attr.aria-label]="ariaLabel() || null"
+  [class.hu-tree-select__trigger--invalid]="isInvalid()"
+  (click)="toggle()"
+  (keydown)="onTriggerKeydown($event)"
+>
+  <div class="hu-tree-select__values">
+    @if (!selectedNodes().length) {
+      <span class="hu-tree-select__placeholder">{{ placeholder() }}</span>
+    } @else if (showChips()) {
+      @for (n of selectedNodes(); track n.key) {
+        <span class="hu-tree-select__chip">
+          @if (n.icon) {
+            <hu-icon [name]="n.icon" [size]="12" />
+          }
+          <span class="hu-tree-select__chip-text">{{ n.label }}</span>
+          @if (!isDisabled()) {
+            <button type="button" class="hu-tree-select__chip-remove" tabindex="-1" [attr.aria-label]="n.label + ' kaldır'" (click)="remove(n, $event)">
+              <hu-icon name="x" [size]="12" />
+            </button>
+          }
+        </span>
+      }
+    } @else {
+      @if (selectionMode() === 'single' && selectedNodes()[0].icon) {
+        <hu-icon class="hu-tree-select__value-icon" [name]="selectedNodes()[0].icon!" [size]="16" />
+      }
+      <span class="hu-tree-select__text">{{ summary() }}</span>
+    }
+  </div>
+  @if (showClear() && selectedNodes().length && !isDisabled()) {
+    <button type="button" class="hu-tree-select__icon-btn" tabindex="-1" aria-label="Seçimi temizle" (click)="clearAll($event)">
+      <hu-icon name="x" [size]="14" />
+    </button>
+  }
+  <hu-icon class="hu-tree-select__caret" name="chevron-down" [size]="16" />
+</div>
+
+<div
+  #panel
+  popover="manual"
+  class="hu-tree-select__panel"
+  [id]="panelId"
+  [class.hu-tree-select__panel--inline]="!supportsPopover"
+  [attr.hidden]="!supportsPopover && !open() ? '' : null"
+  [style.--hu-tree-select-height]="panelHeight()"
+  (keydown)="onPanelKeydown($event)"
+>
+  <hu-tree
+    [nodes]="nodes()"
+    [selectionMode]="selectionMode()"
+    [selection]="keys()"
+    (selectionChange)="onTreeSelection($event)"
+    [(expanded)]="expanded"
+    [filter]="filter()"
+    [filterPlaceholder]="filterPlaceholder()"
+    [propagate]="propagate()"
+    [loadChildren]="loadChildren()"
+    [emptyMessage]="emptyMessage()"
+    [ariaLabel]="ariaLabel() || placeholder()"
+    (nodeSelect)="onNodeSelect($event)"
+    (nodeUnselect)="onNodeUnselect($event)"
+  />
+</div>

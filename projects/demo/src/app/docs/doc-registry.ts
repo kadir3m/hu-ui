@@ -21,7 +21,7 @@ export interface DocApi {
   cssVars?: ApiRow[];
 }
 
-export const DOC_CATEGORIES = ['Yerleşim', 'Form', 'Tarih', 'Veri', 'Panel', 'Medya', 'Navigasyon', 'Geri bildirim', 'Çekirdek'] as const;
+export const DOC_CATEGORIES = ['Yerleşim', 'Form', 'Tarih', 'Veri', 'Panel', 'Medya', 'Navigasyon', 'Geri bildirim', 'Core'] as const;
 export type DocCategory = (typeof DOC_CATEGORIES)[number];
 
 export interface DocEntry {
@@ -305,6 +305,39 @@ export const DOCS: DocEntry[] = [
       methods: [['show() / close() / toggle()', 'void', '—', 'Paneli aç / kapat']],
     },
     load: () => import('./pages/multi-select.doc').then((m) => m.MultiSelectDoc),
+  },
+  {
+    slug: 'tree-select',
+    name: 'TreeSelect',
+    category: 'Form',
+    icon: 'git-branch',
+    isNew: true,
+    description: 'Ağaçtan seçim kutusu: birim, kategori, klasör. Tekli, çoklu veya onay kutulu seçim; arama, tembel yükleme ve tam klavye desteği. Formlarla (formControlName) çalışır.',
+    selector: 'hu-tree-select',
+    imports: 'HuTreeSelect',
+    api: {
+      inputs: [
+        ['nodes', 'HuTreeNode<T>[]', '[]', 'Ağaç verisi (Tree ile aynı: { key, label, icon?, children?, leaf?, disabled?, selectable? })'],
+        ['selectionMode', `'single' | 'multiple' | 'checkbox'`, `'single'`, 'Seçim türü'],
+        ['placeholder', 'string', `'Seçin'`, 'Boşken görünen metin'],
+        ['filter / filterPlaceholder', 'boolean / string', `false / 'Ara…'`, 'Panelde arama kutusu'],
+        ['propagate', 'boolean', 'true', 'Onay kutulu modda seçim alt / üst düğümlere yayılır'],
+        ['loadChildren', '(node) => Promise<HuTreeNode[]>', 'null', 'Tembel yükleme'],
+        ['display', `'chips' | 'text'`, `'chips'`, 'Çoklu seçimde gösterim'],
+        ['maxSelectedLabels', 'number', '3', 'Fazlası “N seçildi” olarak yazılır'],
+        ['showPath', 'boolean', 'false', 'Tekli seçimde üst düğümlerle birlikte: “Fakülte / Bölüm”'],
+        ['showClear', 'boolean', 'true', 'Temizleme düğmesi (Backspace/Delete da temizler)'],
+        ['panelHeight', 'string', `'18rem'`, 'Listenin en büyük yüksekliği'],
+        ['size / disabled / ariaLabel / id', '—', `'md' / false`, ''],
+      ],
+      models: [['value', 'HuTreeKey | HuTreeKey[] | null', 'null', 'Tekli: anahtar; çoklu / onay kutulu: anahtar dizisi (formControlName ile de)']],
+      outputs: [
+        ['nodeSelect / nodeUnselect', 'HuTreeNode', '—', 'Seçim değişti'],
+        ['closed', 'void', '—', 'Panel kapandı'],
+      ],
+      methods: [['show() / close() / toggle()', 'void', '—', 'Paneli aç / kapat']],
+    },
+    load: () => import('./pages/tree-select.doc').then((m) => m.TreeSelectDoc),
   },
   {
     slug: 'password',
@@ -1206,11 +1239,11 @@ export const DOCS: DocEntry[] = [
     load: () => import('./pages/toast.doc').then((m) => m.ToastDoc),
   },
 
-  // --- Çekirdek ------------------------------------------------------------------
+  // --- Core ---------------------------------------------------------------------
   {
     slug: 'icon',
     name: 'Icon',
-    category: 'Çekirdek',
+    category: 'Core',
     icon: 'sun',
     description: 'SVG ikon seti. provideHuIcons ile kendi ikonlarınızı ekleyebilirsiniz.',
     selector: 'hu-icon',
@@ -1228,7 +1261,7 @@ export const DOCS: DocEntry[] = [
   {
     slug: 'theme',
     name: 'Tema',
-    category: 'Çekirdek',
+    category: 'Core',
     icon: 'moon',
     description: 'Açık/koyu/sistem teması ve tasarım token’ları. HuThemeService tercihi saklar, hu-theme-toggle geçiş butonudur.',
     selector: 'hu-theme-toggle + HuThemeService',

@@ -60,6 +60,7 @@ export * from './lib/context-menu/context-menu.component';
 export * from './lib/context-menu/context-menu.service';
 export * from './lib/data/timeline.component';
 export * from './lib/data/tree.component';
+export * from './lib/data/tree-select.component';
 export * from './lib/data/picklist.component';
 export * from './lib/data/org-chart.component';
 

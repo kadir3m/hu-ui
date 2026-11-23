@@ -35,7 +35,8 @@ Admin uygulama iskeleti: daraltılabilir sidebar, mobilde çekmece menü, üst �
 | `brand` | `string` | `''` | Sol üstteki uygulama adı |
 | `brandSubtitle` | `string` | — | Adın altındaki küçük satır |
 | `brandLink` | `string` | `'/'` | Marka alanına tıklanınca gidilecek adres |
-| `sidebarTheme` | `'default' \| 'dark'` | `'default'` | `dark`: açık temada da koyu sidebar |
+| `sidebarTheme` | `'default' \| 'dark'` | `'default'` | `dark`: açık temada da koyu (antrasit) sidebar |
+| `layout` | `'classic' \| 'header' \| 'floating'` | `'classic'` | `header`: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda, sidebar bandın altında (kurumsal görünüm). Bant rengi `--hu-header-bg` ile değiştirilir · `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar |
 
 | Model | Tip | Varsayılan | Açıklama |
 | --- | --- | --- | --- |
@@ -471,6 +472,37 @@ departments: HuSelectOption[] = [
 
 <!-- Nesne değerler -->
 <hu-multi-select [options]="courseOptions" [compareWith]="sameCourse" [selectionLimit]="3" />
+```
+
+### hu-tree-select
+
+Ağaçtan seçim kutusu. Panelde `hu-tree` kullanılır (arama, tembel yükleme, klavye). Tekli seçimde değer
+anahtar (`HuTreeKey | null`), çoklu ve onay kutulu seçimde anahtar dizisidir. Onay kutulu (yayılımlı) modda
+tamamı seçili dal tek çip olarak gösterilir; çipi kaldırmak alt düğümleri de kaldırır.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `nodes` | `HuTreeNode<T>[]` | `[]` | Ağaç verisi (`hu-tree` ile aynı) |
+| `selectionMode` | `'single' | 'multiple' | 'checkbox'` | `'single'` | |
+| `placeholder` | `string` | `'Seçin'` | |
+| `filter`, `filterPlaceholder` | `boolean`, `string` | `false`, `'Ara…'` | Panelde arama |
+| `propagate` | `boolean` | `true` | Onay kutusunda alt / üst yayılım |
+| `loadChildren` | `(node) => Promise<HuTreeNode[]>` | `null` | Tembel yükleme |
+| `display` | `'chips' | 'text'` | `'chips'` | Çoklu seçim gösterimi |
+| `maxSelectedLabels` | `number` | `3` | Fazlası "N seçildi" |
+| `showPath` | `boolean` | `false` | Tekli seçimde "Fakülte / Bölüm" |
+| `showClear` | `boolean` | `true` | Temizleme düğmesi |
+| `panelHeight` | `string` | `'18rem'` | Listenin en büyük yüksekliği |
+| `size`, `disabled`, `ariaLabel`, `id` | | `'md'`, `false` | |
+
+Model: `value` (`HuTreeSelectValue`; `formControlName` ile de). Output: `nodeSelect`, `nodeUnselect`, `closed`.
+Metotlar: `show()`, `close()`, `toggle()`.
+
+```html
+<hu-form-field label="Birim" required>
+  <hu-tree-select formControlName="unit" [nodes]="units" filter showPath placeholder="Birim seçin" />
+</hu-form-field>
+<hu-tree-select [nodes]="units" selectionMode="checkbox" [(value)]="scope" />
 ```
 
 ### hu-password

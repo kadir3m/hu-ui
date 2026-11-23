@@ -38,6 +38,7 @@
   width: var(--_sidebar-w);
   color: var(--hu-sidebar-fg);
   background: var(--hu-sidebar-bg);
+  background-image: var(--hu-sidebar-bg-image, none);
   border-right: 1px solid var(--hu-sidebar-border);
   transition:
     width 200ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -45,13 +46,29 @@
 
   // Açık temada da koyu sidebar
   &--dark {
-    --hu-sidebar-bg: var(--hu-gray-900);
-    --hu-sidebar-fg: var(--hu-gray-300);
-    --hu-sidebar-muted: var(--hu-gray-500);
-    --hu-sidebar-hover: var(--hu-gray-800);
-    --hu-sidebar-active-bg: color-mix(in srgb, var(--hu-red-500) 20%, transparent);
+    // Nötr antrasit zemin + kırmızı vurgu
+    --hu-sidebar-bg: #1c1c1f;
+    --hu-sidebar-fg: #e4e4e7;
+    --hu-sidebar-muted: #8b8b93;
+    --hu-sidebar-hover: rgb(255 255 255 / 0.06);
+    --hu-sidebar-active-bg: rgb(255 255 255 / 0.08);
     --hu-sidebar-active-fg: #fff;
-    --hu-sidebar-border: var(--hu-gray-800);
+    --hu-sidebar-border: rgb(255 255 255 / 0.08);
+    --hu-sidebar-icon-active: #ff8a9b;
+    color-scheme: dark;
+    border-right-color: transparent;
+  }
+
+  // Koyu menüde seçili link sade: gölgesiz, parlamasız
+  &--dark {
+    .hu-nav__link--active,
+    .hu-nav__link--active:hover {
+      box-shadow: none;
+    }
+
+    .hu-nav__link--active::before {
+      box-shadow: none;
+    }
   }
 }
 
@@ -63,7 +80,6 @@
   padding: 0 var(--hu-space-4);
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid var(--hu-sidebar-border);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -78,8 +94,11 @@
 
   &--default {
     color: #fff;
-    background: var(--hu-red-600);
-    border-radius: var(--hu-radius-md);
+    background: linear-gradient(135deg, var(--hu-red-400), var(--hu-red-600) 55%, var(--hu-red-800));
+    border-radius: var(--hu-radius-lg);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.25),
+      0 6px 16px -4px color-mix(in srgb, var(--hu-red-600) 60%, transparent);
   }
 }
 
@@ -94,6 +113,7 @@
 .hu-shell__brand-name {
   font-size: 0.9375rem;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--hu-text);
 
   .hu-shell__sidebar--dark & {
@@ -110,7 +130,7 @@
 
 .hu-shell__nav {
   flex: 1;
-  padding: var(--hu-space-3);
+  padding: var(--hu-space-2) var(--hu-space-3) var(--hu-space-3);
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -125,21 +145,30 @@
   display: flex;
   align-items: center;
   gap: var(--hu-space-3);
-  height: 2.75rem;
-  padding: 0 calc(var(--hu-space-3) + var(--hu-space-3) + 1px);
+  height: 2.5rem;
+  margin: var(--hu-space-2) var(--hu-space-3) var(--hu-space-3);
+  padding: 0 var(--hu-space-3);
   font: inherit;
   font-size: var(--hu-text-sm);
   color: var(--hu-sidebar-muted);
   text-align: left;
   background: none;
-  border: 0;
-  border-top: 1px solid var(--hu-sidebar-border);
+  border: 1px solid var(--hu-sidebar-border);
+  border-radius: var(--hu-radius-lg);
   cursor: pointer;
   flex-shrink: 0;
+  transition:
+    background-color var(--hu-transition),
+    color var(--hu-transition);
 
   &:hover {
     color: var(--hu-sidebar-fg);
     background: var(--hu-sidebar-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hu-focus);
+    outline-offset: 2px;
   }
 }
 
@@ -154,6 +183,7 @@
   }
   .hu-shell__collapse {
     justify-content: center;
+    margin-inline: var(--hu-space-3);
     padding: 0;
   }
 }
@@ -176,9 +206,10 @@
   gap: var(--hu-space-3);
   height: var(--hu-topbar-height);
   padding: 0 var(--hu-space-6);
-  background: color-mix(in srgb, var(--hu-surface) 85%, transparent);
-  border-bottom: 1px solid var(--hu-border);
-  backdrop-filter: saturate(180%) blur(8px);
+  background: color-mix(in srgb, var(--hu-bg) 78%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--hu-border) 80%, transparent);
+  box-shadow: 0 1px 12px -6px rgb(16 16 20 / 0.12);
+  backdrop-filter: saturate(180%) blur(14px);
 }
 
 .hu-shell__topbar-start {
@@ -208,6 +239,196 @@
 
   &:focus {
     outline: none;
+  }
+}
+
+// --- Yüzen yerleşim (layout="floating") ---------------------------------------
+// Sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar.
+.hu-shell--floating {
+  --_gap: 0.75rem;
+  background: var(--hu-bg);
+
+  &:not(.hu-shell--mobile) {
+    .hu-shell__sidebar {
+      inset: var(--_gap) auto var(--_gap) var(--_gap);
+      border: 1px solid var(--hu-sidebar-border);
+      border-radius: 1.25rem;
+      box-shadow:
+        0 1px 2px rgb(12 20 35 / 0.06),
+        0 12px 32px -12px rgb(16 16 20 / 0.14);
+      overflow: hidden;
+    }
+
+    .hu-shell__main {
+      margin-left: calc(var(--_sidebar-w) + var(--_gap));
+    }
+  }
+
+  .hu-shell__topbar {
+    top: var(--_gap);
+    margin: var(--_gap) var(--_gap) 0;
+    padding: 0 var(--hu-space-3) 0 var(--hu-space-5);
+    background: color-mix(in srgb, var(--hu-surface) 72%, transparent);
+    border: 1px solid color-mix(in srgb, var(--hu-border) 70%, transparent);
+    border-radius: 1rem;
+    box-shadow:
+      0 1px 2px rgb(12 20 35 / 0.04),
+      0 8px 24px -12px rgb(16 16 20 / 0.1);
+  }
+
+  &.hu-shell--mobile .hu-shell__topbar {
+    --_gap: 0.5rem;
+    padding: 0 var(--hu-space-2);
+  }
+}
+
+// --- Kurumsal üst bant yerleşimi (layout="header") ---------------------------
+// Tam genişlikte marka renginde bant: solda logo + proje adı (sidebar ile aynı
+// genişlikte, altındaki menüyle hizalı), sağda breadcrumb ve araçlar.
+.hu-shell--header {
+  --_header-h: 4rem;
+  // Bordodan mora hafif geçiş
+  --hu-header-bg: linear-gradient(90deg, #6e0f22 0%, #621230 45%, #4c1745 100%);
+
+  :root[data-theme='dark'] & {
+    --hu-header-bg: linear-gradient(90deg, #4a0a17 0%, #3f0c22 45%, #2f1236 100%);
+  }
+
+  .hu-shell__sidebar {
+    top: var(--_header-h);
+  }
+
+  .hu-shell__nav {
+    padding-top: var(--hu-space-4);
+  }
+
+  .hu-shell__main {
+    padding-top: var(--_header-h);
+  }
+
+  &.hu-shell--collapsed .hu-shell__header-brand {
+    justify-content: center;
+    padding: 0;
+  }
+}
+
+.hu-shell__header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 950;
+  display: flex;
+  height: var(--_header-h);
+  color: #fff;
+  background: var(--hu-header-bg);
+  box-shadow:
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 6px 18px -10px rgb(65 5 16 / 0.55);
+
+  // Bant üstünde ince ışık; düz kırmızıyı derinleştirir
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(55% 140% at 78% -40%, rgb(255 255 255 / 0.16), transparent 60%);
+    pointer-events: none;
+  }
+
+  // Bant içindeki breadcrumb ve ikon butonları beyaz
+  .hu-breadcrumb {
+    --hu-text: #fff;
+    --hu-text-muted: rgb(255 255 255 / 0.78);
+    --hu-text-subtle: rgb(255 255 255 / 0.5);
+  }
+
+  .hu-button[data-variant='ghost'] {
+    --hu-text: #fff;
+    --hu-text-muted: rgb(255 255 255 / 0.85);
+    --hu-surface-3: rgb(255 255 255 / 0.14);
+    --hu-focus: #fff;
+  }
+}
+
+.hu-shell__header-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  flex-shrink: 0;
+  width: var(--_sidebar-w);
+  padding: 0 var(--hu-space-4);
+  border-right: 1px solid rgb(255 255 255 / 0.14);
+  transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  .hu-shell__brand {
+    height: 100%;
+    padding: 0;
+  }
+
+  .hu-shell__logo--default {
+    color: var(--hu-red-600);
+    background: #fff;
+    box-shadow: 0 4px 12px -4px rgb(0 0 0 / 0.35);
+  }
+
+  .hu-shell__brand-name {
+    font-size: 1rem;
+    color: #fff;
+  }
+
+  .hu-shell__brand-subtitle {
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  .hu-shell__brand:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+    border-radius: var(--hu-radius-md);
+  }
+}
+
+.hu-shell__header-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-3);
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--hu-space-6);
+}
+
+.hu-shell--header.hu-shell--mobile {
+  .hu-shell__header-brand {
+    width: auto;
+    min-width: 0;
+    flex-shrink: 1;
+    gap: var(--hu-space-1);
+    padding: 0 var(--hu-space-2);
+    border-right: 0;
+
+    .hu-shell__brand {
+      gap: var(--hu-space-2);
+      min-width: 0;
+    }
+
+    .hu-shell__brand-name {
+      font-size: 0.9375rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .hu-shell__brand-subtitle {
+    display: none;
+  }
+
+  .hu-shell__header-bar {
+    flex: 0 0 auto;
+    gap: var(--hu-space-1);
+    padding: 0 var(--hu-space-2) 0 0;
+  }
+
+  .hu-shell__spacer {
+    display: none;
   }
 }
 
@@ -296,7 +517,7 @@
   white-space: nowrap;
   background: none;
   border: 0;
-  border-radius: var(--hu-radius-md);
+  border-radius: var(--hu-radius-lg);
   cursor: pointer;
   transition:
     background-color var(--hu-transition),
@@ -318,20 +539,21 @@
 
   &--active,
   &--active:hover {
+    font-weight: 600;
     color: var(--hu-sidebar-active-fg);
     background: var(--hu-sidebar-active-bg);
 
     .hu-nav__icon {
-      color: var(--hu-primary);
+      color: var(--hu-sidebar-icon-active, var(--hu-primary));
     }
   }
 
-  &--active:not(.hu-nav__link--sub)::before {
+  &--active::before {
     content: '';
     position: absolute;
-    top: 8px;
-    bottom: 8px;
-    left: calc(var(--hu-space-3) * -1);
+    top: 9px;
+    bottom: 9px;
+    left: 0;
     width: 3px;
     background: var(--hu-primary);
     border-radius: 0 3px 3px 0;
@@ -345,7 +567,7 @@
     }
 
     .hu-nav__icon {
-      color: var(--hu-primary);
+      color: var(--hu-sidebar-icon-active, var(--hu-primary));
     }
   }
 }
@@ -395,20 +617,23 @@
     color: var(--hu-info-fg);
     background: var(--hu-info-soft);
     border-radius: var(--hu-radius-sm);
+
+    .hu-shell__sidebar--dark & {
+      color: #fff;
+      background: rgb(255 255 255 / 0.16);
+    }
   }
 }
 
 // Alt menü içindeki kategori başlığı (örn. "Form", "Veri")
 .hu-nav__subheader {
-  padding: var(--hu-space-3) var(--hu-space-3) var(--hu-space-1);
-  font-size: 0.75rem;
+  padding: var(--hu-space-4) var(--hu-space-3) var(--hu-space-1);
+  font-size: 0.6875rem;
   font-weight: 600;
-  color: var(--hu-text);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hu-sidebar-muted);
   white-space: nowrap;
-
-  .hu-shell__sidebar--dark & {
-    color: #fff;
-  }
 
   &:first-child {
     padding-top: var(--hu-space-2);

@@ -120,7 +120,8 @@ export class HuTree<T = unknown> {
   private readonly selectedSet = computed(() => new Set(this.selection() ?? []));
   private readonly expandedSet = computed(() => new Set(this.expanded() ?? []));
 
-  protected childrenOf(node: HuTreeNode<T>): HuTreeNode<T>[] | undefined {
+  /** @internal Alt düğümler (tembel yüklenenler dahil). */
+  childrenOf(node: HuTreeNode<T>): HuTreeNode<T>[] | undefined {
     return node.children ?? this.loaded().get(node.key);
   }
 
@@ -244,6 +245,14 @@ export class HuTree<T = unknown> {
 
   collapseAll(): void {
     this.expanded.set([]);
+  }
+
+  /** Klavye odağını ağaca verir: aramada ilk eşleşen, yoksa seçili, o da yoksa ilk düğüm. */
+  focus(): void {
+    const q = huFold(this.query().trim());
+    const hit = q ? this.rows().find((r) => huFold(r.node.label).includes(q)) : undefined;
+    const key = hit?.node.key ?? this.tabStop();
+    if (key !== null) this.focusRow(key);
   }
 
   // --- Seçim ------------------------------------------------------------------------------

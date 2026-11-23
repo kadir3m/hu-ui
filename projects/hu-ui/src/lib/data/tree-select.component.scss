@@ -1,0 +1,207 @@
+.hu-tree-select {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+// Tetikleyici huInput ile aynı görünür; çipler sığmazsa satır büyür
+.hu-tree-select__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-1);
+  min-height: var(--hu-control-md);
+  padding: 3px var(--hu-space-2) 3px var(--hu-space-3);
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--hu-shadow-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--hu-transition),
+    box-shadow var(--hu-transition);
+
+  &:hover:not([aria-disabled='true']):not(:focus) {
+    border-color: var(--hu-gray-400);
+  }
+
+  &:focus,
+  .hu-tree-select--open & {
+    outline: none;
+    border-color: var(--hu-primary);
+    box-shadow: var(--hu-ring);
+  }
+
+  &--invalid,
+  &--invalid:hover:not(:focus) {
+    border-color: var(--hu-danger);
+  }
+
+  &--invalid:focus {
+    box-shadow: var(--hu-ring-danger);
+  }
+
+  .hu-tree-select--disabled & {
+    color: var(--hu-text-subtle);
+    background: var(--hu-surface-3);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  [data-size='sm'] & {
+    min-height: var(--hu-control-sm);
+    padding-left: var(--hu-space-2);
+    font-size: 0.8125rem;
+  }
+
+  [data-size='lg'] & {
+    min-height: var(--hu-control-lg);
+    padding-left: var(--hu-space-4);
+    font-size: var(--hu-text-md);
+  }
+}
+
+.hu-tree-select__values {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hu-tree-select__placeholder {
+  color: var(--hu-text-subtle);
+}
+
+.hu-tree-select__value-icon {
+  flex-shrink: 0;
+  color: var(--hu-text-muted);
+}
+
+.hu-tree-select__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hu-tree-select__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  height: 1.5rem;
+  padding: 0 2px 0 var(--hu-space-2);
+  font-size: var(--hu-text-xs);
+  font-weight: 500;
+  color: var(--hu-primary-soft-fg);
+  white-space: nowrap;
+  background: var(--hu-primary-soft);
+  border-radius: var(--hu-radius-sm);
+}
+
+.hu-tree-select__chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hu-tree-select__chip-remove,
+.hu-tree-select__icon-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+    background: rgb(0 0 0 / 0.08);
+  }
+}
+
+.hu-tree-select__chip-remove {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.hu-tree-select__icon-btn {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--hu-text-subtle);
+}
+
+.hu-tree-select__caret {
+  flex-shrink: 0;
+  color: var(--hu-text-subtle);
+  transition: transform var(--hu-transition);
+
+  .hu-tree-select--open & {
+    transform: rotate(180deg);
+  }
+}
+
+.hu-tree-select__panel {
+  position: fixed;
+  inset: auto;
+  flex-direction: column;
+  min-width: 14rem;
+  max-width: calc(100vw - 1rem);
+  margin: 0;
+  padding: var(--hu-space-2);
+  color: var(--hu-text);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-lg);
+
+  &:popover-open {
+    display: flex;
+    animation: hu-tree-select-in 120ms ease-out;
+  }
+
+  &--inline {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    width: 100%;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+
+  .hu-tree {
+    min-height: 0;
+  }
+
+  // Liste kayar, arama kutusu sabit kalır
+  .hu-tree__list {
+    max-height: var(--hu-tree-select-height, 18rem);
+    overflow-y: auto;
+  }
+}
+
+@keyframes hu-tree-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hu-tree-select__panel:popover-open {
+    animation: none;
+  }
+}

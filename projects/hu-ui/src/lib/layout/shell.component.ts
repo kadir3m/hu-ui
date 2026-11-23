@@ -11,6 +11,7 @@ import {
   model,
   signal,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
@@ -50,13 +51,15 @@ const COLLAPSED_KEY = 'hu-shell-collapsed';
  */
 @Component({
   selector: 'hu-shell',
-  imports: [RouterLink, HuButton, HuIcon, HuSidebarNav],
+  imports: [NgTemplateOutlet, RouterLink, HuButton, HuIcon, HuSidebarNav],
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.scss',
   host: {
     class: 'hu-shell',
     '[class.hu-shell--collapsed]': 'isCollapsed()',
     '[class.hu-shell--mobile]': 'isMobile()',
+    '[class.hu-shell--floating]': "layout() === 'floating'",
+    '[class.hu-shell--header]': "layout() === 'header'",
     '[class.hu-shell--drawer-open]': 'isMobile() && mobileOpen()',
     '(document:keydown.escape)': 'mobileOpen.set(false)',
   },
@@ -70,8 +73,16 @@ export class HuShell {
   readonly brand = input('');
   readonly brandSubtitle = input<string>();
   readonly brandLink = input<string>('/');
-  /** Sidebar rengi. `dark`, açık temada da koyu sidebar kullanır. */
+  /** Sidebar rengi. `dark`: açık temada da koyu (antrasit) sidebar. */
   readonly sidebarTheme = input<'default' | 'dark'>('default');
+  /**
+   * Yerleşim.
+   * - `classic`: marka sidebar'ın üstünde, topbar içerik sütununda.
+   * - `header`: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda,
+   *   sidebar bandın altında (kurumsal görünüm).
+   * - `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar (masaüstü).
+   */
+  readonly layout = input<'classic' | 'header' | 'floating'>('classic');
   /** Masaüstünde sidebar daraltılmış mı? Tercih localStorage'da saklanır. */
   readonly collapsed = model(this.readCollapsed());
 
