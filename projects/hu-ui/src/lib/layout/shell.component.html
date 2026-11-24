@@ -20,14 +20,16 @@
   </a>
 </ng-template>
 <ng-template #menuToggleTpl>
-  @if (isMobile()) {
+  @if (isMobile() || collapseToggle() === 'topbar') {
+    @let label = isMobile() ? 'Menüyü aç' : isCollapsed() ? 'Menüyü genişlet' : 'Menüyü daralt';
     <button
       hu-button
       variant="ghost"
       iconOnly
       class="hu-shell__menu-toggle"
-      aria-label="Menüyü aç"
-      [attr.aria-expanded]="mobileOpen()"
+      [attr.aria-label]="label"
+      [attr.title]="isMobile() ? null : label"
+      [attr.aria-expanded]="isMobile() ? mobileOpen() : !isCollapsed()"
       (click)="toggleSidebar()"
     >
       <hu-icon name="menu" [size]="20" />
@@ -74,7 +76,7 @@
 
   <ng-content select="[huSidebarFooter]" />
 
-  @if (!isMobile()) {
+  @if (!isMobile() && collapseToggle() === 'sidebar') {
     <button
       type="button"
       class="hu-shell__collapse"
@@ -94,7 +96,7 @@
 
 <div class="hu-shell__main">
   @if (layout() !== 'header') {
-    <header class="hu-shell__topbar">
+    <header class="hu-shell__topbar" [class.hu-shell__topbar--brand]="topbarTheme() === 'brand'">
       <ng-container *ngTemplateOutlet="menuToggleTpl" />
       <ng-container *ngTemplateOutlet="topbarTpl" />
     </header>

@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { Routes } from '@angular/router';
-import { HuNavItem } from '@ucme-ui/angular';
+import { HuNavGroup, HuNavItem } from '@ucme-ui/angular';
 
 /** [ad, tip, varsayılan, açıklama] */
 export type ApiRow = readonly [name: string, type: string, defaultValue: string, description: string];
@@ -1067,8 +1067,11 @@ export const DOCS: DocEntry[] = [
           'layout',
           `'classic' | 'header' | 'floating'`,
           `'classic'`,
-          'header: tam genişlikte marka bandı, logo ve proje adı solda (bu demo) · floating: kenarlardan ayrık, yuvarlak köşeli kartlar',
+          'header: tam genişlikte marka bandı, logo ve proje adı bandın solunda · floating: kenarlardan ayrık, yuvarlak köşeli kartlar',
         ],
+        ['topbarTheme', `'default' | 'brand'`, `'default'`, 'brand: marka renginde (bordo→mor) topbar; logo ve proje adı sidebar’da kalır'],
+        ['sidebarVariant', `'flush' | 'card'`, `'flush'`, 'card: sidebar kenarlardan ayrık, yuvarlak köşeli kart (bu demo: layout="header" ile)'],
+        ['collapseToggle', `'sidebar' | 'topbar'`, `'sidebar'`, 'Daraltma butonu: sidebar altında "Daralt" ya da topbar’da logonun solunda menü ikonu (bu demo)'],
       ],
       models: [['collapsed', 'boolean', 'son tercih', 'Masaüstünde sidebar daraltılmış mı (saklanır)']],
       slots: [
@@ -1290,9 +1293,9 @@ export function findDoc(slug: string): DocEntry | undefined {
 
 /** "Başlarken" sayfaları: menü ve route'lar bu listeden üretilir. */
 const GUIDES = [
-  { slug: 'kurulum', name: 'Kurulum', load: () => import('./getting-started/installation.page').then((m) => m.InstallationPage) },
-  { slug: 'yapilandirma', name: 'Yapılandırma', load: () => import('./getting-started/configuration.page').then((m) => m.ConfigurationPage) },
-  { slug: 'playground', name: 'Playground', load: () => import('./getting-started/playground.page').then((m) => m.PlaygroundPage) },
+  { slug: 'kurulum', name: 'Kurulum', icon: 'download', load: () => import('./getting-started/installation.page').then((m) => m.InstallationPage) },
+  { slug: 'yapilandirma', name: 'Yapılandırma', icon: 'settings', load: () => import('./getting-started/configuration.page').then((m) => m.ConfigurationPage) },
+  { slug: 'playground', name: 'Playground', icon: 'play', load: () => import('./getting-started/playground.page').then((m) => m.PlaygroundPage) },
 ];
 
 export function gettingStartedNavItem(): HuNavItem {
@@ -1333,6 +1336,25 @@ export function docsNavItem(): HuNavItem {
       })),
     ],
   };
+}
+
+/**
+ * Sidebar için düz gruplar: büyük harfli grup başlığı + ikonlu linkler.
+ * Başlarken → Componentler (Tümü) → her kategori ayrı grup.
+ */
+export function docsNavGroups(): HuNavGroup[] {
+  return [
+    { title: 'Başlarken', items: GUIDES.map((g) => ({ label: g.name, icon: g.icon, link: `/baslarken/${g.slug}` })) },
+    { title: 'Componentler', items: [{ label: 'Tümü', icon: 'grid', link: '/componentler', exact: true }] },
+    ...DOC_CATEGORIES.map((category) => ({
+      title: category,
+      items: DOCS.filter((d) => d.category === category).map((d) => ({
+        label: d.name,
+        icon: d.icon,
+        link: `/componentler/${d.slug}`,
+      })),
+    })),
+  ];
 }
 
 /** /componentler altındaki route'lar (sayfalar ayrı chunk olarak yüklenir). */

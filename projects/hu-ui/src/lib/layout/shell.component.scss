@@ -2,10 +2,41 @@
 // hu-shell + hu-sidebar-nav
 // =============================================================================
 
+// Marka renginde bant (layout="header" üst bandı ve topbarTheme="brand" topbar'ı):
+// gradyan zemin, üstte ince ışık, içindeki breadcrumb ve ikon butonları beyaz.
+@mixin brand-bar {
+  color: #fff;
+  background:
+    radial-gradient(55% 140% at 78% -40%, rgb(255 255 255 / 0.16), transparent 60%),
+    var(--hu-header-bg);
+  box-shadow:
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 6px 18px -10px rgb(65 5 16 / 0.55);
+
+  .hu-breadcrumb {
+    --hu-text: #fff;
+    --hu-text-muted: rgb(255 255 255 / 0.78);
+    --hu-text-subtle: rgb(255 255 255 / 0.5);
+  }
+
+  .hu-button[data-variant='ghost'] {
+    --hu-text: #fff;
+    --hu-text-muted: rgb(255 255 255 / 0.85);
+    --hu-surface-3: rgb(255 255 255 / 0.14);
+    --hu-focus: #fff;
+  }
+}
+
 .hu-shell {
   --_sidebar-w: var(--hu-sidebar-width);
+  // Bant rengi: bordodan mora hafif geçiş
+  --hu-header-bg: linear-gradient(90deg, #6e0f22 0%, #621230 45%, #4c1745 100%);
   display: block;
   min-height: 100dvh;
+
+  :root[data-theme='dark'] & {
+    --hu-header-bg: linear-gradient(90deg, #4a0a17 0%, #3f0c22 45%, #2f1236 100%);
+  }
 
   &--collapsed {
     --_sidebar-w: var(--hu-sidebar-collapsed-width);
@@ -210,6 +241,13 @@
   border-bottom: 1px solid color-mix(in srgb, var(--hu-border) 80%, transparent);
   box-shadow: 0 1px 12px -6px rgb(16 16 20 / 0.12);
   backdrop-filter: saturate(180%) blur(14px);
+
+  // topbarTheme="brand": marka renginde topbar (sidebar ayrı kalır)
+  &--brand {
+    @include brand-bar;
+    border-bottom-color: transparent;
+    backdrop-filter: none;
+  }
 }
 
 .hu-shell__topbar-start {
@@ -280,6 +318,13 @@
     --_gap: 0.5rem;
     padding: 0 var(--hu-space-2);
   }
+
+  // topbarTheme="brand" kartı marka renginde
+  .hu-shell__topbar--brand {
+    @include brand-bar;
+    border-color: transparent;
+    backdrop-filter: none;
+  }
 }
 
 // --- Kurumsal üst bant yerleşimi (layout="header") ---------------------------
@@ -287,12 +332,6 @@
 // genişlikte, altındaki menüyle hizalı), sağda breadcrumb ve araçlar.
 .hu-shell--header {
   --_header-h: 4rem;
-  // Bordodan mora hafif geçiş
-  --hu-header-bg: linear-gradient(90deg, #6e0f22 0%, #621230 45%, #4c1745 100%);
-
-  :root[data-theme='dark'] & {
-    --hu-header-bg: linear-gradient(90deg, #4a0a17 0%, #3f0c22 45%, #2f1236 100%);
-  }
 
   .hu-shell__sidebar {
     top: var(--_header-h);
@@ -318,34 +357,7 @@
   z-index: 950;
   display: flex;
   height: var(--_header-h);
-  color: #fff;
-  background: var(--hu-header-bg);
-  box-shadow:
-    inset 0 -1px 0 rgb(0 0 0 / 0.12),
-    0 6px 18px -10px rgb(65 5 16 / 0.55);
-
-  // Bant üstünde ince ışık; düz kırmızıyı derinleştirir
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(55% 140% at 78% -40%, rgb(255 255 255 / 0.16), transparent 60%);
-    pointer-events: none;
-  }
-
-  // Bant içindeki breadcrumb ve ikon butonları beyaz
-  .hu-breadcrumb {
-    --hu-text: #fff;
-    --hu-text-muted: rgb(255 255 255 / 0.78);
-    --hu-text-subtle: rgb(255 255 255 / 0.5);
-  }
-
-  .hu-button[data-variant='ghost'] {
-    --hu-text: #fff;
-    --hu-text-muted: rgb(255 255 255 / 0.85);
-    --hu-surface-3: rgb(255 255 255 / 0.14);
-    --hu-focus: #fff;
-  }
+  @include brand-bar;
 }
 
 .hu-shell__header-brand {
@@ -394,6 +406,43 @@
   flex: 1;
   min-width: 0;
   padding: 0 var(--hu-space-6);
+}
+
+// sidebarVariant="card": sidebar bandın altında, kenarlardan ayrık kart
+.hu-shell--header.hu-shell--sidebar-card:not(.hu-shell--mobile) {
+  --_gap: 0.75rem;
+
+  .hu-shell__sidebar {
+    inset: calc(var(--_header-h) + var(--_gap)) auto var(--_gap) var(--_gap);
+    border: 1px solid var(--hu-sidebar-border);
+    border-radius: var(--hu-radius-xl);
+    box-shadow:
+      0 1px 2px rgb(16 16 20 / 0.04),
+      0 6px 20px -12px rgb(16 16 20 / 0.14);
+    overflow: hidden;
+  }
+
+  .hu-shell__main {
+    margin-left: calc(var(--_sidebar-w) + var(--_gap));
+  }
+
+  // Marka bloğu, altındaki kartla hizalı
+  .hu-shell__header-brand {
+    width: calc(var(--_sidebar-w) + var(--_gap));
+    padding-left: calc(var(--_gap) + var(--hu-space-4));
+    border-right: 0;
+  }
+
+  &.hu-shell--collapsed .hu-shell__header-brand {
+    padding-left: var(--_gap);
+  }
+}
+
+// collapseToggle="topbar": daraltılmışken menü ikonu + logo yan yana sığsın
+.hu-shell--header.hu-shell--collapsed:not(.hu-shell--mobile) .hu-shell__header-brand:has(.hu-shell__menu-toggle) {
+  width: auto;
+  justify-content: flex-start;
+  padding: 0 var(--hu-space-4);
 }
 
 .hu-shell--header.hu-shell--mobile {

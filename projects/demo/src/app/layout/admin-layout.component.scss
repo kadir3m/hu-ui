@@ -1,4 +1,4 @@
-// Bu öğeler kırmızı üst bandın (hu-shell layout="header") içinde durur:
+// Bu öğeler marka renginde topbar'ın (hu-shell topbarTheme="brand") içinde durur:
 // yarı saydam beyaz yüzeyler + beyaz yazı.
 
 .topbar-search {
@@ -78,36 +78,14 @@
   }
 }
 
-@media (max-width: 639.98px) {
-  .topbar-breadcrumb {
-    display: none;
-  }
+.page-breadcrumb {
+  display: flex;
+  margin-bottom: var(--hu-space-3);
 }
 
-.notif-trigger {
-  position: relative;
-}
 
-.notif-dot {
-  position: absolute;
-  top: 8px;
-  right: 9px;
-  width: 8px;
-  height: 8px;
-  background: #fbbf24;
-  border: 2px solid #621230;
-  border-radius: 50%;
-}
 
-.notifications {
-  --hu-dropdown-min-width: 20rem;
-}
 
-// Topbar ikon butonları: yuvarlak
-hu-theme-toggle ::ng-deep button,
-.notif-trigger {
-  border-radius: var(--hu-radius-full);
-}
 
 .user-trigger {
   display: flex;

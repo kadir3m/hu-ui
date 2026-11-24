@@ -1,6 +1,4 @@
-<hu-shell [nav]="nav" brand="@ucme-ui/angular" brandSubtitle="Dokümantasyon" layout="header">
-  <hu-breadcrumb huTopbarStart class="topbar-breadcrumb" [items]="breadcrumb()" />
-
+<hu-shell [nav]="nav" brand="@ucme-ui/angular" brandSubtitle="Dokümantasyon" layout="header" sidebarVariant="card" collapseToggle="topbar">
   <div huTopbarEnd>
     <div class="topbar-search">
       <hu-icon name="search" [size]="16" />
@@ -8,22 +6,8 @@
       <kbd>Ctrl K</kbd>
     </div>
 
-    <hu-theme-toggle />
-
-    <!-- Özel tetikleyici (okunmamış noktası) + panel başlığı -->
-    <hu-dropdown class="notifications" align="end" ariaLabel="Bildirimler" [options]="notifications">
-      <button huDropdownTrigger hu-button variant="ghost" iconOnly aria-label="Bildirimler" class="notif-trigger">
-        <hu-icon name="bell" [size]="18" />
-        <span class="notif-dot" aria-hidden="true"></span>
-      </button>
-      <div huDropdownHeader>
-        <strong>Bildirimler</strong>
-        <hu-badge variant="primary">{{ notifications.length }} yeni</hu-badge>
-      </div>
-    </hu-dropdown>
-
     <!-- Özel tetikleyici (avatar) -->
-    <hu-dropdown align="end" ariaLabel="Kullanıcı menüsü" [options]="userMenu" (selected)="onUserMenu($event)">
+    <hu-dropdown align="end" ariaLabel="Kullanıcı menüsü" [options]="userMenu()" (selected)="onUserMenu($event)">
       <button huDropdownTrigger type="button" class="user-trigger" aria-label="Kullanıcı menüsü">
         <hu-avatar [name]="user.name" size="sm" />
         <span class="user-trigger__text">
@@ -35,5 +19,8 @@
     </hu-dropdown>
   </div>
 
+  <!-- Breadcrumb şimdilik gizli. Geri açmak için alttaki satırı yorumdan çıkarın
+       ve admin-layout.component.ts'deki imports dizisine HuBreadcrumb ekleyin. -->
+  <!-- <hu-breadcrumb class="page-breadcrumb" [items]="breadcrumb()" /> -->
   <router-outlet />
 </hu-shell>

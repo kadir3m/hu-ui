@@ -37,6 +37,9 @@ Admin uygulama iskeleti: daraltılabilir sidebar, mobilde çekmece menü, üst �
 | `brandLink` | `string` | `'/'` | Marka alanına tıklanınca gidilecek adres |
 | `sidebarTheme` | `'default' \| 'dark'` | `'default'` | `dark`: açık temada da koyu (antrasit) sidebar |
 | `layout` | `'classic' \| 'header' \| 'floating'` | `'classic'` | `header`: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda, sidebar bandın altında (kurumsal görünüm). Bant rengi `--hu-header-bg` ile değiştirilir · `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar |
+| `topbarTheme` | `'default' \| 'brand'` | `'default'` | `brand`: marka renginde (bordo→mor) topbar, içindeki breadcrumb ve ikon butonları beyaz; logo ve proje adı sidebar'ın üstünde kalır. Renk `--hu-header-bg` ile değiştirilir |
+| `sidebarVariant` | `'flush' \| 'card'` | `'flush'` | `card`: sidebar kenarlardan ayrık, yuvarlak köşeli kart; `layout="header"` ile bandın altında durur |
+| `collapseToggle` | `'sidebar' \| 'topbar'` | `'sidebar'` | Masaüstünde daraltma butonu: `sidebar` altında "Daralt" veya `topbar`'da logonun solunda menü ikonu. Mobilde menü ikonu her zaman topbar'dadır |
 
 | Model | Tip | Varsayılan | Açıklama |
 | --- | --- | --- | --- |
