@@ -43,10 +43,10 @@ export type HuFileInputValue = File | HuStoredFile | null;
  *
  * @example
  * <!-- Kendi etiketiyle, liste satırı -->
- * <hu-file-input label="Özet tablo" required accept=".pdf,.docx" formControlName="summary" />
+ * <hu-file-input label="Başvuru formu" required accept=".pdf,.docx" formControlName="summary" />
  *
  * <!-- hu-form-field içinde, input gibi -->
- * <hu-form-field label="Şerh kararı">
+ * <hu-form-field label="Destek mektubu">
  *   <hu-file-input [(value)]="decision" />
  * </hu-form-field>
  */

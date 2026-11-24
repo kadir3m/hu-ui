@@ -26,15 +26,15 @@ const MB = 1024 * 1024;
       >
         <form class="docs" [formGroup]="form" (ngSubmit)="submit()">
           <hu-file-input
-            label="Yapılan değişikliklerin gösterildiği özet tablo"
+            label="Proje başvuru formu"
             required
             accept=".pdf,.docx"
             [maxFileSize]="5 * MB"
             formControlName="summary"
           />
-          <hu-file-input label="Şerh kararı" accept=".pdf" [maxFileSize]="5 * MB" formControlName="annotation" />
+          <hu-file-input label="Destek mektubu" accept=".pdf" [maxFileSize]="5 * MB" formControlName="annotation" />
           <hu-file-input
-            label="Türkçe ve İngilizce öğretim programı tablosu"
+            label="Bütçe ve iş planı tablosu"
             required
             accept=".pdf,.docx,.xlsx"
             [maxFileSize]="10 * MB"
@@ -96,7 +96,7 @@ export class FileInputDoc {
   protected readonly toast = inject(HuToastService);
   protected readonly MB = MB;
 
-  protected readonly stored: HuStoredFile = { name: 'anaokulu.docx', size: 48_640, url: 'data:text/plain,ornek' };
+  protected readonly stored: HuStoredFile = { name: 'proje-basvuru-formu.pdf', size: 48_640, url: 'data:text/plain,ornek' };
 
   protected readonly form = inject(NonNullableFormBuilder).group({
     summary: [this.stored as HuFileInputValue, Validators.required],
@@ -136,15 +136,15 @@ export class FileInputDoc {
   protected readonly listCode = `
 form = this.fb.group({
   // Düzenleme ekranında sunucudaki dosya: { name, size?, url? }
-  summary: [{ name: 'anaokulu.docx', size: 48640, url: '/files/12' } as HuFileInputValue, Validators.required],
+  summary: [{ name: 'proje-basvuru-formu.pdf', size: 48640, url: '/files/12' } as HuFileInputValue, Validators.required],
   annotation: [null as HuFileInputValue],
   curriculum: [null as HuFileInputValue, Validators.required],
 });
 
-<hu-file-input label="Yapılan değişikliklerin gösterildiği özet tablo" required
+<hu-file-input label="Proje başvuru formu" required
                accept=".pdf,.docx" [maxFileSize]="5 * 1024 * 1024" formControlName="summary" />
-<hu-file-input label="Şerh kararı" accept=".pdf" formControlName="annotation" />
-<hu-file-input label="Türkçe ve İngilizce öğretim programı tablosu" required
+<hu-file-input label="Destek mektubu" accept=".pdf" formControlName="annotation" />
+<hu-file-input label="Bütçe ve iş planı tablosu" required
                accept=".pdf,.docx,.xlsx" formControlName="curriculum" />
 
 // Gönderirken: File ise yeni yüklendi, değilse sunucudaki dosya aynen kaldı

@@ -771,7 +771,7 @@ Metotlar: `browse()`, `clear()`.
 ```ts
 form = this.fb.group({
   // Düzenleme ekranında sunucudaki dosya; url verilirse ad indirme bağlantısı olur
-  summary: [{ name: 'ozet.docx', size: 48640, url: '/files/12' } as HuFileInputValue, Validators.required],
+  summary: [{ name: 'basvuru-formu.pdf', size: 48640, url: '/files/12' } as HuFileInputValue, Validators.required],
   decision: [null as HuFileInputValue],
 });
 
@@ -781,8 +781,8 @@ if (summary instanceof File) body.append('summary', summary);
 ```
 
 ```html
-<hu-file-input label="Değişikliklerin özet tablosu" required accept=".pdf,.docx" formControlName="summary" />
-<hu-file-input label="Şerh kararı" accept=".pdf" formControlName="decision" />
+<hu-file-input label="Proje başvuru formu" required accept=".pdf,.docx" formControlName="summary" />
+<hu-file-input label="Destek mektubu" accept=".pdf" formControlName="decision" />
 
 <hu-form-field label="Özgeçmiş">
   <hu-file-input accept=".pdf" [(value)]="cv" />
