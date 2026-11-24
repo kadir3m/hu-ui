@@ -10,8 +10,8 @@ import { DocPage } from '../doc-page.component';
   template: `
     <app-doc-page slug="shell">
       <hu-alert title="Canlı örnek: bu sayfanın kendisi">
-        Bu demo uygulamanın iskeleti hu-shell ile yapıldı (<code>layout="header" sidebarVariant="card" collapseToggle="topbar"</code>).
-        Sol üstteki menü ikonunu, pencereyi daraltınca açılan mobil menüyü ve sağ üstteki kullanıcı menüsünü deneyebilirsiniz.
+        Bu demo uygulamanın iskeleti varsayılan ayarlarıyla hu-shell'dir; ek bir girdi ya da CSS gerekmez. Sol üstteki menü
+        ikonunu, pencereyi daraltınca açılan mobil menüyü ve sağ üstteki kullanıcı menüsünü deneyebilirsiniz.
       </hu-alert>
 
       <app-doc-example title="Layout component'i" description="Uygulamanın ana route'unda bir kez kullanılır." [code]="layoutCode">
@@ -19,20 +19,29 @@ import { DocPage } from '../doc-page.component';
       </app-doc-example>
 
       <app-doc-example
+        title="Topbar araçları"
+        description="Arama kutusu ve kullanıcı alanı için hazır sınıflar; marka bandında otomatik olarak beyaz görünür."
+        [code]="toolsCode"
+      >
+        <ul class="features">
+          <li><strong>hu-topbar-search:</strong> ikonlu, yuvarlak arama kutusu (dar ekranda gizlenir)</li>
+          <li><strong>hu-topbar-user:</strong> avatar, ad, rol ve ok; dar ekranda yalnızca avatar kalır</li>
+        </ul>
+      </app-doc-example>
+
+      <app-doc-example
         title="Yerleşimler"
-        description="layout ve topbarTheme girdileri iskeletin görünümünü değiştirir; menü, slotlar ve davranış hepsinde aynıdır."
+        description="layout, sidebarVariant, collapseToggle ve topbarTheme girdileri iskeletin görünümünü değiştirir; menü, slotlar ve davranış hepsinde aynıdır."
         [code]="layoutsCode"
       >
         <ul class="features">
-          <li><strong>classic</strong> (varsayılan): logo ve proje adı sidebar'ın üstünde, üst çubuk içerik sütununda.</li>
           <li>
-            <strong>topbarTheme="brand"</strong>: classic yerleşimde üst çubuk marka renginde (bordo→mor); logo ve proje adı
-            sidebar'da kalır.
+            <strong>Varsayılan</strong> (<code>layout="header"</code>, <code>sidebarVariant="card"</code>,
+            <code>collapseToggle="topbar"</code>): tam genişlikte marka bandı, logo ve proje adı bandın solunda; sidebar bandın
+            altında ayrık bir kart; daraltma ikonu bantta. Bu demo bunu kullanır.
           </li>
-          <li>
-            <strong>header</strong>: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda, sidebar bandın
-            altında. <code>sidebarVariant="card"</code> ile sidebar bandın altında ayrık bir kart olur; bu demo bunu kullanır.
-          </li>
+          <li><strong>classic</strong>: logo ve proje adı sidebar'ın üstünde, üst çubuk içerik sütununda (0.6.0 öncesi görünüm).</li>
+          <li><strong>topbarTheme="brand"</strong>: classic/floating yerleşimde üst çubuk marka renginde.</li>
           <li><strong>floating</strong>: sidebar ve üst çubuk kenarlardan ayrık, yuvarlak köşeli kartlar.</li>
           <li>Bant / üst çubuk rengi <code>--hu-header-bg</code> ile değişir.</li>
         </ul>
@@ -61,9 +70,7 @@ export class ShellDoc {
   selector: 'app-admin-layout',
   imports: [RouterOutlet, HU_SHELL_IMPORTS, HuBreadcrumb, HuThemeToggle],
   template: \`
-    <hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı"
-              layout="header" sidebarVariant="card" collapseToggle="topbar">
-      <hu-breadcrumb huTopbarStart [items]="crumbs()" />
+    <hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı">
       <div huTopbarEnd><hu-theme-toggle /></div>
       <router-outlet />
     </hu-shell>
@@ -71,19 +78,38 @@ export class ShellDoc {
 })
 export class AdminLayout {}`;
 
+  protected readonly toolsCode = `
+<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı">
+  <div huTopbarEnd>
+    <div class="hu-topbar-search">
+      <hu-icon name="search" [size]="16" />
+      <input huInput size="sm" type="search" placeholder="Ara…" aria-label="Ara" />
+      <kbd>Ctrl K</kbd>
+    </div>
+
+    <hu-dropdown align="end" ariaLabel="Kullanıcı menüsü" [options]="userMenu">
+      <button huDropdownTrigger type="button" class="hu-topbar-user" aria-label="Kullanıcı menüsü">
+        <hu-avatar [name]="user.name" size="sm" />
+        <span class="hu-topbar-user__text">
+          <span class="hu-topbar-user__name">{{ user.name }}</span>
+          <span class="hu-topbar-user__role">{{ user.role }}</span>
+        </span>
+        <hu-icon name="chevron-down" [size]="16" />
+      </button>
+    </hu-dropdown>
+  </div>
+  <router-outlet />
+</hu-shell>`;
+
   protected readonly layoutsCode = `
-<!-- Varsayılan -->
-<hu-shell [nav]="nav" brand="Yönetim Paneli" />
+<!-- Varsayılan: üst bant + kart sidebar + bantta menü ikonu (bu demo) -->
+<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı" />
 
-<!-- Marka renginde üst çubuk, sidebar ayrı -->
-<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı" topbarTheme="brand" />
+<!-- 0.6.0 öncesi klasik görünüm -->
+<hu-shell [nav]="nav" brand="Yönetim Paneli" layout="classic" sidebarVariant="flush" collapseToggle="sidebar" />
 
-<!-- Tam genişlikte kurumsal üst bant -->
-<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı" layout="header" />
-
-<!-- Üst bant + altında kart sidebar + topbar'da menü ikonu (bu demo) -->
-<hu-shell [nav]="nav" brand="Yönetim Paneli" brandSubtitle="Kurum adı"
-          layout="header" sidebarVariant="card" collapseToggle="topbar" />
+<!-- Klasik + marka renginde üst çubuk -->
+<hu-shell [nav]="nav" brand="Yönetim Paneli" layout="classic" sidebarVariant="flush" topbarTheme="brand" />
 
 <!-- Yüzen kartlar -->
 <hu-shell [nav]="nav" brand="Yönetim Paneli" layout="floating" />

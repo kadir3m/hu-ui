@@ -82,12 +82,12 @@ export class HuShell {
    */
   readonly topbarTheme = input<'default' | 'brand'>('default');
   /** Sidebar biçimi. `card`: kenarlardan ayrık, yuvarlak köşeli kart (`header` yerleşimde bandın altında). */
-  readonly sidebarVariant = input<'flush' | 'card'>('flush');
+  readonly sidebarVariant = input<'flush' | 'card'>('card');
   /**
    * Masaüstünde sidebar'ı daraltan buton nerede: `sidebar` (altta "Daralt") veya `topbar`
    * (logonun solunda menü ikonu). Mobilde menü ikonu her zaman topbar'dadır.
    */
-  readonly collapseToggle = input<'sidebar' | 'topbar'>('sidebar');
+  readonly collapseToggle = input<'sidebar' | 'topbar'>('topbar');
   /**
    * Yerleşim.
    * - `classic`: marka sidebar'ın üstünde, topbar içerik sütununda.
@@ -95,7 +95,7 @@ export class HuShell {
    *   sidebar bandın altında (kurumsal görünüm).
    * - `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar (masaüstü).
    */
-  readonly layout = input<'classic' | 'header' | 'floating'>('classic');
+  readonly layout = input<'classic' | 'header' | 'floating'>('header');
   /** Masaüstünde sidebar daraltılmış mı? Tercih localStorage'da saklanır. */
   readonly collapsed = model(this.readCollapsed());
 

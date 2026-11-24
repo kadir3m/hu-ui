@@ -36,10 +36,34 @@ Admin uygulama iskeleti: daraltılabilir sidebar, mobilde çekmece menü, üst �
 | `brandSubtitle` | `string` | — | Adın altındaki küçük satır |
 | `brandLink` | `string` | `'/'` | Marka alanına tıklanınca gidilecek adres |
 | `sidebarTheme` | `'default' \| 'dark'` | `'default'` | `dark`: açık temada da koyu (antrasit) sidebar |
-| `layout` | `'classic' \| 'header' \| 'floating'` | `'classic'` | `header`: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda, sidebar bandın altında (kurumsal görünüm). Bant rengi `--hu-header-bg` ile değiştirilir · `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar |
-| `topbarTheme` | `'default' \| 'brand'` | `'default'` | `brand`: marka renginde (bordo→mor) topbar, içindeki breadcrumb ve ikon butonları beyaz; logo ve proje adı sidebar'ın üstünde kalır. Renk `--hu-header-bg` ile değiştirilir |
-| `sidebarVariant` | `'flush' \| 'card'` | `'flush'` | `card`: sidebar kenarlardan ayrık, yuvarlak köşeli kart; `layout="header"` ile bandın altında durur |
-| `collapseToggle` | `'sidebar' \| 'topbar'` | `'sidebar'` | Masaüstünde daraltma butonu: `sidebar` altında "Daralt" veya `topbar`'da logonun solunda menü ikonu. Mobilde menü ikonu her zaman topbar'dadır |
+| `layout` | `'classic' \| 'header' \| 'floating'` | `'header'` | `header`: tam genişlikte marka renginde üst bant; logo ve proje adı bandın solunda, sidebar bandın altında (kurumsal görünüm). Bant rengi `--hu-header-bg` ile değiştirilir · `classic`: logo sidebar'ın üstünde, topbar içerik sütununda (0.6.0 öncesi varsayılan) · `floating`: sidebar ve topbar kenarlardan ayrık, yuvarlak köşeli kartlar |
+| `topbarTheme` | `'default' \| 'brand'` | `'default'` | `classic`/`floating` yerleşimde: `brand` marka renginde (bordo→mor) topbar, içindeki breadcrumb ve ikon butonları beyaz. Renk `--hu-header-bg` ile değiştirilir |
+| `sidebarVariant` | `'flush' \| 'card'` | `'card'` | `card`: sidebar kenarlardan ayrık, yuvarlak köşeli kart (`header` yerleşimde bandın altında) · `flush`: kenara yapışık, sağında çizgi |
+| `collapseToggle` | `'sidebar' \| 'topbar'` | `'topbar'` | Masaüstünde daraltma butonu: `topbar`'da logonun solunda menü ikonu veya `sidebar` altında "Daralt". Mobilde menü ikonu her zaman topbar'dadır |
+
+Topbar araçları için hazır sınıflar (marka bandında otomatik beyaz görünür):
+
+```html
+<div huTopbarEnd>
+  <div class="hu-topbar-search">
+    <hu-icon name="search" [size]="16" />
+    <input huInput size="sm" type="search" placeholder="Ara…" aria-label="Ara" />
+    <kbd>Ctrl K</kbd>
+  </div>
+  <hu-dropdown align="end" [options]="userMenu">
+    <button huDropdownTrigger type="button" class="hu-topbar-user" aria-label="Kullanıcı menüsü">
+      <hu-avatar [name]="user.name" size="sm" />
+      <span class="hu-topbar-user__text">
+        <span class="hu-topbar-user__name">{{ user.name }}</span>
+        <span class="hu-topbar-user__role">{{ user.role }}</span>
+      </span>
+      <hu-icon name="chevron-down" [size]="16" />
+    </button>
+  </hu-dropdown>
+</div>
+```
+
+0.8.0 ile değişen varsayılanlar: üst bant + kart sidebar + topbar'da menü ikonu; menü grup başlıkları koyu ve kalın, seçili link zeminsiz (yalnızca kırmızı yazı ve ikon). Eski görünüm için: `layout="classic" sidebarVariant="flush" collapseToggle="sidebar"`.
 
 | Model | Tip | Varsayılan | Açıklama |
 | --- | --- | --- | --- |

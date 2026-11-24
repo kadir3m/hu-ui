@@ -7,30 +7,6 @@
   --hu-bg: #f5f6f9;
 }
 
-// Menü: koyu, kalın grup başlıkları; seçili link zeminsiz, yalnızca renkli yazı
-.hu-shell__sidebar {
-  --hu-sidebar-active-bg: transparent;
-
-  .hu-nav {
-    gap: var(--hu-space-2);
-  }
-
-  .hu-nav__title {
-    padding-bottom: var(--hu-space-1);
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--hu-text);
-  }
-
-  .hu-nav__link {
-    height: 2.25rem;
-  }
-
-  .hu-nav__link--active::before {
-    display: none;
-  }
-}
-
 // --- Demo uygulamasına özel yardımcı sınıflar --------------------------------
 .page-header {
   display: flex;

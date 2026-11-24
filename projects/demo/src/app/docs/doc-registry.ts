@@ -1066,12 +1066,12 @@ export const DOCS: DocEntry[] = [
         [
           'layout',
           `'classic' | 'header' | 'floating'`,
-          `'classic'`,
-          'header: tam genişlikte marka bandı, logo ve proje adı bandın solunda · floating: kenarlardan ayrık, yuvarlak köşeli kartlar',
+          `'header'`,
+          'header: tam genişlikte marka bandı, logo ve proje adı bandın solunda · classic: logo sidebar’ın üstünde · floating: kenarlardan ayrık kartlar',
         ],
-        ['topbarTheme', `'default' | 'brand'`, `'default'`, 'brand: marka renginde (bordo→mor) topbar; logo ve proje adı sidebar’da kalır'],
-        ['sidebarVariant', `'flush' | 'card'`, `'flush'`, 'card: sidebar kenarlardan ayrık, yuvarlak köşeli kart (bu demo: layout="header" ile)'],
-        ['collapseToggle', `'sidebar' | 'topbar'`, `'sidebar'`, 'Daraltma butonu: sidebar altında "Daralt" ya da topbar’da logonun solunda menü ikonu (bu demo)'],
+        ['topbarTheme', `'default' | 'brand'`, `'default'`, 'classic/floating yerleşimde: brand marka renginde (bordo→mor) topbar'],
+        ['sidebarVariant', `'flush' | 'card'`, `'card'`, 'card: sidebar kenarlardan ayrık, yuvarlak köşeli kart · flush: kenara yapışık'],
+        ['collapseToggle', `'sidebar' | 'topbar'`, `'topbar'`, 'Daraltma butonu: topbar’da logonun solunda menü ikonu ya da sidebar altında "Daralt"'],
       ],
       models: [['collapsed', 'boolean', 'son tercih', 'Masaüstünde sidebar daraltılmış mı (saklanır)']],
       slots: [
@@ -1345,7 +1345,14 @@ export function docsNavItem(): HuNavItem {
 export function docsNavGroups(): HuNavGroup[] {
   return [
     { title: 'Başlarken', items: GUIDES.map((g) => ({ label: g.name, icon: g.icon, link: `/baslarken/${g.slug}` })) },
-    { title: 'Componentler', items: [{ label: 'Tümü', icon: 'grid', link: '/componentler', exact: true }] },
+    {
+      title: 'Componentler',
+      items: [
+        { label: 'Tümü', icon: 'grid', link: '/componentler', exact: true },
+        // Uzun menü adı örneği: kesilmeden alt satıra kayar.
+        { label: 'Uygulama İskeleti ve Yönetim Paneli Yerleşim Örnekleri', icon: 'monitor', link: '/componentler/shell', badge: 'Yeni' },
+      ],
+    },
     ...DOC_CATEGORIES.map((category) => ({
       title: category,
       items: DOCS.filter((d) => d.category === category).map((d) => ({
