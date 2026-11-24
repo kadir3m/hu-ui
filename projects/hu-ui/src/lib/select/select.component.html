@@ -1,0 +1,112 @@
+<div
+  #trigger
+  class="hu-select__trigger"
+  role="combobox"
+  aria-haspopup="listbox"
+  [id]="id()"
+  [attr.tabindex]="isDisabled() ? -1 : 0"
+  [attr.aria-expanded]="open()"
+  [attr.aria-controls]="listId"
+  [attr.aria-disabled]="isDisabled() || null"
+  [attr.aria-invalid]="isInvalid() || null"
+  [attr.aria-describedby]="field?.describedBy() ?? null"
+  [attr.aria-label]="ariaLabel() || null"
+  [class.hu-select__trigger--invalid]="isInvalid()"
+  (click)="toggle()"
+  (keydown)="onTriggerKeydown($event)"
+>
+  @if (selectedOption(); as s) {
+    @if (s.icon) {
+      <hu-icon class="hu-select__value-icon" [name]="s.icon" [size]="16" />
+    }
+    <span class="hu-select__value">{{ s.label }}</span>
+  } @else {
+    <span class="hu-select__placeholder">{{ placeholder() }}</span>
+  }
+  @if (showClear() && selectedOption() && !isDisabled()) {
+    <button type="button" class="hu-select__clear" tabindex="-1" aria-label="Seçimi temizle" (click)="clear($event)">
+      <hu-icon name="x" [size]="14" />
+    </button>
+  }
+  <hu-icon class="hu-select__caret" name="chevron-down" [size]="16" />
+</div>
+
+<div
+  #panel
+  popover="manual"
+  class="hu-select__panel"
+  [class.hu-select__panel--inline]="!supportsPopover"
+  [attr.hidden]="!supportsPopover && !open() ? '' : null"
+  (keydown)="onPanelKeydown($event)"
+>
+  @if (open()) {
+    @if (showFilter()) {
+      <div class="hu-select__search">
+        <hu-icon name="search" [size]="15" />
+        <input
+          #search
+          type="text"
+          role="searchbox"
+          autocomplete="off"
+          spellcheck="false"
+          [attr.aria-label]="filterPlaceholder()"
+          [attr.aria-controls]="listId"
+          [attr.aria-activedescendant]="activeIndex() >= 0 ? optionId(activeIndex()) : null"
+          [placeholder]="filterPlaceholder()"
+          [value]="query()"
+          (input)="onQuery($any($event.target).value)"
+        />
+      </div>
+    }
+
+    <ul
+      #listbox
+      class="hu-select__list"
+      role="listbox"
+      [id]="listId"
+      [attr.tabindex]="showFilter() ? -1 : 0"
+      [attr.aria-label]="ariaLabel() || placeholder()"
+      [attr.aria-activedescendant]="!showFilter() && activeIndex() >= 0 ? optionId(activeIndex()) : null"
+    >
+      @for (row of rows(); track $index) {
+        @if (row.kind === 'group') {
+          <li class="hu-select__group" role="presentation">{{ row.label }}</li>
+        } @else {
+          @let o = row.option;
+          @let selected = isSelected(o);
+          <li
+            class="hu-select__option"
+            role="option"
+            [id]="optionId(row.index)"
+            [attr.aria-selected]="selected"
+            [attr.aria-disabled]="o.disabled || null"
+            [class.hu-select__option--active]="row.index === activeIndex()"
+            [class.hu-select__option--selected]="selected"
+            [class.hu-select__option--disabled]="o.disabled"
+            (mousedown)="$event.preventDefault()"
+            (mousemove)="onOptionHover(row.index, o)"
+            (click)="choose(o)"
+          >
+            @if (o.icon) {
+              <hu-icon class="hu-select__option-icon" [name]="o.icon" [size]="16" />
+            }
+            <span class="hu-select__option-text">
+              <span class="hu-select__option-label">{{ o.label }}</span>
+              @if (o.description) {
+                <span class="hu-select__option-desc">{{ o.description }}</span>
+              }
+            </span>
+            @if (selected) {
+              <hu-icon class="hu-select__check" name="check" [size]="16" />
+            }
+          </li>
+        }
+      } @empty {
+        <li class="hu-select__empty" role="presentation">
+          <hu-icon name="search" [size]="18" />
+          {{ emptyMessage() }}
+        </li>
+      }
+    </ul>
+  }
+</div>

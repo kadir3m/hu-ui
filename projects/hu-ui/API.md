@@ -15,7 +15,7 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 ## İçindekiler
 
 - **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle) · [Grid](#grid)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-multi-select](#hu-multi-select) · [hu-password](#hu-password) · [huMask](#humask-inputmask) · [hu-radio-group](#hu-radio-group--hu-radio) · [hu-rating](#hu-rating) · [hu-file-upload](#hu-file-upload)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-select](#hu-select) · [hu-multi-select](#hu-multi-select) · [hu-password](#hu-password) · [huMask](#humask-inputmask) · [hu-radio-group](#hu-radio-group--hu-radio) · [hu-rating](#hu-rating) · [hu-file-upload](#hu-file-upload)
 - **Tarih:** [hu-agenda](#hu-agenda) · [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
 - **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [ContextMenu](#contextmenu-hucontextmenu) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
 - **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [huTooltip](#hutooltip) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
@@ -454,6 +454,44 @@ verir (`HU_DEFAULT_ERROR_MESSAGES` ile Türkçe mesaj).
 <hu-input-number [(value)]="fee" mode="currency" currency="TRY" />
 <hu-input-number [(value)]="gpa" [min]="0" [max]="4" [step]="0.05" [minFractionDigits]="2" [maxFractionDigits]="2" buttons="stacked" />
 <hu-input-number [(value)]="discount" suffix="%" [min]="0" [max]="100" />
+```
+
+### hu-select
+
+Tek seçimli açılır liste; native `<select huInput>`'un yerine. Panel tema renklerinde ve üst katmanda açılır
+(dialog içinde kesilmez). Seçenek sayısı 7'yi aşınca panelde arama kutusu çıkar; arama Türkçe karakterleri yok
+sayar. Klavye: ↑/↓, PageUp/PageDown, Home/End, Enter ile seç, Esc ile kapat. Kapalıyken yazmaya başlamak paneli
+açıp aramaya yazar (aramasızken o harfle başlayan seçeneğe geçer).
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `options` | `HuSelectOption<T>[]` | `[]` | `{ label, value, description?, icon?, disabled?, group? }` |
+| `placeholder` | `string` | `'Seçin'` | Seçim yokken |
+| `filter` | `boolean \| 'auto'` | `'auto'` | Panelde arama kutusu; `auto`: seçenek sayısı `filterThreshold`'u aşınca |
+| `filterThreshold` | `number` | `7` | |
+| `filterPlaceholder` | `string` | `'Ara…'` | |
+| `showClear` | `boolean` | `false` | Seçimi temizleyen ✕ |
+| `compareWith` | `(a: T, b: T) => boolean` | `Object.is` | Nesne değerlerde eşitlik |
+| `emptyMessage` | `string` | `'Sonuç bulunamadı'` | |
+| `size`, `disabled`, `ariaLabel`, `id` | | | Diğer form kontrolleriyle aynı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `T \| null` | `null` | Seçilen değer |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `selectionChange` | `T \| null` | Kullanıcı seçince / temizleyince |
+| `closed` | `void` | Panel kapanınca |
+
+Panel zemini `--hu-select-panel-bg`, liste yüksekliği `--hu-select-max-height` ile değiştirilebilir.
+
+```html
+<hu-form-field label="Fakülte" required>
+  <hu-select formControlName="faculty" [options]="faculties" placeholder="Fakülte seçin" />
+</hu-form-field>
+
+<hu-select [options]="departments" [(value)]="department" showClear [filter]="true" />
 ```
 
 ### hu-multi-select

@@ -31,10 +31,13 @@
     border-color: var(--hu-gray-400);
   }
 
+  // Odak halkası anında gelir (tıklayınca gecikmeli odaklanıyormuş hissi
+  // vermesin); odaktan çıkarken yine yumuşak söner.
   &:focus {
     outline: none;
     border-color: var(--hu-primary);
     box-shadow: var(--hu-ring);
+    transition: none;
   }
 
   &:disabled {

@@ -1,0 +1,306 @@
+.hu-select {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+// Tetikleyici huInput ile aynı görünür
+.hu-select__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  height: var(--hu-control-md);
+  padding: 0 var(--hu-space-2) 0 var(--hu-space-3);
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text);
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--hu-shadow-sm);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color var(--hu-transition),
+    box-shadow var(--hu-transition);
+
+  &:hover:not([aria-disabled='true']):not(:focus) {
+    border-color: var(--hu-gray-400);
+  }
+
+  &:focus,
+  .hu-select--open & {
+    outline: none;
+    border-color: var(--hu-primary);
+    box-shadow: var(--hu-ring);
+    transition: none;
+  }
+
+  &--invalid,
+  &--invalid:hover:not(:focus) {
+    border-color: var(--hu-danger);
+  }
+
+  &--invalid:focus {
+    box-shadow: var(--hu-ring-danger);
+  }
+
+  .hu-select--disabled & {
+    color: var(--hu-text-subtle);
+    background: var(--hu-surface-3);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  [data-size='sm'] & {
+    height: var(--hu-control-sm);
+    padding-left: var(--hu-space-2);
+    font-size: 0.8125rem;
+  }
+
+  [data-size='lg'] & {
+    height: var(--hu-control-lg);
+    padding-left: var(--hu-space-4);
+    font-size: var(--hu-text-md);
+  }
+}
+
+.hu-select__value,
+.hu-select__placeholder {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hu-select__placeholder {
+  color: var(--hu-text-subtle);
+}
+
+.hu-select__value-icon {
+  flex-shrink: 0;
+  color: var(--hu-text-muted);
+}
+
+.hu-select__clear {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: var(--hu-text-subtle);
+  background: none;
+  border: 0;
+  border-radius: var(--hu-radius-sm);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--hu-text);
+    background: var(--hu-surface-3);
+  }
+}
+
+.hu-select__caret {
+  flex-shrink: 0;
+  color: var(--hu-text-subtle);
+  transition: transform var(--hu-transition);
+
+  .hu-select--open & {
+    color: var(--hu-primary);
+    transform: rotate(180deg);
+  }
+}
+
+// --- Panel -------------------------------------------------------------------------
+// Zemin tema yüzeyinden gelir; koyu temada bir ton açık (sayfadan ayrışsın).
+.hu-select__panel {
+  --_panel-bg: var(--hu-select-panel-bg, var(--hu-surface));
+  position: fixed;
+  inset: auto;
+  flex-direction: column;
+  min-width: 12rem;
+  max-width: min(32rem, calc(100vw - 1rem));
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: var(--hu-text);
+  background: var(--_panel-bg);
+  border: 1px solid var(--hu-border);
+  border-radius: var(--hu-radius-lg);
+  box-shadow: var(--hu-shadow-lg);
+
+  :root[data-theme='dark'] & {
+    --_panel-bg: var(--hu-select-panel-bg, var(--hu-surface-2));
+    border-color: var(--hu-border-strong);
+  }
+
+  &:popover-open {
+    display: flex;
+    animation: hu-select-in 140ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+
+  &--inline {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    width: 100%;
+
+    &[hidden] {
+      display: none;
+    }
+  }
+}
+
+// Arama: kenarlıksız, panelle bütünleşik
+.hu-select__search {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--hu-space-2);
+  margin: var(--hu-space-2) var(--hu-space-2) 0;
+  padding: 0 var(--hu-space-3);
+  height: 2.25rem;
+  color: var(--hu-text-subtle);
+  background: var(--hu-surface-2);
+  border: 1px solid transparent;
+  border-radius: var(--hu-radius-md);
+  transition: border-color var(--hu-transition), background-color var(--hu-transition);
+
+  :root[data-theme='dark'] & {
+    background: var(--hu-surface-3);
+  }
+
+  &:focus-within {
+    color: var(--hu-primary);
+    background: var(--_panel-bg);
+    border-color: color-mix(in srgb, var(--hu-primary) 45%, transparent);
+  }
+
+  > hu-icon {
+    flex-shrink: 0;
+  }
+
+  > input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    font: inherit;
+    font-size: var(--hu-text-sm);
+    color: var(--hu-text);
+    background: none;
+    border: 0;
+    outline: none;
+
+    &::placeholder {
+      color: var(--hu-text-subtle);
+    }
+  }
+}
+
+.hu-select__list {
+  max-height: var(--hu-select-max-height, 17rem);
+  margin: 0;
+  padding: var(--hu-space-1-5, 6px);
+  overflow-y: auto;
+  list-style: none;
+  outline: none;
+  scrollbar-width: thin;
+}
+
+.hu-select__group {
+  padding: var(--hu-space-3) var(--hu-space-2) var(--hu-space-1);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hu-text-subtle);
+
+  &:first-child {
+    padding-top: var(--hu-space-1);
+  }
+}
+
+.hu-select__option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-2);
+  min-height: 2.25rem;
+  padding: var(--hu-space-2) var(--hu-space-2) var(--hu-space-2) var(--hu-space-3);
+  font-size: var(--hu-text-sm);
+  line-height: 1.35;
+  border-radius: var(--hu-radius-md);
+  cursor: pointer;
+  user-select: none;
+
+  &--active {
+    background: var(--hu-surface-3);
+  }
+
+  // Seçili: marka renginde yazı + açık zemin + tik
+  &--selected {
+    font-weight: 500;
+    color: var(--hu-primary-soft-fg);
+    background: var(--hu-primary-soft);
+
+    .hu-select__option-icon {
+      color: var(--hu-primary);
+    }
+  }
+
+  &--selected.hu-select__option--active {
+    background: var(--hu-primary-soft-hover);
+  }
+
+  &--disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.hu-select__option-icon {
+  flex-shrink: 0;
+  color: var(--hu-text-subtle);
+}
+
+.hu-select__option-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hu-select__option-desc {
+  font-size: var(--hu-text-xs);
+  font-weight: 400;
+  color: var(--hu-text-subtle);
+}
+
+.hu-select__check {
+  flex-shrink: 0;
+  color: var(--hu-primary);
+}
+
+.hu-select__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hu-space-2);
+  padding: var(--hu-space-5) var(--hu-space-2);
+  font-size: var(--hu-text-sm);
+  color: var(--hu-text-subtle);
+  text-align: center;
+}
+
+@keyframes hu-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}

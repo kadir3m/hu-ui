@@ -277,6 +277,36 @@ export const DOCS: DocEntry[] = [
     load: () => import('./pages/input-number.doc').then((m) => m.InputNumberDoc),
   },
   {
+    slug: 'select',
+    name: 'Select',
+    category: 'Form',
+    icon: 'chevrons-up-down',
+    isNew: true,
+    description:
+      'Tek seçimli açılır liste: tema renklerinde panel, arama (Türkçe karakterleri yok sayar), gruplar, ikon ve açıklamalı seçenekler, klavye desteği. Native select yerine.',
+    selector: 'hu-select',
+    imports: 'HuSelect, HuSelectOption',
+    api: {
+      inputs: [
+        ['options', 'HuSelectOption<T>[]', '[]', '{ label, value, description?, icon?, disabled?, group? }'],
+        ['placeholder', 'string', `'Seçin'`, 'Seçim yokken görünen metin'],
+        ['filter', `boolean | 'auto'`, `'auto'`, 'Panelde arama kutusu; auto: seçenek sayısı filterThreshold\'u aşınca'],
+        ['filterThreshold', 'number', '7', 'auto modda aramanın çıktığı seçenek sayısı'],
+        ['showClear', 'boolean', 'false', 'Seçimi temizleyen ✕'],
+        ['compareWith', '(a, b) => boolean', 'Object.is', 'Nesne değerlerde eşitlik: (a, b) => a.id === b.id'],
+        ['emptyMessage', 'string', `'Sonuç bulunamadı'`, 'Arama sonucu boşken'],
+        ['size / disabled / ariaLabel', '—', '—', 'Diğer form kontrolleriyle aynı'],
+      ],
+      models: [['value', 'T | null', 'null', 'Seçilen değer']],
+      outputs: [
+        ['selectionChange', 'T | null', '—', 'Kullanıcı seçince veya temizleyince'],
+        ['closed', 'void', '—', 'Panel kapanınca'],
+      ],
+      methods: [['show() / close() / toggle()', 'void', '—', 'Paneli aç / kapat']],
+    },
+    load: () => import('./pages/select.doc').then((m) => m.SelectDoc),
+  },
+  {
     slug: 'multi-select',
     name: 'MultiSelect',
     category: 'Form',

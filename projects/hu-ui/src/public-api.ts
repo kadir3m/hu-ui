@@ -30,6 +30,7 @@ export * from './lib/editor/editor.component';
 export * from './lib/file-upload/file-upload.component';
 export * from './lib/input-number/input-number.component';
 export * from './lib/multi-select/multi-select.component';
+export * from './lib/select/select.component';
 export * from './lib/input-mask/input-mask.directive';
 export * from './lib/password/password.component';
 export * from './lib/radio/radio.component';

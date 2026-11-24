@@ -44,7 +44,7 @@ export class HuDialogFooter {}
       [attr.aria-labelledby]="titleId"
       (close)="onNativeClose()"
       (cancel)="onCancel($event)"
-      (mousedown)="pointerDownOnBackdrop = $event.target === dialog"
+      (mousedown)="onMouseDown($event)"
       (click)="onClick($event)"
     >
       <div class="hu-dialog__panel">
@@ -101,6 +101,12 @@ export class HuDialog {
 
   protected onCancel(event: Event): void {
     if (!this.closeOnEsc()) event.preventDefault();
+  }
+
+  // Atama şablonda yapılmaz: Angular, `false` dönen dinleyicide preventDefault()
+  // çağırır ve dialog içindeki input'lara tıklayınca odak gitmez.
+  protected onMouseDown(event: MouseEvent): void {
+    this.pointerDownOnBackdrop = event.target === this.dialogRef().nativeElement;
   }
 
   protected onClick(event: MouseEvent): void {
