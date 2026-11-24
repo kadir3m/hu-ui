@@ -13,7 +13,11 @@
               class="hu-nav__link"
               [class.hu-nav__link--parent-active]="isParentActive(item)"
               [attr.aria-expanded]="open"
-              [attr.title]="collapsed() ? item.label : null"
+              [attr.aria-label]="collapsed() ? item.label : null"
+              (mouseenter)="showTip($event, item)"
+              (focus)="showTip($event, item)"
+              (mouseleave)="hideTip()"
+              (blur)="hideTip()"
               (click)="toggle(item)"
             >
               @if (item.icon) {
@@ -44,7 +48,11 @@
               routerLinkActive="hu-nav__link--active"
               [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
               ariaCurrentWhenActive="page"
-              [attr.title]="collapsed() ? item.label : null"
+              [attr.aria-label]="collapsed() ? item.label : null"
+              (mouseenter)="showTip($event, item)"
+              (focus)="showTip($event, item)"
+              (mouseleave)="hideTip()"
+              (blur)="hideTip()"
               (click)="navigate.emit()"
             >
               @if (item.icon) {
@@ -59,6 +67,15 @@
         </li>
       }
     </ul>
+  </div>
+}
+
+@if (tip(); as t) {
+  <div class="hu-nav__tooltip" role="tooltip" aria-hidden="true" [style.top.px]="t.top" [style.left.px]="t.left">
+    {{ t.label }}
+    @if (t.badge != null) {
+      <span class="hu-nav__tooltip-badge">{{ t.badge }}</span>
+    }
   </div>
 }
 

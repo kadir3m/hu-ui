@@ -25,7 +25,7 @@ import { HuNavGroup, HuNavItem } from './nav.types';
   selector: 'hu-sidebar-nav',
   imports: [NgTemplateOutlet, RouterLink, RouterLinkActive, HuIcon],
   templateUrl: './sidebar-nav.component.html',
-  host: { class: 'hu-nav', '[class.hu-nav--collapsed]': 'collapsed()' },
+  host: { class: 'hu-nav', '[class.hu-nav--collapsed]': 'collapsed()', '(wheel)': 'hideTip()' },
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -49,8 +49,17 @@ export class HuSidebarNav {
     { initialValue: this.router.url },
   );
   protected readonly openItems = signal<ReadonlySet<HuNavItem>>(new Set());
+  /** Daraltılmış modda üzerine gelinen öğenin adı (ikonun sağında, ekrana sabit). */
+  protected readonly tip = signal<{ label: string; badge?: string | number; top: number; left: number } | null>(null);
 
   constructor() {
+    // Menü açılınca / sayfa değişince ipucu kapansın.
+    effect(() => {
+      this.collapsed();
+      this.url();
+      untracked(() => this.tip.set(null));
+    });
+
     // `expanded: true` olan öğeler başlangıçta açık gelsin.
     effect(() => {
       const expanded = this.groups()
@@ -99,6 +108,16 @@ export class HuSidebarNav {
   /** `'Yeni'` gibi metin rozetleri sayılardan farklı görünür. */
   protected isTextBadge(badge: string | number): boolean {
     return typeof badge === 'string' && Number.isNaN(Number(badge));
+  }
+
+  protected showTip(event: Event, item: HuNavItem): void {
+    if (!this.collapsed()) return;
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.tip.set({ label: item.label, badge: item.badge, top: rect.top + rect.height / 2, left: rect.right + 12 });
+  }
+
+  protected hideTip(): void {
+    this.tip.set(null);
   }
 
   protected toggle(item: HuNavItem): void {
