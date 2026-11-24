@@ -1,0 +1,305 @@
+.hu-file-input {
+  display: block;
+  // container-type içerik genişliğini sıfırlar; flex/grid içinde de tam genişlik al
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.hu-file-input__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-3);
+  min-height: var(--hu-control-md);
+  padding: 3px 3px 3px var(--hu-space-2);
+  overflow: hidden;
+  background: var(--hu-surface);
+  border: 1px solid var(--hu-border-strong);
+  border-radius: var(--hu-radius-md);
+  box-shadow: var(--hu-shadow-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--hu-transition),
+    background-color var(--hu-transition),
+    box-shadow var(--hu-transition);
+
+  &:hover {
+    border-color: var(--hu-gray-400);
+  }
+
+  // Odak halkası anında gelsin (bkz. huInput)
+  &:focus-within {
+    border-color: var(--hu-primary);
+    box-shadow: var(--hu-ring);
+    transition: none;
+  }
+
+  .hu-file-input--labelled & {
+    gap: var(--hu-space-3);
+    padding: var(--hu-space-3) var(--hu-space-3) var(--hu-space-3) var(--hu-space-3);
+    border-color: var(--hu-border);
+    border-radius: var(--hu-radius-lg);
+  }
+
+  .hu-file-input--labelled &:hover {
+    border-color: var(--hu-border-strong);
+  }
+
+  .hu-file-input--labelled &:focus-within {
+    border-color: var(--hu-primary);
+  }
+
+  .hu-file-input--dragging & {
+    background: var(--hu-primary-soft);
+    border-color: var(--hu-primary);
+    border-style: dashed;
+
+    // Sürüklerken içteki öğeler dragleave üretmesin
+    * {
+      pointer-events: none;
+    }
+  }
+
+  .hu-file-input--invalid &,
+  .hu-file-input--invalid &:hover {
+    border-color: var(--hu-danger);
+  }
+
+  .hu-file-input--invalid &:focus-within {
+    box-shadow: var(--hu-ring-danger);
+  }
+
+  .hu-file-input--disabled & {
+    background: var(--hu-surface-3);
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.65;
+
+    &:hover {
+      border-color: var(--hu-border-strong);
+    }
+  }
+}
+
+// --- İkon karesi -----------------------------------------------------------------
+.hu-file-input__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  color: var(--hu-text-subtle);
+  background: var(--hu-surface-2);
+  border-radius: var(--hu-radius-sm);
+  transition:
+    color var(--hu-transition),
+    background-color var(--hu-transition);
+
+  .hu-file-input--labelled & {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--hu-radius-md);
+  }
+
+  .hu-file-input--filled & {
+    color: var(--hu-primary-soft-fg);
+    background: var(--hu-primary-soft);
+  }
+
+  [data-status='done'] &,
+  .hu-file-input--stored[data-status='idle'] & {
+    color: var(--hu-success-fg);
+    background: var(--hu-success-soft);
+  }
+
+  .hu-file-input--invalid &,
+  [data-status='error'] & {
+    color: var(--hu-danger-fg);
+    background: var(--hu-danger-soft);
+  }
+
+  .hu-file-input--dragging & {
+    color: var(--hu-primary-fg);
+    background: var(--hu-primary);
+  }
+}
+
+// --- Metinler ----------------------------------------------------------------------
+.hu-file-input__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hu-file-input__label {
+  font-size: var(--hu-text-sm);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--hu-text);
+}
+
+.hu-file-input__required {
+  margin-left: 2px;
+  color: var(--hu-danger);
+}
+
+.hu-file-input__line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--hu-space-2);
+  min-width: 0;
+  font-size: var(--hu-text-sm);
+  line-height: 1.4;
+}
+
+.hu-file-input__name {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 500;
+  color: var(--hu-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.hu-file-input__name {
+  color: var(--hu-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--hu-focus);
+    outline-offset: 1px;
+    border-radius: 2px;
+  }
+}
+
+.hu-file-input__meta {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--hu-space-2);
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+  white-space: nowrap;
+}
+
+.hu-file-input__ok,
+.hu-file-input__fail {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
+}
+
+.hu-file-input__ok {
+  color: var(--hu-success);
+}
+
+.hu-file-input__fail {
+  color: var(--hu-danger);
+}
+
+.hu-file-input__placeholder {
+  flex-shrink: 0;
+  color: var(--hu-text-subtle);
+}
+
+.hu-file-input__drop {
+  font-weight: 500;
+  color: var(--hu-primary);
+}
+
+.hu-file-input__hint {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--hu-text-xs);
+  color: var(--hu-text-subtle);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &::before {
+    content: '·';
+    margin-right: var(--hu-space-2);
+  }
+}
+
+// --- Düğmeler ve ilerleme ---------------------------------------------------------
+.hu-file-input__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--hu-space-1);
+}
+
+.hu-file-input__progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: var(--hu-surface-3);
+
+  > span {
+    display: block;
+    height: 100%;
+    background: var(--hu-primary);
+    transition: width 150ms ease-out;
+  }
+}
+
+.hu-file-input__message {
+  display: flex;
+  align-items: center;
+  gap: var(--hu-space-1);
+  margin: var(--hu-space-1) 0 0;
+  font-size: var(--hu-text-xs);
+  color: var(--hu-danger);
+}
+
+// --- Dar alan: düğmeler alt satıra geçer -----------------------------------------
+@container (max-width: 30rem) {
+  .hu-file-input--labelled .hu-file-input__box {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .hu-file-input--labelled .hu-file-input__body {
+    flex-basis: calc(100% - 2.5rem - var(--hu-space-3));
+  }
+
+  .hu-file-input--labelled .hu-file-input__line {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .hu-file-input--labelled .hu-file-input__name {
+    max-width: 100%;
+  }
+
+  .hu-file-input--labelled .hu-file-input__hint {
+    max-width: 100%;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .hu-file-input--labelled .hu-file-input__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .hu-file-input:not(.hu-file-input--labelled) .hu-file-input__hint {
+    display: none;
+  }
+}

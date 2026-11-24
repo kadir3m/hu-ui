@@ -1,0 +1,139 @@
+<input
+  #input
+  type="file"
+  class="hu-sr-only"
+  tabindex="-1"
+  aria-hidden="true"
+  [accept]="accept()"
+  [disabled]="isDisabled()"
+  (change)="onInputChange($event)"
+/>
+
+<div class="hu-file-input__box" (click)="onBoxClick($event)">
+  <span class="hu-file-input__icon" aria-hidden="true">
+    <hu-icon [name]="dragging() ? 'upload-cloud' : (display()?.icon ?? 'upload')" [size]="18" />
+  </span>
+
+  <div class="hu-file-input__body">
+    @if (label(); as l) {
+      <span class="hu-file-input__label" [id]="labelId()">
+        {{ l }}
+        @if (required()) {
+          <span class="hu-file-input__required" aria-hidden="true">*</span>
+        }
+      </span>
+    }
+
+    <span class="hu-file-input__line">
+      @if (dragging()) {
+        <span class="hu-file-input__placeholder hu-file-input__drop">Bırakın, eklensin</span>
+      } @else if (display(); as d) {
+        @if (d.url) {
+          <a class="hu-file-input__name" [href]="d.url" target="_blank" rel="noopener" [title]="d.name">{{ d.name }}</a>
+        } @else {
+          <span class="hu-file-input__name" [title]="d.name">{{ d.name }}</span>
+        }
+        <span class="hu-file-input__meta">
+          @if (d.size != null) {
+            <span>{{ formatSize(d.size) }}</span>
+          }
+          @switch (status()) {
+            @case ('uploading') {
+              <span>%{{ progress() }}</span>
+            }
+            @case ('done') {
+              <span class="hu-file-input__ok"><hu-icon name="check-circle" [size]="13" /> Yüklendi</span>
+            }
+            @case ('error') {
+              <span class="hu-file-input__fail"><hu-icon name="alert-circle" [size]="13" /> Yüklenemedi</span>
+            }
+            @default {
+              @if (d.stored) {
+                <span class="hu-file-input__ok"><hu-icon name="check-circle" [size]="13" /> Yüklü</span>
+              }
+            }
+          }
+        </span>
+      } @else {
+        <span class="hu-file-input__placeholder">{{ placeholder() }}</span>
+        @if (hintText()) {
+          <span class="hu-file-input__hint" [id]="hintId()">{{ hintText() }}</span>
+        }
+      }
+    </span>
+  </div>
+
+  <div class="hu-file-input__actions">
+    @if (status() === 'error') {
+      <button
+        hu-button
+        size="sm"
+        variant="ghost"
+        iconOnly
+        type="button"
+        title="Tekrar dene"
+        aria-label="Tekrar yükle"
+        [disabled]="isDisabled()"
+        (click)="retry()"
+        (blur)="onBlur($event)"
+      >
+        <hu-icon name="rotate-cw" [size]="14" />
+      </button>
+    }
+    <button
+      #browseButton
+      hu-button
+      size="sm"
+      type="button"
+      class="hu-file-input__browse"
+      [variant]="display() ? 'outline' : 'soft'"
+      [color]="display() ? 'neutral' : 'primary'"
+      [id]="id()"
+      [disabled]="isDisabled()"
+      [attr.aria-labelledby]="label() ? labelId() + ' ' + id() : null"
+      [attr.aria-describedby]="describedBy()"
+      [attr.aria-invalid]="isInvalid() || null"
+      (click)="browse()"
+      (blur)="onBlur($event)"
+    >
+      <hu-icon name="upload" [size]="14" />
+      {{ display() ? changeLabel() : browseLabel() }}
+    </button>
+    @if (display() && removable()) {
+      <button
+        hu-button
+        size="sm"
+        variant="ghost"
+        color="danger"
+        iconOnly
+        type="button"
+        title="Kaldır"
+        [attr.aria-label]="display()!.name + ' kaldır'"
+        [disabled]="isDisabled()"
+        (click)="remove()"
+        (blur)="onBlur($event)"
+      >
+        <hu-icon name="trash" [size]="15" />
+      </button>
+    }
+  </div>
+
+  @if (status() === 'uploading') {
+    <span
+      class="hu-file-input__progress"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      [attr.aria-valuenow]="progress()"
+      [attr.aria-label]="(display()?.name ?? 'Dosya') + ' yükleniyor'"
+    >
+      <span [style.width.%]="progress()"></span>
+    </span>
+  }
+</div>
+
+@if (message(); as m) {
+  <p class="hu-file-input__message" role="alert" [id]="messageId()">
+    <hu-icon name="alert-circle" [size]="14" /> {{ m }}
+  </p>
+}

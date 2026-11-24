@@ -15,7 +15,7 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 ## İçindekiler
 
 - **Layout:** [hu-shell](#hu-shell) · [hu-breadcrumb](#hu-breadcrumb) · [hu-theme-toggle](#hu-theme-toggle) · [Grid](#grid)
-- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-select](#hu-select) · [hu-multi-select](#hu-multi-select) · [hu-password](#hu-password) · [huMask](#humask-inputmask) · [hu-radio-group](#hu-radio-group--hu-radio) · [hu-rating](#hu-rating) · [hu-file-upload](#hu-file-upload)
+- **Form:** [hu-button](#hu-button) · [hu-button-group](#hu-button-group) · [huInput](#huinput) · [hu-form-field](#hu-form-field) · [hu-checkbox](#hu-checkbox) · [hu-switch](#hu-switch) · [hu-date-picker](#hu-date-picker) · [hu-editor](#hu-editor) · [hu-input-number](#hu-input-number) · [hu-select](#hu-select) · [hu-multi-select](#hu-multi-select) · [hu-password](#hu-password) · [huMask](#humask-inputmask) · [hu-radio-group](#hu-radio-group--hu-radio) · [hu-rating](#hu-rating) · [hu-file-upload](#hu-file-upload) · [hu-file-input](#hu-file-input)
 - **Tarih:** [hu-agenda](#hu-agenda) · [hu-calendar](#hu-calendar) · [tarih yardımcıları](#tarih-yardımcıları)
 - **Veri:** [hu-table](#hu-table) · [hu-paginator](#hu-paginator) · [hu-tabs](#hu-tabs--hu-tab) · [hu-stepper](#hu-stepper--hu-step) · [ContextMenu](#contextmenu-hucontextmenu) · [hu-card](#hu-card) · [hu-dropdown](#hu-dropdown)
 - **Geri bildirim:** [hu-dialog](#hu-dialog) · [ConfirmPopup](#confirmpopup-huconfirm) · [huTooltip](#hutooltip) · [HuToastService + hu-toaster](#hutoastservice--hu-toaster) · [hu-alert](#hu-alert) · [hu-badge](#hu-badge) · [hu-avatar](#hu-avatar) · [hu-spinner](#hu-spinner)
@@ -732,6 +732,61 @@ upload: HuFileUploader = (file, progress) =>
 </hu-form-field>
 
 <hu-file-upload multiple [uploader]="upload" (uploaded)="onUploaded($event.result)" />
+```
+
+### hu-file-input
+
+Tek dosyalık, satır biçiminde dosya alanı: etiket, seçilen dosya, "Dosya seç / Değiştir" ve "Kaldır".
+Başvuru evrakı gibi belge listeleri için. Dosya satırın üzerine sürüklenebilir; satırın boş yerine
+tıklamak da seçme penceresini açar. Değer `File`, sunucuda kayıtlı dosya için `HuStoredFile`
+(`{ name, size?, url? }`) veya `null`'dır. `label` verilmezse huInput yüksekliğinde sade bir alana
+dönüşür ve `hu-form-field` içinde kullanılır.
+
+| Input | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `label` | `string` | — | Satırın etiketi. `hu-form-field` içinde vermeyin |
+| `required` | `boolean` | `false` | Etikette yıldız (doğrulama için `Validators.required`) |
+| `hint` | `string` | otomatik | Dosya yokken görünen bilgi; verilmezse `accept` ve boyuttan üretilir |
+| `placeholder` | `string` | `'Dosya seçilmedi'` | Dosya yokken metin |
+| `accept` | `string` | `''` | Kabul edilen türler: `'.pdf,.docx'` |
+| `maxFileSize` | `number` (bayt) | `null` | En büyük boyut |
+| `uploader` | `HuFileUploader` | `null` | Verilirse dosya seçilince yüklenir; alt kenarda ilerleme çubuğu, hata olursa "tekrar dene" |
+| `removable` | `boolean` | `true` | Kaldır düğmesi |
+| `browseLabel` / `changeLabel` | `string` | `'Dosya seç'` / `'Değiştir'` | Düğme metinleri |
+| `disabled` | `boolean` | `false` | Devre dışı |
+
+| Model | Tip | Varsayılan | Açıklama |
+| --- | --- | --- | --- |
+| `value` | `File \| HuStoredFile \| null` | `null` | Seçilen dosya (form kontrolü olarak da çalışır) |
+
+| Output | Değer | Ne zaman |
+| --- | --- | --- |
+| `rejected` | `HuFileRejection` | Tür veya boyut kuralına uymayan dosya; mesaj satırın altında da gösterilir |
+| `uploaded` | `{ file, result }` | `uploader` başarıyla bitince |
+| `uploadError` | `{ file, error }` | `uploader` hata verince |
+| `removed` | `File \| HuStoredFile` | Kullanıcı dosyayı kaldırınca |
+
+Metotlar: `browse()`, `clear()`.
+
+```ts
+form = this.fb.group({
+  // Düzenleme ekranında sunucudaki dosya; url verilirse ad indirme bağlantısı olur
+  summary: [{ name: 'ozet.docx', size: 48640, url: '/files/12' } as HuFileInputValue, Validators.required],
+  decision: [null as HuFileInputValue],
+});
+
+// Gönderirken: File ise yeni seçildi, değilse sunucudaki dosya olduğu gibi kaldı
+const { summary } = this.form.getRawValue();
+if (summary instanceof File) body.append('summary', summary);
+```
+
+```html
+<hu-file-input label="Değişikliklerin özet tablosu" required accept=".pdf,.docx" formControlName="summary" />
+<hu-file-input label="Şerh kararı" accept=".pdf" formControlName="decision" />
+
+<hu-form-field label="Özgeçmiş">
+  <hu-file-input accept=".pdf" [(value)]="cv" />
+</hu-form-field>
 ```
 
 ---

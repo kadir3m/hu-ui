@@ -497,6 +497,43 @@ export const DOCS: DocEntry[] = [
     },
     load: () => import('./pages/file-upload.doc').then((m) => m.FileUploadDoc),
   },
+  {
+    slug: 'file-input',
+    name: 'FileInput',
+    category: 'Form',
+    icon: 'file',
+    isNew: true,
+    description:
+      'Tek dosyalık, satır biçiminde dosya alanı: etiket, seçilen dosya, "Dosya seç" ve "Kaldır". Başvuru evrakı gibi belge listeleri için; satıra sürükle-bırak, tür/boyut kontrolü, sunucudaki dosyayı gösterme ve ilerlemeli yükleme.',
+    selector: 'hu-file-input',
+    imports: 'HuFileInput',
+    api: {
+      inputs: [
+        ['label', 'string', '—', 'Satırın etiketi; hu-form-field içinde vermeyin'],
+        ['required', 'boolean', 'false', 'Etikette yıldız (doğrulama için Validators.required)'],
+        ['hint', 'string', 'otomatik', 'Dosya yokken görünen bilgi; verilmezse accept ve boyuttan üretilir'],
+        ['placeholder', 'string', `'Dosya seçilmedi'`, 'Dosya yokken metin'],
+        ['accept', 'string', `''`, `Kabul edilen türler: '.pdf,.docx'`],
+        ['maxFileSize', 'number (bayt)', 'null', 'En büyük boyut'],
+        ['uploader', '(file, progress) => Promise', 'null', 'Verilirse dosya seçilince yüklenir; ilerleme ve tekrar dene gösterilir'],
+        ['removable', 'boolean', 'true', 'Kaldır düğmesi'],
+        ['browseLabel / changeLabel', 'string', `'Dosya seç' / 'Değiştir'`, 'Düğme metinleri'],
+        ['disabled', 'boolean', 'false', 'Devre dışı'],
+      ],
+      models: [['value', 'File | HuStoredFile | null', 'null', 'Seçilen dosya; sunucudaki dosya için { name, size?, url? } (formControlName ile de çalışır)']],
+      outputs: [
+        ['rejected', 'HuFileRejection', '—', `Kurala uymayan dosya (reason: 'type' | 'size')`],
+        ['uploaded', '{ file, result }', '—', 'uploader başarıyla bitince'],
+        ['uploadError', '{ file, error }', '—', 'uploader hata verince'],
+        ['removed', 'File | HuStoredFile', '—', 'Kullanıcı dosyayı kaldırınca'],
+      ],
+      methods: [
+        ['browse()', 'void', '—', 'Dosya seçme penceresini açar'],
+        ['clear()', 'void', '—', 'Dosyayı kaldırır'],
+      ],
+    },
+    load: () => import('./pages/file-input.doc').then((m) => m.FileInputDoc),
+  },
 
   // --- Tarih ---------------------------------------------------------------------
   {

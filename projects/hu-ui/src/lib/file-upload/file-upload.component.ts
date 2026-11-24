@@ -22,6 +22,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, ValidationErrors } 
 import { HuButton } from '../button/button.component';
 import { HuIcon } from '../icon/icon.component';
 import { huUniqueId } from '../core/unique-id';
+import { huAcceptLabel, huDragHasFiles, huFileIcon, huMatchesAccept } from '../core/file';
 import { HU_FORM_FIELD, HuFormFieldControl } from '../form-field/form-field.tokens';
 
 export type HuFileRejectReason = 'type' | 'size' | 'count';
@@ -133,12 +134,8 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
     const hint = this.hint();
     if (hint !== undefined) return hint;
     const parts: string[] = [];
-    const accept = this.accept()
-      .split(',')
-      .map((a) => a.trim())
-      .filter(Boolean)
-      .map((a) => (a.startsWith('.') ? a.slice(1).toUpperCase() : a === 'image/*' ? 'Görseller' : a));
-    if (accept.length) parts.push(accept.join(', '));
+    const accept = huAcceptLabel(this.accept());
+    if (accept) parts.push(accept);
     const max = this.maxFileSize();
     if (max) parts.push(`en fazla ${formatFileSize(max)}`);
     if (this.multiple() && this.maxFiles()) parts.push(`en fazla ${this.maxFiles()} dosya`);
@@ -196,14 +193,14 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
   }
 
   protected onDragEnter(event: DragEvent): void {
-    if (this.isDisabled() || !hasFiles(event)) return;
+    if (this.isDisabled() || !huDragHasFiles(event)) return;
     event.preventDefault();
     this.dragDepth++;
     this.dragging.set(true);
   }
 
   protected onDragOver(event: DragEvent): void {
-    if (this.isDisabled() || !hasFiles(event)) return;
+    if (this.isDisabled() || !huDragHasFiles(event)) return;
     event.preventDefault();
     if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
   }
@@ -252,10 +249,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
   protected readonly formatSize = formatFileSize;
 
   protected iconFor(file: File): string {
-    if (file.type.startsWith('image/')) return 'file-image';
-    if (/zip|rar|7z|tar|gzip/.test(file.type) || /\.(zip|rar|7z|tar|gz)$/i.test(file.name)) return 'file-archive';
-    if (/pdf|word|document|text|sheet|excel|presentation/.test(file.type)) return 'file-text';
-    return 'file';
+    return huFileIcon(file.name, file.type);
   }
 
   private add(incoming: File[]): void {
@@ -266,7 +260,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
     const max = this.maxFileSize();
 
     for (const file of incoming) {
-      if (!matchesAccept(file, this.accept())) {
+      if (!huMatchesAccept(file, this.accept())) {
         rejections.push({ file, reason: 'type', message: `${file.name}: bu dosya türü kabul edilmiyor.` });
       } else if (max && file.size > max) {
         rejections.push({ file, reason: 'size', message: `${file.name}: en fazla ${formatFileSize(max)} olabilir.` });
@@ -364,23 +358,4 @@ export function formatFileSize(bytes: number): string {
     unit++;
   }
   return `${value.toLocaleString('tr-TR', { maximumFractionDigits: value < 10 ? 1 : 0 })} ${units[unit]}`;
-}
-
-function matchesAccept(file: File, accept: string): boolean {
-  const rules = accept
-    .split(',')
-    .map((r) => r.trim().toLowerCase())
-    .filter(Boolean);
-  if (!rules.length) return true;
-  const name = file.name.toLowerCase();
-  const type = file.type.toLowerCase();
-  return rules.some((rule) => {
-    if (rule.startsWith('.')) return name.endsWith(rule);
-    if (rule.endsWith('/*')) return type.startsWith(rule.slice(0, -1));
-    return type === rule;
-  });
-}
-
-function hasFiles(event: DragEvent): boolean {
-  return !!event.dataTransfer?.types.includes('Files');
 }

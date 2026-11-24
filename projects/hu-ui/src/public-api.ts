@@ -28,6 +28,7 @@ export * from './lib/editor/sanitize-html';
 export * from './lib/editor/editor.tools';
 export * from './lib/editor/editor.component';
 export * from './lib/file-upload/file-upload.component';
+export * from './lib/file-input/file-input.component';
 export * from './lib/input-number/input-number.component';
 export * from './lib/multi-select/multi-select.component';
 export * from './lib/select/select.component';
