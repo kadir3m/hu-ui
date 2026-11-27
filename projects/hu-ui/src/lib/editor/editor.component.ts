@@ -1,8 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   DoCheck,
+  DOCUMENT,
   ElementRef,
   Injector,
   ViewEncapsulation,
@@ -13,7 +13,8 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
+  output,
   signal,
   untracked,
   viewChild,
@@ -85,7 +86,11 @@ export class HuEditor implements ControlValueAccessor, HuFormFieldControl, DoChe
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   /** HTML değer. Boş içerik `''` olarak döner (Validators.required ile uyumlu). */
-  readonly value = model('');
+  readonly valueInput = input('', { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<string>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   readonly placeholder = input('Yazmaya başlayın…');
   readonly toolbar = input<readonly HuEditorTool[]>(HU_EDITOR_DEFAULT_TOOLBAR);
   readonly readonly = input(false, { transform: booleanAttribute });
@@ -565,6 +570,7 @@ export class HuEditor implements ControlValueAccessor, HuFormFieldControl, DoChe
     this.updateState();
     if (html === this.lastEmitted) return;
     this.lastEmitted = html;
+    if (!Object.is(this.value(), html)) this.valueChange.emit(html);
     this.value.set(html);
     this.onChange(html);
   }

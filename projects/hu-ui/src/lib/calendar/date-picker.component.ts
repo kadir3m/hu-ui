@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   DestroyRef,
   DoCheck,
+  DOCUMENT,
   ElementRef,
   Injector,
   ViewEncapsulation,
@@ -14,7 +14,8 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
+  output,
   signal,
   untracked,
   viewChild,
@@ -84,7 +85,11 @@ export class HuDatePicker implements ControlValueAccessor, Validator, HuFormFiel
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   readonly mode = input<HuCalendarMode>('single');
-  readonly value = model<HuDatePickerValue>(null);
+  readonly valueInput = input<HuDatePickerValue>(null, { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<HuDatePickerValue>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   readonly min = input<Date | null>(null);
   readonly max = input<Date | null>(null);
   readonly dateFilter = input<((date: Date) => boolean) | null>(null);
@@ -283,6 +288,7 @@ export class HuDatePicker implements ControlValueAccessor, Validator, HuFormFiel
     } else {
       // Metni koru ki kullanıcı düzeltebilsin; forma null + parse hatası yaz.
       this.parseError.set(true);
+      if (!Object.is(this.value(), null)) this.valueChange.emit(null);
       this.value.set(null);
       this.text.set(text);
       this.onChange(null);
@@ -291,6 +297,7 @@ export class HuDatePicker implements ControlValueAccessor, Validator, HuFormFiel
 
   private commit(value: HuDatePickerValue): void {
     this.parseError.set(false);
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.text.set(this.format(value));
     this.onChange(value);

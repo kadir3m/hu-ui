@@ -6,7 +6,9 @@ import {
   computed,
   forwardRef,
   input,
+  linkedSignal,
   model,
+  output,
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -57,7 +59,11 @@ import { huUniqueId } from '../core/unique-id';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HuCheckbox implements ControlValueAccessor {
-  readonly checked = model(false);
+  readonly checkedInput = input(false, { alias: 'checked', transform: booleanAttribute });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly checkedChange = output<boolean>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly checked = linkedSignal(() => this.checkedInput());
   readonly indeterminate = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly name = input<string>();
@@ -74,6 +80,7 @@ export class HuCheckbox implements ControlValueAccessor {
   protected onInputChange(event: Event): void {
     const value = (event.target as HTMLInputElement).checked;
     this.indeterminate.set(false);
+    if (!Object.is(this.checked(), value)) this.checkedChange.emit(value);
     this.checked.set(value);
     this.onChange(value);
   }

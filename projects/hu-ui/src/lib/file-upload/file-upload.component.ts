@@ -12,7 +12,7 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   output,
   signal,
   untracked,
@@ -87,7 +87,11 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   /** Seçilen dosyalar. */
-  readonly files = model<File[]>([]);
+  readonly filesInput = input<File[]>([], { alias: 'files' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly filesChange = output<File[]>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly files = linkedSignal(() => this.filesInput());
   /** null/undefined verilirse boş liste. */
   protected readonly fileList = computed(() => this.files() ?? []);
   /** Kabul edilen türler, `<input accept>` biçiminde: `'image/*,.pdf'`. */
@@ -316,6 +320,7 @@ export class HuFileUpload implements ControlValueAccessor, HuFormFieldControl, D
   }
 
   private setFiles(files: File[]): void {
+    if (!Object.is(this.files(), files)) this.filesChange.emit(files);
     this.files.set(files);
     this.syncMeta(files);
     this.onChange(files);

@@ -12,8 +12,9 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
+  output,
   signal,
   untracked,
   viewChild,
@@ -77,7 +78,15 @@ export class HuInputNumber implements ControlValueAccessor, Validator, HuFormFie
   private readonly injector = inject(Injector);
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
-  readonly value = model<number | null>(null);
+  readonly valueInput = input<number | null>(null, { alias: 'value' });
+
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+
+  readonly valueChange = output<number | null>();
+
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+
+  readonly value = linkedSignal(() => this.valueInput());
   readonly min = input(null, { transform: optionalNumber });
   readonly max = input(null, { transform: optionalNumber });
   readonly step = input(1, { transform: numberAttribute });
@@ -245,6 +254,7 @@ export class HuInputNumber implements ControlValueAccessor, Validator, HuFormFie
 
     const parsed = parseNumber(formatted);
     if (parsed !== this.value()) {
+      if (!Object.is(this.value(), parsed)) this.valueChange.emit(parsed);
       this.value.set(parsed);
       this.onChange(parsed);
     }
@@ -305,6 +315,7 @@ export class HuInputNumber implements ControlValueAccessor, Validator, HuFormFie
     const el = this.input().nativeElement;
     if (el.value !== this.text()) el.value = this.text();
     if (value === this.value()) return;
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
   }

@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   DestroyRef,
   DoCheck,
+  DOCUMENT,
   ElementRef,
   Injector,
   ViewEncapsulation,
@@ -13,7 +13,7 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
   output,
   signal,
@@ -68,7 +68,11 @@ export class HuTreeSelect<T = unknown> implements ControlValueAccessor, HuFormFi
 
   readonly nodes = input<readonly HuTreeNode<T>[]>([]);
   readonly selectionMode = input<HuTreeSelectMode>('single');
-  readonly value = model<HuTreeSelectValue>(null);
+  readonly valueInput = input<HuTreeSelectValue>(null, { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<HuTreeSelectValue>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   readonly placeholder = input('Seçin');
   /** Panelde arama kutusu. */
   readonly filter = input(false, { transform: booleanAttribute });
@@ -360,6 +364,7 @@ export class HuTreeSelect<T = unknown> implements ControlValueAccessor, HuFormFi
   }
 
   private commit(value: HuTreeSelectValue): void {
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
     if (this.open()) afterNextRender(() => this.positionPanel(), { injector: this.injector });

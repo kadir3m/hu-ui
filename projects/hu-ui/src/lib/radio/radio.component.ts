@@ -10,7 +10,8 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
+  output,
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, ValidationErrors } from '@angular/forms';
@@ -121,7 +122,15 @@ export class HuRadioGroup<T = string> implements ControlValueAccessor, HuFormFie
   private readonly injector = inject(Injector);
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
-  readonly value = model<T | null>(null);
+  readonly valueInput = input<T | null>(null, { alias: 'value' });
+
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+
+  readonly valueChange = output<T | null>();
+
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+
+  readonly value = linkedSignal(() => this.valueInput());
   readonly options = input<readonly HuRadioOption<T>[]>([]);
   readonly orientation = input<'vertical' | 'horizontal'>('vertical');
   /** `default` sade daire, `card` çerçeveli seçenek kutuları. */
@@ -169,6 +178,7 @@ export class HuRadioGroup<T = string> implements ControlValueAccessor, HuFormFie
   /** @internal */
   select(value: T): void {
     if (this.isDisabled()) return;
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
   }

@@ -8,6 +8,11 @@ yuvaları (slot). Kurulum ve genel kullanım için [README](README.md)'ye bakın
 - **Input:** `[ad]="değer"` ile verilir. `boolean` input'lar öznitelik olarak da yazılabilir:
   `<button hu-button disabled>` ile `[disabled]="true"` aynıdır.
 - **Model:** iki yönlüdür, `[(ad)]="signal"` ile bağlanır; ayrıca `(adChange)` output'u da vardır.
+  Form kontrolleri (`hu-checkbox`, `hu-switch`, `hu-select`, `hu-multi-select`, `hu-tree-select`,
+  `hu-radio-group`, `hu-rating`, `hu-input-number`, `hu-password`, `hu-date-picker`, `hu-editor`,
+  `hu-file-upload`, `hu-file-input`) `(valueChange)` / `(checkedChange)` / `(filesChange)` olayını
+  **yalnızca kullanıcı değiştirdiğinde** yayar. Form tarafından yapılan `setValue`, `patchValue`, `reset`
+  ve `setControl` olay üretmez (0.10.2 öncesinde üretiyordu).
 - **Slot:** component'in içine koyduğunuz ve belirli bir özniteliği taşıyan elementler
   (örn. `<div huCardFooter>`).
 - Bir tabloda bir satır **zorunlu** diye işaretlenmişse o input verilmeden component çalışmaz.

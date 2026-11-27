@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   DestroyRef,
   DoCheck,
+  DOCUMENT,
   ElementRef,
   Injector,
   ViewEncapsulation,
@@ -13,7 +13,7 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
   output,
   signal,
@@ -82,7 +82,11 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   readonly options = input<readonly HuSelectOption<T>[]>([]);
-  readonly value = model<T[]>([]);
+  readonly valueInput = input<T[]>([], { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<T[]>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   /** null/undefined verilirse boş dizi (henüz yüklenmemiş veri, form reset vb.). */
   protected readonly values = computed(() => this.value() ?? []);
   readonly placeholder = input('Seçin');
@@ -373,6 +377,7 @@ export class HuMultiSelect<T = string> implements ControlValueAccessor, HuFormFi
 
   // --- Yardımcılar ---------------------------------------------------------------------
   private commit(value: T[]): void {
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
     // Çip sayısı değişince tetikleyici büyüyebilir: paneli yeniden hizala

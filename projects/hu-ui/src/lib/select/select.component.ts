@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DOCUMENT,
   DestroyRef,
   DoCheck,
+  DOCUMENT,
   ElementRef,
   Injector,
   ViewEncapsulation,
@@ -13,7 +13,7 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
   output,
   signal,
@@ -66,7 +66,11 @@ export class HuSelect<T = string> implements ControlValueAccessor, HuFormFieldCo
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   readonly options = input<readonly HuSelectOption<T>[]>([]);
-  readonly value = model<T | null>(null);
+  readonly valueInput = input<T | null>(null, { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<T | null>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   readonly placeholder = input('Seçin');
   /**
    * Panelde arama kutusu. Varsayılan: seçenek sayısı `filterThreshold`'u
@@ -330,6 +334,7 @@ export class HuSelect<T = string> implements ControlValueAccessor, HuFormFieldCo
 
   // --- Yardımcılar ---------------------------------------------------------------------
   private commit(value: T | null): void {
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
     this.selectionChange.emit(value);

@@ -10,7 +10,7 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   output,
   signal,
   viewChild,
@@ -81,7 +81,11 @@ export class HuFileInput implements ControlValueAccessor, HuFormFieldControl, Do
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   /** Seçilen dosya; sunucudaki dosya için `HuStoredFile`. */
-  readonly value = model<HuFileInputValue>(null);
+  readonly valueInput = input<HuFileInputValue>(null, { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<HuFileInputValue>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   /** Satırın kendi etiketi. hu-form-field içinde kullanırken vermeyin. */
   readonly label = input<string>();
   /** Etiketin yanında yıldız gösterir (doğrulama için `Validators.required` kullanın). */
@@ -312,6 +316,7 @@ export class HuFileInput implements ControlValueAccessor, HuFormFieldControl, Do
 
   private setValue(value: HuFileInputValue): void {
     this.resetStatus();
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
   }

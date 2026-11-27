@@ -9,8 +9,9 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
+  output,
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl, ValidationErrors } from '@angular/forms';
@@ -91,7 +92,11 @@ export class HuRating implements ControlValueAccessor, HuFormFieldControl, DoChe
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
   /** 0 = puan yok. */
-  readonly value = model(0);
+  readonly valueInput = input(0, { alias: 'value' });
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+  readonly valueChange = output<number>();
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+  readonly value = linkedSignal(() => this.valueInput());
   readonly max = input(5, { transform: numberAttribute });
   readonly readonly = input(false, { transform: booleanAttribute });
   readonly disabled = input(false, { transform: booleanAttribute });
@@ -145,6 +150,7 @@ export class HuRating implements ControlValueAccessor, HuFormFieldControl, DoChe
 
   protected select(i: number): void {
     if (this.isDisabled()) return;
+    if (!Object.is(this.value(), i)) this.valueChange.emit(i);
     this.value.set(i);
     this.onChange(i);
   }
@@ -155,6 +161,7 @@ export class HuRating implements ControlValueAccessor, HuFormFieldControl, DoChe
       // Klavyeyle (boşluk tuşu) seçimde de click gelir; yalnızca zaten seçiliyse temizle
       queueMicrotask(() => {
         if (this.value() === i) {
+          if (!Object.is(this.value(), 0)) this.valueChange.emit(0);
           this.value.set(0);
           this.hover.set(0);
           this.onChange(0);

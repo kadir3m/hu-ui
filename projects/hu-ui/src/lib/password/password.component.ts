@@ -10,8 +10,9 @@ import {
   forwardRef,
   inject,
   input,
-  model,
+  linkedSignal,
   numberAttribute,
+  output,
   signal,
   untracked,
 } from '@angular/core';
@@ -152,7 +153,15 @@ export class HuPassword implements ControlValueAccessor, Validator, HuFormFieldC
   private readonly injector = inject(Injector);
   protected readonly field = inject(HU_FORM_FIELD, { optional: true, host: true });
 
-  readonly value = model('');
+  readonly valueInput = input('', { alias: 'value' });
+
+  /** Yalnızca kullanıcı değiştirince yayılır; form (writeValue) güncellemeleri yaymaz. */
+
+  readonly valueChange = output<string>();
+
+  /** Geçerli değer: bağlamadan, formdan veya kullanıcıdan gelir. */
+
+  readonly value = linkedSignal(() => this.valueInput());
   /** Göz ikonuyla göster/gizle. */
   readonly toggleMask = input(true, { transform: booleanAttribute });
   /** Güç göstergesi (yeni şifre belirlerken açın). */
@@ -215,6 +224,7 @@ export class HuPassword implements ControlValueAccessor, Validator, HuFormFieldC
   }
 
   protected onInput(value: string): void {
+    if (!Object.is(this.value(), value)) this.valueChange.emit(value);
     this.value.set(value);
     this.onChange(value);
   }
